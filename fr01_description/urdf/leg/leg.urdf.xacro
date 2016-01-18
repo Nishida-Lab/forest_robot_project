@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:macro name="bogie_v0" params="side parent *link_origin *inertia *joint_origin *joint_axis">
+	<joint name="bogie_${side}_joint" type="revolute">
+	  <insert_block name="joint_origin"/>
+	  <parent link="${parent}"/>
+	  <child link="bogie_${side}_link"/>
+	  <insert_block name="joint_axis"/>
+	  <dynamics dampint="0.7" friction="0.7"/>
+	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
+	</joint>
+		
+    <link name="bogie_${side}_link">
+      <visual>
+		<insert_block name="link_origin"/>
+        <geometry>
+          <mesh filename="package://fr01_description/meshes/visual/bogie_${side}_link.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+		<insert_block  name="link_origin"/>
+        <geometry>
+		  <mesh filename="package://fr01_description/meshes/collision/bogie_${side}_link.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+		<mass value="3.374"/>		
+		<insert_block name="inertia"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="rocker_v0" params="side parent *link_origin *inertia *joint_origin *joint_axis">
+	<joint name="rocker_${side}_joint" type="revolute">
+	  <insert_block name="joint_origin"/>
+	  <parent link="${parent}"/>
+	  <child link="rocker_${side}_link"/>
+	  <insert_block name="joint_axis"/>
+	  <dynamics dampint="0.7" friction="0.7"/>
+	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
+	</joint>
+	
+	<link name="rocker_${side}_link">
+	  <visual>
+		<insert_block name="link_origin"/>
+        <geometry>
+          <mesh filename="package://fr01_description/meshes/visual/rocker_${side}_link.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+		<insert_block name="link_origin"/>
+        <geometry>
+		  <mesh filename="package://fr01_description/meshes/collision/rocker_${side}_link.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+		<mass value="2.088"/>
+		<insert_block name="inertia"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+  
+</robot>
