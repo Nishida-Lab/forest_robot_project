@@ -8,7 +8,7 @@
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="support_gazebo_v0" params="part">
+  <xacro:macro name="steer_gazebo_v0" params="part">
 	<gazebo reference="rocke_${part}_link">
 	  <selfCollide>true</selfCollide>
       <mu1 value="0.8" />

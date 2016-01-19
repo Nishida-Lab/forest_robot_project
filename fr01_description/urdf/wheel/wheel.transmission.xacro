@@ -14,13 +14,13 @@
 	</transmission>
   </xacro:macro>
 
-  <xacro:macro name="support_trans_v0" params="part">
-	<transmission name="support_${part}_trans">
+  <xacro:macro name="steer_trans_v0" params="part">
+	<transmission name="steer_${part}_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="support_${part}_joint">
+      <joint name="steer_${part}_joint">
 		<hardwareInterface>EffortJointInterface</hardwareInterface>
       </joint>
-	  <actuator name="support_${part}_motor">
+	  <actuator name="steer_${part}_motor">
 		<hardwareInterface>EffortJointInterface</hardwareInterface>
 		<mechanicalReduction>1</mechanicalReduction>
       </actuator>

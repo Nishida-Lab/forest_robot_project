@@ -55,33 +55,33 @@
   	<axis xyz="0 1 0"/>
   </xacro:bogie_v0>
 
-  <!-- Support -->
-  <xacro:support_v0 part="right_front" parent="bogie_right_link">
+  <!-- Steer -->
+  <xacro:steer_v0 part="right_front" parent="bogie_right_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.202 0.115 0.05" rpy="0 0 ${-M_PI/2}"/>
   	<axis xyz="0 0 1"/>
-  </xacro:support_v0>
+  </xacro:steer_v0>
 
-  <xacro:support_v0 part="right_back" parent="rocker_right_link">
+  <xacro:steer_v0 part="right_back" parent="rocker_right_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.4 -0.05 -0.1" rpy="0 0 ${M_PI/2}"/>
   	<axis xyz="0 0 1"/>
-  </xacro:support_v0>
+  </xacro:steer_v0>
 
-  <xacro:support_v0 part="left_front" parent="bogie_left_link">
+  <xacro:steer_v0 part="left_front" parent="bogie_left_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.202 -0.115 0.05" rpy="0 0 ${M_PI/2}"/>
   	<axis xyz="0 0 1"/>
-  </xacro:support_v0>
+  </xacro:steer_v0>
 
-  <xacro:support_v0 part="left_back" parent="rocker_left_link">
+  <xacro:steer_v0 part="left_back" parent="rocker_left_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.4 0.05 -0.1" rpy="0 0 ${-M_PI/2}"/>
   	<axis xyz="0 0 1"/>
-  </xacro:support_v0>
+  </xacro:steer_v0>
   
   <!-- Wheel -->
-  <xacro:wheel_v0 part="right_front" parent="support_right_front_link">
+  <xacro:wheel_v0 part="right_front" parent="steer_right_front_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
@@ -93,13 +93,13 @@
   	<axis xyz="1 0 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="right_back" parent="support_right_back_link">
+  <xacro:wheel_v0 part="right_back" parent="steer_right_back_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="left_front" parent="support_left_front_link">
+  <xacro:wheel_v0 part="left_front" parent="steer_left_front_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
@@ -111,7 +111,7 @@
   	<axis xyz="1 0 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="left_back" parent="support_left_back_link">
+  <xacro:wheel_v0 part="left_back" parent="steer_left_back_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
@@ -126,11 +126,11 @@
   <xacro:bogie_trans_v0 side="right"/>
   <xacro:bogie_trans_v0 side="left"/>
   
-  <!-- Support -->
-  <xacro:support_trans_v0 part="right_front"/>
-  <xacro:support_trans_v0 part="right_back"/>
-  <xacro:support_trans_v0 part="left_front"/>
-  <xacro:support_trans_v0 part="left_back"/>
+  <!-- Steer -->
+  <xacro:steer_trans_v0 part="right_front"/>
+  <xacro:steer_trans_v0 part="right_back"/>
+  <xacro:steer_trans_v0 part="left_front"/>
+  <xacro:steer_trans_v0 part="left_back"/>
 
   <!-- Wheel -->
   <xacro:wheel_trans_v0 part="right_front"/>
@@ -152,11 +152,11 @@
   <xacro:bogie_gazebo_v0 side="right"/>
   <xacro:bogie_gazebo_v0 side="left"/>
   
-  <!-- Support -->
-  <xacro:support_gazebo_v0 part="right_front"/>
-  <xacro:support_gazebo_v0 part="right_back"/>
-  <xacro:support_gazebo_v0 part="left_front"/>
-  <xacro:support_gazebo_v0 part="left_back"/>
+  <!-- Steer -->
+  <xacro:steer_gazebo_v0 part="right_front"/>
+  <xacro:steer_gazebo_v0 part="right_back"/>
+  <xacro:steer_gazebo_v0 part="left_front"/>
+  <xacro:steer_gazebo_v0 part="left_back"/>
 
   <!-- Wheel -->
   <xacro:wheel_gazebo_v0 part="right_front"/>
