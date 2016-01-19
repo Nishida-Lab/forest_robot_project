@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:macro name="wheel_v0" params="part parent *link_origin *joint_origin *joint_axis">
+	<joint name="wheel_${part}_joint" type="continuous">
+	  <insert_block name="joint_origin"/>
+	  <parent link="${parent}"/>
+	  <child link="wheel_${part}_link"/>
+	  <insert_block name="joint_axis"/>
+	</joint>
+	
+    <link name="wheel_${part}_link">
+      <visual>
+		<insert_block name="link_origin"/>
+        <geometry>
+          <mesh filename="package://fr01_description/meshes/visual/wheel_link.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+		<insert_block name="link_origin"/>
+        <geometry>
+		  <mesh filename="package://fr01_description/meshes/collision/wheel_link.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.966"/>
+        <inertia ixx="0.006" ixy="0" ixz="0"
+				 iyy="0.004" iyz="0"
+				 izz="0.004" />
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="support_v0" params="part parent *link_origin *joint_origin *joint_axis">
+	<joint name="support_${part}_joint" type="revolute">
+	  <insert_block name="joint_origin"/>
+	  <parent link="${parent}"/>
+	  <child link="support_${part}_link"/>
+	  <insert_block name="joint_axis"/>
+	  <dynamics dampint="0.7" friction="0.7"/>
+	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
+	</joint>
+	
+    <link name="support_${part}_link">
+      <visual>
+		<insert_block name="link_origin"/>
+        <geometry>
+          <mesh filename="package://fr01_description/meshes/visual/support_link.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+		<insert_block name="link_origin"/>
+        <geometry>
+		  <mesh filename="package://fr01_description/meshes/collision/support_link.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.522"/>
+        <inertia ixx="0.0005737" ixy="0.0000000001174" ixz="0.0000003442"
+				 iyy="0.002" iyz="-0.0000000007199"
+				 izz="0.002" />
+      </inertial>
+    </link>
+  </xacro:macro>
+</robot>
