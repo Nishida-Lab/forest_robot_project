@@ -77,6 +77,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        fake_base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rocker_left_link:
           Alpha: 1
           Show Axes: false
@@ -87,22 +91,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        support_left_back_link:
+        steer_left_back_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        support_left_front_link:
+        steer_left_front_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        support_right_back_link:
+        steer_right_back_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        support_right_front_link:
+        steer_right_front_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -156,17 +160,19 @@ Visualization Manager:
           Value: true
         bogie_right_link:
           Value: true
+        fake_base_footprint:
+          Value: true
         rocker_left_link:
           Value: true
         rocker_right_link:
           Value: true
-        support_left_back_link:
+        steer_left_back_link:
           Value: true
-        support_left_front_link:
+        steer_left_front_link:
           Value: true
-        support_right_back_link:
+        steer_right_back_link:
           Value: true
-        support_right_front_link:
+        steer_right_front_link:
           Value: true
         wheel_left_back_link:
           Value: true
@@ -186,26 +192,28 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
+        fake_base_footprint:
           base_link:
             rocker_left_link:
               bogie_left_link:
-                support_left_front_link:
+                steer_left_front_link:
                   wheel_left_front_link:
                     {}
                 wheel_left_middle_link:
                   {}
-              support_left_back_link:
+              steer_left_back_link:
                 wheel_left_back_link:
                   {}
             rocker_right_link:
+              base_footprint:
+                {}
               bogie_right_link:
-                support_right_front_link:
+                steer_right_front_link:
                   wheel_right_front_link:
                     {}
                 wheel_right_middle_link:
                   {}
-              support_right_back_link:
+              steer_right_back_link:
                 wheel_right_back_link:
                   {}
       Update Interval: 0
@@ -234,22 +242,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.24184
+      Distance: 2.36933
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.155901
-        Y: -0.17085
-        Z: -0.354371
+        X: 0.0229286
+        Y: 0.0141174
+        Z: -0.17175
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.415398
+      Pitch: 0.390398
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 0.833597
+      Yaw: 5.29178
     Saved: ~
 Window Geometry:
   Displays:

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="bogie_trans_v0" params="side">
+	<transmission name="bogie_${side}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="bogie_${side}_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+	  <actuator name="bogie_${side}_motor">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+	</transmission>
+  </xacro:macro>
+
+  <xacro:macro name="rocker_trans_v0" params="side">
+	<transmission name="rocker_${side}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="rocker_${side}_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+	  <actuator name="rocker_${side}_motor">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+	</transmission>
+  </xacro:macro>
+  
+</robot>

@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   
+  <xacro:include filename="$(find fr01_description)/urdf/body/body.gazebo.xacro"/>
+  
   <xacro:macro name="base_v0" params="parent *link_origin *joint_origin">
 	<joint name="base_link_joint" type="fixed">
       <insert_block name="joint_origin" />
