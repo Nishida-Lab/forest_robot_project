@@ -54,7 +54,7 @@ notifications:
   email:
     on_success: change
     on_failue: always
-  slack: nishida-lab:z78v1yQRiOylt3CTGNuY9PUf
+  slack: nishida-lab:H4ttMsMuWha4quQmPXGU1YlS
 branches:
   only:
   - master
