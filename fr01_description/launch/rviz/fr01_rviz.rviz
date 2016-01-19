@@ -87,7 +87,52 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        support_left_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        support_left_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        support_right_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         support_right_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_left_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_left_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_left_middle_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_right_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_right_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        wheel_right_middle_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -115,7 +160,25 @@ Visualization Manager:
           Value: true
         rocker_right_link:
           Value: true
+        support_left_back_link:
+          Value: true
+        support_left_front_link:
+          Value: true
+        support_right_back_link:
+          Value: true
         support_right_front_link:
+          Value: true
+        wheel_left_back_link:
+          Value: true
+        wheel_left_front_link:
+          Value: true
+        wheel_left_middle_link:
+          Value: true
+        wheel_right_back_link:
+          Value: true
+        wheel_right_front_link:
+          Value: true
+        wheel_right_middle_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -127,10 +190,23 @@ Visualization Manager:
           base_link:
             rocker_left_link:
               bogie_left_link:
-                {}
+                support_left_front_link:
+                  wheel_left_front_link:
+                    {}
+                wheel_left_middle_link:
+                  {}
+              support_left_back_link:
+                wheel_left_back_link:
+                  {}
             rocker_right_link:
               bogie_right_link:
                 support_right_front_link:
+                  wheel_right_front_link:
+                    {}
+                wheel_right_middle_link:
+                  {}
+              support_right_back_link:
+                wheel_right_back_link:
                   {}
       Update Interval: 0
       Value: true
@@ -158,22 +234,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.01918
+      Distance: 2.24184
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.184881
-        Y: -0.234272
-        Z: -0.0647104
+        X: -0.155901
+        Y: -0.17085
+        Z: -0.354371
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.420398
+      Pitch: 0.415398
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 5.38359
+      Yaw: 0.833597
     Saved: ~
 Window Geometry:
   Displays:
