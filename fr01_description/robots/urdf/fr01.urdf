@@ -28,11 +28,12 @@
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
+  <!--==================== Link & Joint ====================-->
   <!-- Body -->
-  <link name="base_footprint"/>
+  <link name="fake_base_footprint"/>
   <joint name="base_link_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.369"/>
-    <parent link="base_footprint"/>
+    <origin rpy="0 0 0" xyz="0 0 0.370"/>
+    <parent link="fake_base_footprint"/>
     <child link="base_link"/>
   </joint>
   <link name="base_link">
@@ -159,26 +160,26 @@
       <inertia ixx="0.002" ixy="-0.0000006528" ixz="-0.000002349" iyy="0.002" iyz="0.0000001156" izz="0.003"/>
     </inertial>
   </link>
-  <!-- Support -->
-  <joint name="support_right_front_joint" type="revolute">
+  <!-- Steer -->
+  <joint name="steer_right_front_joint" type="revolute">
     <origin rpy="0 0 -1.57079637" xyz="-0.202 0.115 0.05"/>
     <parent link="bogie_right_link"/>
-    <child link="support_right_front_link"/>
+    <child link="steer_right_front_link"/>
     <axis xyz="0 0 1"/>
     <dynamics dampint="0.7" friction="0.7"/>
     <limit effort="30.0" lower="-1.57079637" upper="1.57079637" velocity="6.28318548"/>
   </joint>
-  <link name="support_right_front_link">
+  <link name="steer_right_front_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/visual/support_link.dae"/>
+        <mesh filename="package://fr01_description/meshes/visual/steer_link.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/collision/support_link.stl"/>
+        <mesh filename="package://fr01_description/meshes/collision/steer_link.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -186,25 +187,25 @@
       <inertia ixx="0.0005737" ixy="0.0000000001174" ixz="0.0000003442" iyy="0.002" iyz="-0.0000000007199" izz="0.002"/>
     </inertial>
   </link>
-  <joint name="support_right_back_joint" type="revolute">
+  <joint name="steer_right_back_joint" type="revolute">
     <origin rpy="0 0 1.57079637" xyz="-0.4 -0.05 -0.1"/>
     <parent link="rocker_right_link"/>
-    <child link="support_right_back_link"/>
+    <child link="steer_right_back_link"/>
     <axis xyz="0 0 1"/>
     <dynamics dampint="0.7" friction="0.7"/>
     <limit effort="30.0" lower="-1.57079637" upper="1.57079637" velocity="6.28318548"/>
   </joint>
-  <link name="support_right_back_link">
+  <link name="steer_right_back_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/visual/support_link.dae"/>
+        <mesh filename="package://fr01_description/meshes/visual/steer_link.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/collision/support_link.stl"/>
+        <mesh filename="package://fr01_description/meshes/collision/steer_link.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -212,25 +213,25 @@
       <inertia ixx="0.0005737" ixy="0.0000000001174" ixz="0.0000003442" iyy="0.002" iyz="-0.0000000007199" izz="0.002"/>
     </inertial>
   </link>
-  <joint name="support_left_front_joint" type="revolute">
+  <joint name="steer_left_front_joint" type="revolute">
     <origin rpy="0 0 1.57079637" xyz="-0.202 -0.115 0.05"/>
     <parent link="bogie_left_link"/>
-    <child link="support_left_front_link"/>
+    <child link="steer_left_front_link"/>
     <axis xyz="0 0 1"/>
     <dynamics dampint="0.7" friction="0.7"/>
     <limit effort="30.0" lower="-1.57079637" upper="1.57079637" velocity="6.28318548"/>
   </joint>
-  <link name="support_left_front_link">
+  <link name="steer_left_front_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/visual/support_link.dae"/>
+        <mesh filename="package://fr01_description/meshes/visual/steer_link.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/collision/support_link.stl"/>
+        <mesh filename="package://fr01_description/meshes/collision/steer_link.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -238,25 +239,25 @@
       <inertia ixx="0.0005737" ixy="0.0000000001174" ixz="0.0000003442" iyy="0.002" iyz="-0.0000000007199" izz="0.002"/>
     </inertial>
   </link>
-  <joint name="support_left_back_joint" type="revolute">
+  <joint name="steer_left_back_joint" type="revolute">
     <origin rpy="0 0 -1.57079637" xyz="-0.4 0.05 -0.1"/>
     <parent link="rocker_left_link"/>
-    <child link="support_left_back_link"/>
+    <child link="steer_left_back_link"/>
     <axis xyz="0 0 1"/>
     <dynamics dampint="0.7" friction="0.7"/>
     <limit effort="30.0" lower="-1.57079637" upper="1.57079637" velocity="6.28318548"/>
   </joint>
-  <link name="support_left_back_link">
+  <link name="steer_left_back_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/visual/support_link.dae"/>
+        <mesh filename="package://fr01_description/meshes/visual/steer_link.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://fr01_description/meshes/collision/support_link.stl"/>
+        <mesh filename="package://fr01_description/meshes/collision/steer_link.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -267,7 +268,7 @@
   <!-- Wheel -->
   <joint name="wheel_right_front_joint" type="continuous">
     <origin rpy="0 0 0" xyz="-0.065 0 -0.2145"/>
-    <parent link="support_right_front_link"/>
+    <parent link="steer_right_front_link"/>
     <child link="wheel_right_front_link"/>
     <axis xyz="1 0 0"/>
   </joint>
@@ -315,7 +316,7 @@
   </link>
   <joint name="wheel_right_back_joint" type="continuous">
     <origin rpy="0 0 0" xyz="-0.065 0 -0.2145"/>
-    <parent link="support_right_back_link"/>
+    <parent link="steer_right_back_link"/>
     <child link="wheel_right_back_link"/>
     <axis xyz="1 0 0"/>
   </joint>
@@ -339,7 +340,7 @@
   </link>
   <joint name="wheel_left_front_joint" type="continuous">
     <origin rpy="0 0 0" xyz="-0.065 0 -0.2145"/>
-    <parent link="support_left_front_link"/>
+    <parent link="steer_left_front_link"/>
     <child link="wheel_left_front_link"/>
     <axis xyz="1 0 0"/>
   </joint>
@@ -387,7 +388,7 @@
   </link>
   <joint name="wheel_left_back_joint" type="continuous">
     <origin rpy="0 0 0" xyz="-0.065 0 -0.2145"/>
-    <parent link="support_left_back_link"/>
+    <parent link="steer_left_back_link"/>
     <child link="wheel_left_back_link"/>
     <axis xyz="1 0 0"/>
   </joint>
@@ -409,5 +410,238 @@
       <inertia ixx="0.006" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.004"/>
     </inertial>
   </link>
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.213 -0.398"/>
+    <parent link="rocker_right_link"/>
+    <child link="base_footprint"/>
+  </joint>
+  <!--==================== Transmission ====================-->
+  <!-- Rocker -->
+  <transmission name="rocker_right_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rocker_right_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rocker_right_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="rocker_left_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rocker_left_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rocker_left_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- Bogie -->
+  <transmission name="bogie_right_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bogie_right_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bogie_right_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="bogie_left_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bogie_left_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bogie_left_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- Steer -->
+  <transmission name="steer_right_front_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="steer_right_front_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="steer_right_front_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="steer_right_back_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="steer_right_back_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="steer_right_back_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="steer_left_front_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="steer_left_front_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="steer_left_front_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="steer_left_back_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="steer_left_back_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="steer_left_back_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- Wheel -->
+  <transmission name="wheel_right_front_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_right_front_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_right_front_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wheel_right_middle_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_right_middle_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_right_middle_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wheel_right_back_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_right_back_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_right_back_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wheel_left_front_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_left_front_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_left_front_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wheel_left_middle_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_left_middle_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_left_middle_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wheel_left_back_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_left_back_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_left_back_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!--==================== Gazebo ====================-->
+  <gazebo>
+    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+      <robotNamespace>/fr01</robotNamespace>
+    </plugin>
+  </gazebo>
+  <!-- Body -->
+  <xacro:body_gazebo_vo/>
+  <!-- Rocker -->
+  <gazebo reference="rocke_right_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="rocke_left_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <!-- Bogie -->
+  <gazebo reference="bogie_right_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="bogie_left_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <!-- Steer -->
+  <gazebo reference="rocke_right_front_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="rocke_right_back_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="rocke_left_front_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="rocke_left_back_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <!-- Wheel -->
+  <gazebo reference="wheel_right_front_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="wheel_right_middle_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="wheel_right_back_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="wheel_left_front_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="wheel_left_middle_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
+  <gazebo reference="wheel_left_back_link">
+    <selfCollide>true</selfCollide>
+    <mu1 value="0.8"/>
+    <mu2 value="0.8"/>
+  </gazebo>
 </robot>
 
