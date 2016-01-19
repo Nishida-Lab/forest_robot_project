@@ -7,6 +7,10 @@
       <joint name="bogie_${side}_joint">
 		<hardwareInterface>EffortJointInterface</hardwareInterface>
       </joint>
+	  <actuator name="bogie_${side}_motor">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+      </actuator>
 	</transmission>
   </xacro:macro>
 
@@ -16,6 +20,10 @@
       <joint name="rocker_${side}_joint">
 		<hardwareInterface>EffortJointInterface</hardwareInterface>
       </joint>
+	  <actuator name="rocker_${side}_motor">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+      </actuator>
 	</transmission>
   </xacro:macro>
   
