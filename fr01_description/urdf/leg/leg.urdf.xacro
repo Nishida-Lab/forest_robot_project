@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find fr01_description)/urdf/leg/leg.gazebo.xacro"/>
+  <xacro:include filename="$(find fr01_description)/urdf/leg/leg.transmission.xacro"/>
   
   <xacro:macro name="bogie_v0" params="side parent *link_origin *inertia *joint_origin *joint_axis">
 	<joint name="bogie_${side}_joint" type="revolute">
