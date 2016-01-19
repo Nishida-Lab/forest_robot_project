@@ -14,7 +14,7 @@
   <link name="base_footprint"/>
   <xacro:base_v0 parent="base_footprint">
 	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
-	<origin xyz="0 0 0.369" rpy="0 0 0"/>
+	<origin xyz="0 0 0.370" rpy="0 0 0"/>
   </xacro:base_v0>
   
   <!-- Rocker -->
