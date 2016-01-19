@@ -55,9 +55,9 @@
         </geometry>
       </collision>
       <inertial>
-        <mass value="2.517"/>
-        <inertia ixx="0.0005746" ixy="0.0000000001176" ixz="0.0000003448"
-				 iyy="0.002" iyz="-0.0000000007211"
+        <mass value="2.522"/>
+        <inertia ixx="0.0005737" ixy="0.0000000001174" ixz="0.0000003442"
+				 iyy="0.002" iyz="-0.0000000007199"
 				 izz="0.002" />
       </inertial>
     </link>

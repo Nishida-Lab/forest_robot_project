@@ -10,7 +10,7 @@
 	  <dynamics dampint="0.7" friction="0.7"/>
 	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
 	</joint>
-		
+	
     <link name="bogie_${side}_link">
       <visual>
 		<insert_block name="link_origin"/>
