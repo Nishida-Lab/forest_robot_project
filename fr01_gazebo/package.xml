@@ -13,5 +13,6 @@
   <run_depend>gazebo_ros_control</run_depend>
   <run_depend>gazebo_ros</run_depend>
   <run_depend>forest_robot_control</run_depend>
+  <run_depend>fr01_control</run_depend>
 
 </package>
