@@ -11,8 +11,8 @@
 
   <!--==================== Link & Joint ====================-->
   <!-- Body -->
-  <link name="base_footprint"/>
-  <xacro:base_v0 parent="base_footprint">
+  <link name="fake_base_footprint"/>
+  <xacro:base_v0 parent="fake_base_footprint">
 	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
 	<origin xyz="0 0 0.370" rpy="0 0 0"/>
   </xacro:base_v0>
@@ -117,6 +117,13 @@
   	<axis xyz="1 0 0"/>
   </xacro:wheel_v0>
 
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+	<origin xyz="0 0.213 -0.398" rpy="0 0 0"/>
+	<parent link="rocker_right_link"/>
+	<child link="base_footprint"/>
+  </joint>
+  
   <!--==================== Transmission ====================-->
   <!-- Rocker -->
   <xacro:rocker_trans_v0 side="right"/>
@@ -141,6 +148,11 @@
   <xacro:wheel_trans_v0 part="left_back"/>
 
   <!--==================== Gazebo ====================-->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/fr01</robotNamespace>
+    </plugin>
+  </gazebo>
   <!-- Body -->
   <xacro:body_gazebo_vo/>
   
