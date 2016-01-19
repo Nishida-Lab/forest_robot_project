@@ -1,48 +1,48 @@
-fr01 :
+fr01:
 # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 50    
 # Position Controllers ---------------------------------------
   # Steer 
-  joint_s_position_controller:
+  steer_right_front_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: steer_right_front_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  steer_right_back_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: steer_right_back_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  steer_left_front_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: steer_left_front_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  steer_left_back_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: steer_left_back_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
   # Wheel
-  joint_s_position_controller:
+  wheel_right_front_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: wheel_right_front_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  wheel_right_middle_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: wheel_right_middle_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  wheel_right_back_joint_position_controller:
     type: effort_controllers/JointPositionController
     joint: wheel_right_back_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  wheel_left_front_joint_position_controller:
     type: effort_controllers/JointPositionController
-    joint: wheel_right_front_joint
+    joint: wheel_left_front_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  wheel_left_middle_joint_position_controller:
     type: effort_controllers/JointPositionController
-    joint: wheel_right_middle_joint
+    joint: wheel_left_middle_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
-  joint_s_position_controller:
+  wheel_left_back_joint_position_controller:
     type: effort_controllers/JointPositionController
-    joint: wheel_right_back_joint
+    joint: wheel_left_back_joint
     pid: {p: 100, i: 10, d: 0, i_clamp: 100}
