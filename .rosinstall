@@ -1,0 +1,8 @@
+- git:
+    local-name: fr01/ros_ixis_imcs01_driver_beta
+    uri: https://github.com/AriYu/ros_ixis_imcs01_driver_beta.git
+    version: master
+- git:
+    local-name: fr01/ros-kondo-b3m-driver-beta
+    uri: https://github.com/AriYu/ros-kondo-b3m-driver-beta.git
+    version: master
