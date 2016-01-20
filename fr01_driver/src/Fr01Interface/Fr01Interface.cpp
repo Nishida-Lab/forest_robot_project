@@ -37,7 +37,7 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
                            sensor_msgs::JointState& wheel_input,
                            sensor_msgs::JointState& steer_input)
 {
-  if(fabs(linear_speed) < 0.1)
+  if(fabs(linear_speed) > 0.1)
   {
     if(angular_speed > 0)
     {
