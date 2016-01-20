@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   geometry_msgs
   nav_msgs
+  message_filters
 )
 
 ## System dependencies are found with CMake's conventions
@@ -132,6 +133,7 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(fr01_driver_node src/fr01_driver_node.cpp src/fr01_driver.cpp src/Fr01Interface/Fr01Interface.cpp)
+add_executable(fr01_controller_node src/fr01_controller_node.cpp src/fr01_controller.cpp )
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -139,6 +141,9 @@ add_executable(fr01_driver_node src/fr01_driver_node.cpp src/fr01_driver.cpp src
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(fr01_driver_node
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(fr01_controller_node
   ${catkin_LIBRARIES}
 )
 
