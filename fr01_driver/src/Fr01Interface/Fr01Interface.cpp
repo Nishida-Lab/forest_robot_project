@@ -42,13 +42,13 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     if(angular_speed > 0)
     {
       // steering
-      steer_input.position[0] = atan2(2.0*tred_length_[0]*tan(angular_speed),
+      steer_input.position[0] = -atan2(2.0*tred_length_[0]*tan(angular_speed),
                                       2.0*tred_length_[0]+tred_width_[0]*tan(angular_speed));
-      steer_input.position[1] = atan2(2.0*tred_length_[1]*tan(angular_speed),
-                                      2.0*tred_length_[1]-tred_width_[0]*tan(angular_speed));
-      steer_input.position[2] = -atan2(2.0*tred_length_[2]*tan(angular_speed),
-                                       2.0*tred_length_[2]+tred_width_[2]*tan(angular_speed));
-      steer_input.position[3] = -atan2(2.0*tred_length_[3]*tan(angular_speed),
+      steer_input.position[1] = -atan2(2.0*tred_length_[1]*tan(angular_speed),
+                                      2.0*tred_length_[1]+tred_width_[0]*tan(angular_speed));
+      steer_input.position[2] = atan2(2.0*tred_length_[2]*tan(angular_speed),
+                                       2.0*tred_length_[2]-tred_width_[2]*tan(angular_speed));
+      steer_input.position[3] = atan2(2.0*tred_length_[3]*tan(angular_speed),
                                        2.0*tred_length_[3]-tred_width_[2]*tan(angular_speed));
       
       // wheel
@@ -61,13 +61,13 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     }
     else
     {
-      steer_input.position[0] = atan2(2.0*tred_length_[0]*tan(angular_speed),
+      steer_input.position[0] = -atan2(2.0*tred_length_[0]*tan(angular_speed),
                                       2.0*tred_length_[0]-tred_width_[0]*tan(angular_speed));
-      steer_input.position[1] = atan2(2.0*tred_length_[1]*tan(angular_speed),
+      steer_input.position[1] = -atan2(2.0*tred_length_[1]*tan(angular_speed),
                                       2.0*tred_length_[1]+tred_width_[0]*tan(angular_speed));
-      steer_input.position[2] = -atan2(2.0*tred_length_[2]*tan(angular_speed),
+      steer_input.position[2] = atan2(2.0*tred_length_[2]*tan(angular_speed),
                                        2.0*tred_length_[2]-tred_width_[2]*tan(angular_speed));
-      steer_input.position[3] = -atan2(2.0*tred_length_[3]*tan(angular_speed),
+      steer_input.position[3] = atan2(2.0*tred_length_[3]*tan(angular_speed),
                                        2.0*tred_length_[3]+tred_width_[2]*tan(angular_speed));
 
       wheel_input.velocity[0] = linear_speed - (tred_width_[0]/2.0)*angular_speed;
