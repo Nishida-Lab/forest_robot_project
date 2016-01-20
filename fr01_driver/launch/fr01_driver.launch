@@ -1,6 +1,10 @@
 <launch>
 
-  <node name="fr01_driver" pkg="fr01_driver" type="fr01_driver_node" output="screen" />
+  <node name="fr01_driver" pkg="fr01_driver" type="fr01_driver_node" output="screen" >
+	<rosparam param="tred_width">[0.41, 0.41, 0.26]</rosparam>
+	<rosparam param="tred_length">[0.40, 0.40, 0.40, 0.40]</rosparam>
+	<rosparam param="wheel_diameters">[0.16, 0.16, 0.16, 0.16, 0.16, 0.16]</rosparam>
+  </node>
 
   <node name="fr01_controller" pkg="fr01_driver" type="fr01_controller_node" output="screen" /> 
   
