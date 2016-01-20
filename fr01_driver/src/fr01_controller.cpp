@@ -37,5 +37,6 @@ void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_st
   for (int i = 0; i < motor_input_.name.size(); ++i) {
     motor_input_.velocity[i] = gain_p*(wheel_joint_ctrl->velocity[i] - wheel_state->velocity[i]);
   }
+  motor_input_.header.stamp = ros::Time::now();
   motor_input_pub_.publish(motor_input_);
 }
