@@ -3,8 +3,10 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 class fr01_controller
 {
@@ -20,9 +22,11 @@ class fr01_controller
   ros::Publisher motor_input_pub_;
   message_filters::Subscriber<sensor_msgs::JointState> wheel_state_sub_;
   message_filters::Subscriber<sensor_msgs::JointState> wheel_joint_ctrl_sub_;
-  message_filters::TimeSynchronizer<sensor_msgs::JointState, sensor_msgs::JointState> sync_;
+  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::JointState, sensor_msgs::JointState> MySyncPolicy;
+
+  message_filters::Synchronizer<MySyncPolicy> sync_;
   
-  sensor_msgs::JointState motor_input_;
+  std_msgs::Int32MultiArray motor_cmd_;
 };
 
 #endif /* FR01_CONTROLLER_H */
