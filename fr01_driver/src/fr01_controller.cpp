@@ -1,5 +1,9 @@
 #include <fr01_controller.hpp>
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 fr01_controller::fr01_controller(ros::NodeHandle nh)
     : nh_(nh), rate_(100), wheel_state_sub_(nh_, "/wheel_state", 1),
       wheel_joint_ctrl_sub_(nh_, "/wheel_joint_ctrl", 1),
@@ -34,8 +38,11 @@ void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_st
                                  const sensor_msgs::JointStateConstPtr& wheel_joint_ctrl)
 {
   double gain_p = 1.0;
+  double input = 0;
   for (int i = 0; i < motor_input_.name.size(); ++i) {
-    motor_input_.velocity[i] = gain_p*(wheel_joint_ctrl->velocity[i] - wheel_state->velocity[i]);
+    input = gain_p*(wheel_joint_ctrl->velocity[i] - wheel_state->velocity[i]);
+    motor_input_.position[i] = sgn(input);
+    motor_input_.velocity[i] = fabs(input);
   }
   motor_input_.header.stamp = ros::Time::now();
   motor_input_pub_.publish(motor_input_);
