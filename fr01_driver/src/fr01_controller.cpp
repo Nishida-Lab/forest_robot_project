@@ -9,6 +9,8 @@ fr01_controller::fr01_controller(ros::NodeHandle nh)
       wheel_joint_ctrl_sub_(nh_, "/wheel_joint_ctrl", 1),
       sync_(MySyncPolicy(10), wheel_state_sub_, wheel_joint_ctrl_sub_)
 {
+  input_.resize(6);
+  gain_p_ = 1.0;
   motor_cmd_.data.resize(6);
   motor_input_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/motor_input", 10);
   sync_.registerCallback(boost::bind(&fr01_controller::control_cb, this, _1, _2));
@@ -31,14 +33,27 @@ void fr01_controller::run()
   }
 }
 
+void fr01_controller::timer_cb(const ros::TimerEvent& e)
+{
+  for (int i = 0; i < motor_cmd_.data.size(); ++i) {
+    input_[i] = 0;
+    motor_cmd_.data[i] = (int)input_[i];
+  }
+  motor_input_pub_.publish(motor_cmd_);
+}
+
 void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_state,
                                  const sensor_msgs::JointStateConstPtr& wheel_joint_ctrl)
 {
-  double gain_p = 10.0;
-  double input = 0;
   for (int i = 0; i < motor_cmd_.data.size(); ++i) {
-    input = gain_p*(wheel_joint_ctrl->velocity[i] - wheel_state->velocity[i]);
-    motor_cmd_.data[i] = input;
+    input_[i] += gain_p_*(wheel_joint_ctrl->velocity[i] - wheel_state->velocity[i]);
+    motor_cmd_.data[i] = (int)input_[i];
   }
   motor_input_pub_.publish(motor_cmd_);
+  
+  // reset the timeout timer
+  if(timeout_){
+    timeout_.stop();
+  }
+  timeout_ = nh_.createTimer(ros::Duration(0.1), &fr01_controller::timer_cb, this, true);
 }
