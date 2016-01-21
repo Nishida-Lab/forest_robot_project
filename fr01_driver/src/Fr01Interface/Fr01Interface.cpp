@@ -34,7 +34,7 @@ void Fr01Interface::setParams(std::vector<double> wheel_diameters,
 
 // linear_speed : [m/s], angular_speed : [rad/s]
 void Fr01Interface::drive(double linear_speed, double angular_speed, 
-                           sensor_msgs::JointState& wheel_input,
+                          sensor_msgs::JointState& wheel_input,
                           sensor_msgs::JointState& steer_input,
                           bool isPivotTurn=false)
 {
@@ -44,39 +44,39 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     {
       // steering
       steer_input.position[0] = -atan2(2.0*tred_length_[0]*tan(angular_speed),
-                                      2.0*tred_length_[0]+tred_width_[0]*tan(angular_speed));
+                                       2.0*tred_length_[0]+2.0*tred_width_[0]*tan(angular_speed));
       steer_input.position[1] = -atan2(2.0*tred_length_[1]*tan(angular_speed),
-                                      2.0*tred_length_[1]+tred_width_[0]*tan(angular_speed));
+                                       2.0*tred_length_[1]+2.0*tred_width_[0]*tan(angular_speed));
       steer_input.position[2] = atan2(2.0*tred_length_[2]*tan(angular_speed),
-                                       2.0*tred_length_[2]-tred_width_[2]*tan(angular_speed));
+                                      2.0*tred_length_[2]+2.0*tred_width_[2]*tan(angular_speed));
       steer_input.position[3] = atan2(2.0*tred_length_[3]*tan(angular_speed),
-                                       2.0*tred_length_[3]-tred_width_[2]*tan(angular_speed));
+                                      2.0*tred_length_[3]-2.0*tred_width_[2]*tan(angular_speed));
       
       // wheel
-      wheel_input.velocity[0] = linear_speed + (tred_width_[0]/2.0)*angular_speed;
-      wheel_input.velocity[1] = linear_speed - (tred_width_[0]/2.0)*angular_speed;
-      wheel_input.velocity[2] = linear_speed + (tred_width_[1]/2.0)*angular_speed;
-      wheel_input.velocity[3] = linear_speed - (tred_width_[1]/2.0)*angular_speed;
-      wheel_input.velocity[4] = linear_speed + (tred_width_[2]/2.0)*angular_speed;
-      wheel_input.velocity[5] = linear_speed - (tred_width_[2]/2.0)*angular_speed;
+      wheel_input.velocity[0] = linear_speed + (tred_width_[0])*angular_speed;
+      wheel_input.velocity[1] = linear_speed - (tred_width_[0])*angular_speed;
+      wheel_input.velocity[2] = linear_speed + (tred_width_[1])*angular_speed;
+      wheel_input.velocity[3] = linear_speed - (tred_width_[1])*angular_speed;
+      wheel_input.velocity[4] = linear_speed + (tred_width_[2])*angular_speed;
+      wheel_input.velocity[5] = linear_speed - (tred_width_[2])*angular_speed;
     }
     else
     {
       steer_input.position[0] = -atan2(2.0*tred_length_[0]*tan(angular_speed),
-                                      2.0*tred_length_[0]-tred_width_[0]*tan(angular_speed));
+                                       2.0*tred_length_[0]-2.0*tred_width_[0]*tan(angular_speed));
       steer_input.position[1] = -atan2(2.0*tred_length_[1]*tan(angular_speed),
-                                      2.0*tred_length_[1]+tred_width_[0]*tan(angular_speed));
+                                       2.0*tred_length_[1]+2.0*tred_width_[0]*tan(angular_speed));
       steer_input.position[2] = atan2(2.0*tred_length_[2]*tan(angular_speed),
-                                       2.0*tred_length_[2]-tred_width_[2]*tan(angular_speed));
+                                      2.0*tred_length_[2]-2.0*tred_width_[2]*tan(angular_speed));
       steer_input.position[3] = atan2(2.0*tred_length_[3]*tan(angular_speed),
-                                       2.0*tred_length_[3]+tred_width_[2]*tan(angular_speed));
+                                      2.0*tred_length_[3]+2.0*tred_width_[2]*tan(angular_speed));
 
-      wheel_input.velocity[0] = linear_speed - (tred_width_[0]/2.0)*angular_speed;
-      wheel_input.velocity[1] = linear_speed + (tred_width_[0]/2.0)*angular_speed;
-      wheel_input.velocity[2] = linear_speed - (tred_width_[1]/2.0)*angular_speed;
-      wheel_input.velocity[3] = linear_speed + (tred_width_[1]/2.0)*angular_speed;
-      wheel_input.velocity[4] = linear_speed - (tred_width_[2]/2.0)*angular_speed;
-      wheel_input.velocity[5] = linear_speed + (tred_width_[2]/2.0)*angular_speed;
+      wheel_input.velocity[0] = linear_speed - (tred_width_[0])*angular_speed;
+      wheel_input.velocity[1] = linear_speed + (tred_width_[0])*angular_speed;
+      wheel_input.velocity[2] = linear_speed - (tred_width_[1])*angular_speed;
+      wheel_input.velocity[3] = linear_speed + (tred_width_[1])*angular_speed;
+      wheel_input.velocity[4] = linear_speed - (tred_width_[2])*angular_speed;
+      wheel_input.velocity[5] = linear_speed + (tred_width_[2])*angular_speed;
     }
   }else // pivot turn
   {
