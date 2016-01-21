@@ -53,7 +53,8 @@ void fr01_driver::run()
 
 void fr01_driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
 {
-  fr01_->drive(cmd_vel->linear.x, cmd_vel->angular.z, wheel_joint_ctrl_, steer_joint_ctrl_);
+  bool isPivotTurn = false;
+  fr01_->drive(cmd_vel->linear.x, cmd_vel->angular.z, wheel_joint_ctrl_, steer_joint_ctrl_, isPivotTurn);
   steer_joint_ctrl_.header.stamp = ros::Time::now();
   steer_pub_.publish(steer_joint_ctrl_);
   wheel_joint_ctrl_.header.stamp = ros::Time::now();
