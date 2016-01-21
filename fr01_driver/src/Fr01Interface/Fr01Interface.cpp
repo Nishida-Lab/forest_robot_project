@@ -35,11 +35,12 @@ void Fr01Interface::setParams(std::vector<double> wheel_diameters,
 // linear_speed : [m/s], angular_speed : [rad/s]
 void Fr01Interface::drive(double linear_speed, double angular_speed, 
                            sensor_msgs::JointState& wheel_input,
-                           sensor_msgs::JointState& steer_input)
+                          sensor_msgs::JointState& steer_input,
+                          bool isPivotTurn=false)
 {
-  if(fabs(linear_speed) > 0.1)
+  if(!isPivotTurn)
   {
-    if(angular_speed > 0)
+    if(angular_speed >= 0)
     {
       // steering
       steer_input.position[0] = -atan2(2.0*tred_length_[0]*tan(angular_speed),

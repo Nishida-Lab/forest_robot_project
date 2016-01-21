@@ -18,7 +18,8 @@ class Fr01Interface
 
   virtual void drive(double linear_speed, double angular_speed, 
                      sensor_msgs::JointState& wheel_input,
-                     sensor_msgs::JointState& steer_input);
+                     sensor_msgs::JointState& steer_input,
+                     bool isPivotTurn);
 
  protected:
   // 0 : front, 1 : middle, 2 : rear
