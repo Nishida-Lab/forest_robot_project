@@ -4,6 +4,8 @@
 #include <sensor_msgs/JointState.h>
 
 #define num_of_motor 6
+#define MIN_PWM -100
+#define MAX_PWM 100
 
 int dir_pin_array[num_of_motor] = {26, 27, 24, 25, 22, 23};
 int pwm_pin_array[num_of_motor] = {4, 5, 6, 7, 8, 9};
@@ -37,21 +39,21 @@ void loop() {
 void wheelCb(const std_msgs::Int32MultiArray& msg) {
   for(int i = 0; i < num_of_motor; ++i)
   {
-    if(msg.data[i] > 0)
+    if(msg.data[i] >= 0)
     {
       digitalWrite(dir_pin_array[i], rotate_positive[i]);
-      if(msg.data[i] > 50)
+      if(msg.data[i] > MAX_PWM)
       {
-        msg.data[i] = 50;
+        msg.data[i] = MAX_PWM;
       }
       analogWrite(pwm_pin_array[i], fabs(msg.data[i]));
     }
     else
     {
       digitalWrite(dir_pin_array[i], rotate_negative[i]);
-      if(msg.data[i] < -50)
+      if(msg.data[i] < MIN_PWM)
       {
-        msg.data[i] = -50;
+        msg.data[i] = MIN_PWM;
       }
       analogWrite(pwm_pin_array[i], fabs(msg.data[i]));
     }
