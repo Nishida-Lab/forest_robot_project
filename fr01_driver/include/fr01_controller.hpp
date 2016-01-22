@@ -8,6 +8,8 @@
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
+class PID;
+
 class fr01_controller
 {
  public:
@@ -29,7 +31,25 @@ class fr01_controller
   
   std_msgs::Int32MultiArray motor_cmd_;
   std::vector<double> input_;
-  double gain_p_;
+  std::vector<PID> pid_controllers_;
+};
+
+class PID
+{
+ public:
+  PID(double Kp, double Ki, double Kd, double max, double min);
+  double compute(double input, double target);
+ private:
+  double Kp_;
+  double Ki_;
+  double Kd_;
+  double ITerm_; // Integral Term(積分項)
+  double max_;
+  double min_;
+  double last_input_;
+  double output_;
+  ros::Time last_time_;
+  double sample_time_;
 };
 
 #endif /* FR01_CONTROLLER_H */

@@ -75,3 +75,4 @@ void fr01_driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
   }
   timeout_ = nh_.createTimer(ros::Duration(0.1), &fr01_driver::timer_cb, this, true);
 }
+
