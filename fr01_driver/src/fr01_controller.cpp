@@ -33,14 +33,6 @@ void fr01_controller::run()
   }
 }
 
-void fr01_controller::timer_cb(const ros::TimerEvent& e)
-{
-  for (int i = 0; i < motor_cmd_.data.size(); ++i) {
-    input_[i] = 0;
-    motor_cmd_.data[i] = (int)input_[i];
-  }
-  motor_input_pub_.publish(motor_cmd_);
-}
 
 void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_state,
                                  const sensor_msgs::JointStateConstPtr& wheel_joint_ctrl)
@@ -51,9 +43,5 @@ void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_st
   }
   motor_input_pub_.publish(motor_cmd_);
   
-  // reset the timeout timer
-  if(timeout_){
-    timeout_.stop();
-  }
-  timeout_ = nh_.createTimer(ros::Duration(0.1), &fr01_controller::timer_cb, this, true);
+
 }

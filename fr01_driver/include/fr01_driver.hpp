@@ -11,6 +11,7 @@ class fr01_driver
   fr01_driver(ros::NodeHandle nh);
   ~fr01_driver();
   void cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel);
+  void timer_cb(const ros::TimerEvent& e);
   void run();
  private:
   ros::NodeHandle nh_;
@@ -19,6 +20,7 @@ class fr01_driver
   ros::Publisher steer_pub_;
   ros::Publisher wheel_pub_;
   ros::Subscriber cmd_vel_sub_;
+  ros::Timer timeout_;
   Fr01Interface *fr01_;
   sensor_msgs::JointState steer_joint_ctrl_;
   sensor_msgs::JointState wheel_joint_ctrl_;
