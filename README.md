@@ -1,6 +1,6 @@
 # Welcome to the forest_robot_project ! [![Build Status](https://travis-ci.org/Nishida-Lab/forest_robot_project.svg?branch=master)](https://travis-ci.org/Nishida-Lab/forest_robot_project)
 
-![fr01_gazebo](.images/fr01_with_step_gazebo.png)
+![fr01_gazebo](.images/fr01_with_step_gazebo-2.png)
 
 ### About
 This is the repository for the forest robot (named FR01).  
