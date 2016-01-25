@@ -11,7 +11,7 @@ fr01_controller::fr01_controller(ros::NodeHandle nh)
 {
   input_.resize(6);
   motor_cmd_.data.resize(6);
-  PID pid_contoller(10.0, 1.0, 1.0, 100, -100);
+  PID pid_contoller(50.0, 1.0, 1.0, 100, -100);
   for (int i = 0; i < 6; ++i) {
     pid_controllers_.push_back(pid_contoller);
   }
@@ -42,7 +42,7 @@ void fr01_controller::control_cb(const sensor_msgs::JointStateConstPtr& wheel_st
                                  const sensor_msgs::JointStateConstPtr& wheel_joint_ctrl)
 {
   for (int i = 0; i < motor_cmd_.data.size(); ++i) {
-    motor_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state->velocity[i],
+    motor_cmd_.data[i] = (int)pid_controllers_[i].compute(-wheel_state->velocity[i],
                                                           wheel_joint_ctrl->velocity[i]);
   }
   motor_input_pub_.publish(motor_cmd_); 
@@ -62,7 +62,7 @@ double  PID::compute(double input, double target)
 {
   ros::Time now = ros::Time::now();
   ros::Duration timeChange = now - last_time_;
-
+ 
   if(timeChange.toSec() >= sample_time_)
   {
     double error = target - input;
@@ -87,7 +87,9 @@ double  PID::compute(double input, double target)
 
     last_input_ = input;
     last_time_ = now;
+
   }
+
 
   return output_;
 }
