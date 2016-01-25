@@ -7,11 +7,12 @@
 #define MIN_PWM -100
 #define MAX_PWM 100
 
-int dir_pin_array[num_of_motor] = {26, 27, 24, 25, 22, 23};
-int pwm_pin_array[num_of_motor] = {4, 5, 6, 7, 8, 9};
+int dir_pin_array[num_of_motor] = {27, 26, 23, 22, 25, 24};
+int pwm_pin_array[num_of_motor] = { 4,  5,  8,  9,  6,  7};
 
-bool rotate_positive[num_of_motor] = {LOW, HIGH, LOW, HIGH, LOW, HIGH};
-bool rotate_negative[num_of_motor] = {HIGH, LOW, HIGH, LOW, HIGH, LOW};
+bool rotate_positive[num_of_motor] = {HIGH, LOW, HIGH, LOW, HIGH, LOW};
+bool rotate_negative[num_of_motor] = {LOW, HIGH, LOW, HIGH, LOW, HIGH};
+
 
 /* Declare proto type functions. */
 void wheelCb(const std_msgs::Int32MultiArray& msg); 
@@ -56,6 +57,7 @@ void wheelCb(const std_msgs::Int32MultiArray& msg) {
         msg.data[i] = MIN_PWM;
       }
       analogWrite(pwm_pin_array[i], fabs(msg.data[i]));
+      //analogWrite(pwm_pin_array[i], 80);
     }
   }
 }
