@@ -51,14 +51,6 @@ void fr01_driver::run()
   }
 }
 
-void fr01_driver::timer_cb(const ros::TimerEvent& e)
-{
-  for (int i = 0; i < wheel_joint_ctrl_.velocity.size(); ++i) {
-    wheel_joint_ctrl_.velocity[i] = 0;
-  }
-  wheel_joint_ctrl_.header.stamp = ros::Time::now();
-  wheel_pub_.publish(wheel_joint_ctrl_);
-}
 
 void fr01_driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
 {
@@ -69,10 +61,5 @@ void fr01_driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
   wheel_joint_ctrl_.header.stamp = ros::Time::now();
   wheel_pub_.publish(wheel_joint_ctrl_);
 
-  // reset the timeout timer
-  if(timeout_){
-    timeout_.stop();
-  }
-  timeout_ = nh_.createTimer(ros::Duration(0.1), &fr01_driver::timer_cb, this, true);
 }
 
