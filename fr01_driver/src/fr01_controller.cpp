@@ -11,7 +11,7 @@ fr01_controller::fr01_controller(ros::NodeHandle nh)
 {
   input_.resize(6);
   motor_cmd_.data.resize(6);
-  PID pid_contoller(50.0, 1.0, 1.0, 100, -100);
+  PID pid_contoller(80.0, 30.0, 0.0, 100, -100);
   for (int i = 0; i < 6; ++i) {
     pid_controllers_.push_back(pid_contoller);
   }
