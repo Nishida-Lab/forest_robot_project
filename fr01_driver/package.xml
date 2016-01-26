@@ -51,8 +51,6 @@
   <run_depend>geometry_msgs</run_depend>
   <run_depend>message_filters</run_depend>
   <run_depend>rosserial_python</run_depend>
-  <run_depend>b3m_servo</run_depend>
-  <run_depend>ros_ixis_imcs01_driver_beta</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
