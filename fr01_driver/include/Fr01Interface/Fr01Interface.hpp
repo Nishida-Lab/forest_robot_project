@@ -5,6 +5,16 @@
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Twist.h>
 
+#ifndef MIN
+#define MIN(a,b) ((a < b) ? (a) : (b))
+#endif
+#ifndef MAX
+#define MAX(a,b) ((a > b) ? (a) : (b))
+#endif
+#ifndef NORMALIZE
+#define NORMALIZE(z) atan2(sin(z), cos(z))
+#endif
+
 class Fr01Interface
 {
  public:
@@ -32,6 +42,10 @@ class Fr01Interface
   // 4 : right rear, 5 : left rear
   std::vector<double> wheel_diameters_;
   
+  double angular_limit_max_;
+  double angular_limit_min_;
+  double linear_limit_max_;
+  double linear_limit_min_;
 };
 
 
