@@ -82,10 +82,10 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
   }
   
   for (size_t i = 0; i < steer_input.position.size(); ++i) {
-    steer_input.position[i] = MAX(steer_input.positon[i], angular_limit_min_);
-    steer_input.position[i] = MIN(steer_input.positon[i], angular_limit_max_);
+    steer_input.position[i] = MAX(steer_input.position[i], angular_limit_min_);
+    steer_input.position[i] = MIN(steer_input.position[i], angular_limit_max_);
   }
-  for (size_t i = 0; i < wheel_input.velocity.size.size(); ++i) {
+  for (size_t i = 0; i < wheel_input.velocity.size(); ++i) {
     wheel_input.velocity[i] = MAX(wheel_input.velocity[i], linear_limit_min_);
     wheel_input.velocity[i] = MIN(wheel_input.velocity[i], linear_limit_max_);
   }
