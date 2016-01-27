@@ -4,6 +4,8 @@ This package contains follow two nodes.
 - fr01_driver_node
 - fr01_wheel_controller(not yet)
 
+![ros_package](documents/image/ros_packages.png ) 
+
 ## fr01_driver_node
 * subscribe
   - /cmd_vel
