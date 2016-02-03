@@ -42,7 +42,6 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
                           sensor_msgs::JointState& steer_input,
                           bool isPivotTurn=false)
 {
-  angular_speed = -angular_speed;
   if(!isPivotTurn)
   {
     steer_input.position[2] = atan2(2.0*tred_length_[2]*tan(angular_speed),
@@ -50,8 +49,8 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     steer_input.position[3] = atan2(2.0*tred_length_[3]*tan(angular_speed),
                                     2.0*tred_length_[3]-2.0*tred_width_[2]*tan(angular_speed));
 
-    steer_input.position[0] = -steer_input.position[2];
-    steer_input.position[1] = -steer_input.position[3];
+    steer_input.position[0] = -steer_input.position[3];
+    steer_input.position[1] = -steer_input.position[2];
 
     // wheel
     // 0 : left rear,   1 : right rear, 
@@ -66,12 +65,15 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     }
     else
     {
-      wheel_input.velocity[4] = (sin(angular_speed)/sin(steer_input.position[2]))*linear_speed;
-      wheel_input.velocity[0] = wheel_input.velocity[4];
-      wheel_input.velocity[5] = (sin(angular_speed)/sin(steer_input.position[3]))*linear_speed;
+      // right
+      wheel_input.velocity[5] = (sin(angular_speed)/sin(steer_input.position[2]))*linear_speed;
       wheel_input.velocity[1] = wheel_input.velocity[5];
-      wheel_input.velocity[2] = (sin(angular_speed)/tan(steer_input.position[2]))*linear_speed;
-      wheel_input.velocity[3] = (sin(angular_speed)/tan(steer_input.position[3]))*linear_speed;
+      // left
+      wheel_input.velocity[4] = (sin(angular_speed)/sin(steer_input.position[3]))*linear_speed;
+      wheel_input.velocity[0] = wheel_input.velocity[4];
+      // middle
+      wheel_input.velocity[2] = (sin(angular_speed)/tan(steer_input.position[3]))*linear_speed;
+      wheel_input.velocity[3] = (sin(angular_speed)/tan(steer_input.position[2]))*linear_speed;
     }
     
   }else // pivot turn
