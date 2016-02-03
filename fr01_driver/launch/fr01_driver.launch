@@ -19,7 +19,7 @@
   <rosparam file="$(find b3m_servo)/config/b3m_driver_sample.yaml" 
 			command="load" ns="b3m_driver"/>
   <node name="b3m_driver" pkg="b3m_servo" type="b3m_driver" 
-		args="joint_2_driver joint_3_driver" output="screen">
+		args="joint_0_driver joint_1_driver joint_2_driver joint_3_driver" output="screen">
 		<!-- args="joint_0_driver joint_1_driver joint_2_driver joint_3_driver" output="screen"> -->
 		
 	<remap from="/joint_states" to="/steer_joint_ctrl"/>
