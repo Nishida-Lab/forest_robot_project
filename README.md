@@ -2,7 +2,7 @@
 
 ![fr01_gazebo](.images/rocker-bogie-gazebo-2.png)
 
-[![fr01_real_machine](.image/6wheel-rocker-bogie-video.png)](https://www.youtube.com/watch?v=MN6KCJ4qRo4)
+[![fr01_real_machine](.images/6wheel-rocker-bogie-video.png)](https://www.youtube.com/watch?v=MN6KCJ4qRo4)
 
 ### About
 This is the repository for the forest robot (named FR01).  
