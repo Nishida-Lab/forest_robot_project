@@ -2,6 +2,8 @@
 
 ![fr01_gazebo](.images/rocker-bogie-gazebo-2.png)
 
+[![fr01_real_machine](.images/6wheel-rocker-bogie-video.png)](https://www.youtube.com/watch?v=MN6KCJ4qRo4)
+
 ### About
 This is the repository for the forest robot (named FR01).  
 **FR01** is created by [Nishida-Lab](http://lab.cntl.kyutech.ac.jp/~nishida/index.html) and [Ivan-Lab](https://www.ingegneria.unisalento.it/scheda_docente/-/people/ivan.giannoccaro).  
