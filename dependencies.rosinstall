@@ -6,3 +6,7 @@
     local-name: fr01/ros-kondo-b3m-driver-beta
     uri: https://github.com/AriYu/ros-kondo-b3m-driver-beta.git
     version: master
+- git:
+    local-name: fr01/hokuyo3d
+    uri: https://github.com/at-wat/hokuyo3d.git
+    version: master

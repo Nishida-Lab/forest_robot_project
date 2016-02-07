@@ -1,5 +1,5 @@
 <launch>
-  <arg name="model" default="$(find fr01_description)/robots/fr01.urdf.xacro"/>
+  <arg name="model" default="$(find fr01_description)/robots/fr01_with_hokuyo3d.urdf.xacro"/>
   <arg name="gui" default="True" />
 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)'"/>
