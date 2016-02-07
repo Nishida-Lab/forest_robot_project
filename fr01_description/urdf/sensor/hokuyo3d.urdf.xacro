@@ -4,13 +4,13 @@
     <link name="${name}">
       <visual>
         <geometry>
-		  <box size="0.085 0.106 0.105"/>
+		  <box size="0.106 0.085 0.105"/>
         </geometry>
       </visual>
       <collision>
 		<origin xyz="0 0 0"/>
         <geometry>
-		  <box size="0.085 0.106 0.105"/>
+		  <box size="0.106 0.085 0.105"/>
         </geometry>
       </collision>
       <inertial>
