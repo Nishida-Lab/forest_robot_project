@@ -179,3 +179,6 @@ catkin_package(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+find_package(roslaunch)
+roslaunch_add_file_check(test/fr01_sensors_test.xml)
