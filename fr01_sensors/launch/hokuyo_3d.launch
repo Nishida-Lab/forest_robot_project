@@ -1,0 +1,8 @@
+<launch>
+
+  <node name="hokuyo3d" pkg="hokuyo3d" type="hokuyo3d" output="screen" >
+	<rosparam param="ip">"192.168.0.10"</rosparam>
+	<rosparam param="output_cycle">"field"</rosparam>
+  </node>
+
+</launch>
