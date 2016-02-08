@@ -41,7 +41,8 @@ class Fr01Interface
   // 0 : right front, 1 : left front, 2 : right middle, 3 : left middle
   // 4 : right rear, 5 : left rear
   std::vector<double> wheel_diameters_;
-  
+
+  bool two_steer_mode_;
   double angular_limit_max_;
   double angular_limit_min_;
   double linear_limit_max_;
