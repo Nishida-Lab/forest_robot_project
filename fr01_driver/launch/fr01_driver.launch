@@ -8,6 +8,7 @@
 	<rosparam param="angular_limit_min">-0.78</rosparam>
 	<rosparam param="linear_limit_max">0.8</rosparam>
 	<rosparam param="linear_limit_min">-0.8</rosparam>
+	<rosparam param="two_steer_mode">true</rosparam>
   </node>
 
   <node name="fr01_controller" pkg="fr01_driver" type="fr01_controller_node" output="screen" /> 
