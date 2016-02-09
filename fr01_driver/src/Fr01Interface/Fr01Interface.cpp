@@ -48,9 +48,9 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
     if(two_steer_mode_)
     {
       steer_input.position[2] = atan2(2.0*(tred_length_[2]+tred_length_[2]/2.0)*tan(angular_speed),
-                                      2.0*(tred_length_[2]+tred_length_[2]/2.0)+2.0*tred_width_[2]*tan(angular_speed));
+                                      2.0*(tred_length_[2]+tred_length_[2]/2.0)-2.0*tred_width_[2]*tan(angular_speed));
       steer_input.position[3] = atan2(2.0*(tred_length_[3]+tred_length_[3]/2.0)*tan(angular_speed),
-                                      2.0*(tred_length_[3]+tred_length_[3]/2.0)-2.0*tred_width_[2]*tan(angular_speed));
+                                      2.0*(tred_length_[3]+tred_length_[3]/2.0)+2.0*tred_width_[2]*tan(angular_speed));
       steer_input.position[0] = 0;
       steer_input.position[1] = 0;
 
@@ -64,13 +64,13 @@ void Fr01Interface::drive(double linear_speed, double angular_speed,
       else
       {
         // middle
-        wheel_input.velocity[2] = (sin(angular_speed)/tan(steer_input.position[3]))*linear_speed;
-        wheel_input.velocity[3] = (sin(angular_speed)/tan(steer_input.position[2]))*linear_speed;
+        wheel_input.velocity[2] = (sin(angular_speed)/tan(steer_input.position[2]))*linear_speed;
+        wheel_input.velocity[3] = (sin(angular_speed)/tan(steer_input.position[3]))*linear_speed;
         // right
-        wheel_input.velocity[5] = (sin(angular_speed)/sin(steer_input.position[2]))*linear_speed;
+        wheel_input.velocity[5] = (sin(angular_speed)/sin(steer_input.position[3]))*linear_speed;
         wheel_input.velocity[1] = wheel_input.velocity[3];
         // left
-        wheel_input.velocity[4] = (sin(angular_speed)/sin(steer_input.position[3]))*linear_speed;
+        wheel_input.velocity[4] = (sin(angular_speed)/sin(steer_input.position[2]))*linear_speed;
         wheel_input.velocity[0] = wheel_input.velocity[2];
       }
 
