@@ -5,6 +5,12 @@
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Twist.h>
 
+#include <controller_manager/controller_manager.h>
+#include <hardware_interface/joint_command_interface.h>
+#include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/robot_hw.h>
+#include <realtime_tools/realtime_buffer.h>
+
 #ifndef MIN
 #define MIN(a,b) ((a < b) ? (a) : (b))
 #endif
@@ -16,21 +22,26 @@
 #endif
 
 class Fr01Interface
+  : public hardware_interface::RobotHW
 {
  public:
   Fr01Interface();
   ~Fr01Interface();
 
-  virtual void setParams(std::vector<double> wheel_diameters, std::vector<double> tred_width);
+  void calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
+			 const sensor_msgs::JointStateConstPtr& steer_state);
+  void setParams(std::vector<double> wheel_diameters,
+		 std::vector<double> tred_width);
+  
+  void drive(double linear_speed, double angular_speed, 
+	     sensor_msgs::JointState& wheel_input,
+	     sensor_msgs::JointState& steer_input,
+	     bool isPivotTurn);
+  
+  void read();
 
-  virtual void calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
-                                 const sensor_msgs::JointStateConstPtr& steer_state);
-
-  virtual void drive(double linear_speed, double angular_speed, 
-                     sensor_msgs::JointState& wheel_input,
-                     sensor_msgs::JointState& steer_input,
-                     bool isPivotTurn);
-
+  void write();
+  
  protected:
   // 0 : front, 1 : middle, 2 : rear
   std::vector<double> tred_width_;
@@ -47,6 +58,9 @@ class Fr01Interface
   double angular_limit_min_;
   double linear_limit_max_;
   double linear_limit_min_;
+
+  hardware_interface::JointStateInterface joint_state_interface_;
+  hardware_interface::VelocityJointInterface joint_vel_interface_;
 };
 
 

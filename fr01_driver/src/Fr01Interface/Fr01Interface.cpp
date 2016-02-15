@@ -13,11 +13,27 @@ Fr01Interface::Fr01Interface()
   n.getParam("linear_limit_max", linear_limit_max_);
   n.getParam("linear_limit_min", linear_limit_min_);
   n.param("two_steer_mode", two_steer_mode_, false);
-}
+
+  hardware_interface::JointStateHandle state_handle_front_right("front_right_wheel");
+  joint_state_interface_.registerHandle(state_handle_front_right);
+  
+  hardware_interface::JointStateHandle state_handle_front_left("front_left_wheel");
+  joint_state_interface_.registerHandle(state_handle_front_left);
+  
+  hardware_interface::JointStateHandle state_handle_middle_right("middle_right");
+  joint_vel_interface_.registerHandle(const hardware_interface::JointHandle &handle)
 
 Fr01Interface::~Fr01Interface()
 {
 
+}
+
+void Fr01Interface::read()
+{
+}
+
+void Fr01Interface::write()
+{
 }
 
 void Fr01Interface::calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
