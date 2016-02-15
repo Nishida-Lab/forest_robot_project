@@ -43,6 +43,9 @@ class Fr01Interface
   void write();
   
  protected:
+  unsigned int wheel_n_dof_;
+  unsigned int steer_n_dof_;
+  
   // 0 : front, 1 : middle, 2 : rear
   std::vector<double> tred_width_;
   
@@ -59,8 +62,25 @@ class Fr01Interface
   double linear_limit_max_;
   double linear_limit_min_;
 
-  hardware_interface::JointStateInterface joint_state_interface_;
-  hardware_interface::VelocityJointInterface joint_vel_interface_;
+  std::vector<std::string> transmission_names_;
+
+  std::vector<std::string> wheel_joint_names_;
+  std::vector<double> wheel_joint_pos_;
+  std::vector<double> wheel_joint_vel_;
+  std::vector<double> wheel_joint_eff_;
+  std::vector<double> wheel_joint_vel_cmd_;
+  std::vector<std::string> steer_joint_names_;
+  std::vector<double> steer_joint_pos_;
+  std::vector<double> steer_joint_vel_;
+  std::vector<double> steer_joint_eff_;
+  std::vector<double> steer_joint_pos_cmd_;
+  
+  hardware_interface::JointStateInterface wheel_joint_state_interface_;
+  hardware_interface::JointStateInterface steer_joint_state_interface_;
+  
+  hardware_interface::VelocityJointInterface wheel_joint_vel_interface_;
+  hardware_interface::VelocityJointInterface steer_joint_pos_interface_;
+  
 };
 
 

@@ -1,6 +1,11 @@
 #include <ros/ros.h>
 #include <Fr01Interface/Fr01Interface.hpp>
 
+#include <angles/angles.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
+#include <joint_limits_interface/joint_limits_rosparam.h>
+
+#include <pluginlib/class_list_macros.h>
 
 Fr01Interface::Fr01Interface()
 {
@@ -14,15 +19,61 @@ Fr01Interface::Fr01Interface()
   n.getParam("linear_limit_min", linear_limit_min_);
   n.param("two_steer_mode", two_steer_mode_, false);
 
-  hardware_interface::JointStateHandle state_handle_front_right("front_right_wheel");
-  joint_state_interface_.registerHandle(state_handle_front_right);
-  
-  hardware_interface::JointStateHandle state_handle_front_left("front_left_wheel");
-  joint_state_interface_.registerHandle(state_handle_front_left);
-  
-  hardware_interface::JointStateHandle state_handle_middle_right("middle_right");
-  joint_vel_interface_.registerHandle(const hardware_interface::JointHandle &handle)
+  n.getParam("wheel_joint_names", wheel_joint_names_);
+  n.getParam("steer_joint_names", steer_joint_names_);
+  // Cleanup
+  wheel_joint_pos_.clear();
+  wheel_joint_vel_.clear();
+  wheel_joint_eff_.clear();
+  wheel_joint_vel_cmd_.clear();
+  steer_joint_pos_.clear();
+  steer_joint_vel_.clear();
+  steer_joint_eff_.clear();
+  steer_joint_pos_cmd_.clear();
 
+  wheel_n_dof_ = wheel_joint_names_.size();
+  steer_n_dof_ = steer_joint_names_.size();
+  
+  wheel_joint_pos_.resize(wheel_n_dof_);
+  wheel_joint_vel_.resize(wheel_n_dof_);
+  wheel_joint_eff_.resize(wheel_n_dof_);
+  wheel_joint_vel_cmd_.resize(wheel_n_dof_);
+  steer_joint_pos_.resize(steer_n_dof_);
+  steer_joint_vel_.resize(steer_n_dof_);
+  steer_joint_eff_.resize(steer_n_dof_);
+  steer_joint_pos_cmd_.resize(steer_n_dof_);
+
+  // Hardware interfaces
+  for (size_t i = 0; i < wheel_n_dof_; ++i) {
+    wheel_joint_state_interface_.registerHandle(JointStateHandle(wheel_joint_names_[i],
+								 &wheel_joint_pos_[i],
+								 &wheel_joint_vel_[i],
+								 &wheel_joint_eff_[i]));
+    wheel_joint_vel_interface_.registerHandle(JointHandle(wheel_joint_state_interface_.getHandle(wheel_joint_names_[i]),
+							&wheel_joint_vel_cmd_[i]));
+
+    ROS_DEBUG_STREAM("Registered joint '", << wheel_joint_names_[i], " ' in the PositionJointInterface");
+  }
+  for (size_t i = 0; i < steer_n_dof_; ++i) {
+    steer_joint_state_interface_.registerHandle(JointStateHandle(steer_joint_names_[i],
+								 &steer_joint_pos_[i],
+								 &steer_joint_vel_[i],
+								 &steer_joint_eff_[i]));
+    steer_joint_pos_interface_.registerHandle(JointHandle(steer_joint_state_interface_.getHandle(steer_joint_names_[i]),
+							&steer_joint_pos_cmd_[i]));
+
+    ROS_DEBUG_STREAM("Registered joint '", << steer_joint_names_[i], " ' in the PositionJointInterface");
+  }
+  
+  registerInterface(&wheel_joint_state_interface_);
+  registerInterface(&steer_joint_state_interface_);
+  registerInterface(&wheel_joint_vel_interface_);
+  registerInterface(&steer_joint_pos_interface_);
+
+  // Position joint limits interface
+  // TODO
+  
+}
 Fr01Interface::~Fr01Interface()
 {
 
@@ -30,10 +81,12 @@ Fr01Interface::~Fr01Interface()
 
 void Fr01Interface::read()
 {
+  // TODO
 }
 
 void Fr01Interface::write()
 {
+  // TODO
 }
 
 void Fr01Interface::calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
