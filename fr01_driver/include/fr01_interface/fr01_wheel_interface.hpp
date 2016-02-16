@@ -1,5 +1,5 @@
-#ifndef FR01INTERFACE_H
-#define FR01INTERFACE_H
+#ifndef FR01_WHEEL_INTERFACE_H
+#define FR01_WHEEL_INTERFACE_H
 
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
@@ -21,23 +21,22 @@
 #define NORMALIZE(z) atan2(sin(z), cos(z))
 #endif
 
-class Fr01Interface
+class Fr01WheelInterface
+  : public hardware_interface::RobotHW
 {
  public:
-  Fr01Interface();
-  ~Fr01Interface();
+  Fr01WheelInterface();
 
-  void calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
-			 const sensor_msgs::JointStateConstPtr& steer_state);
-  void setParams(std::vector<double> wheel_diameters,
-		 std::vector<double> tred_width);
+  ros::Time getTime() const { return ros::Time::now(); }
+  ros::Duration getPeriod() const { return ros::Duration(0.01); }
   
-  void drive(double linear_speed, double angular_speed, 
-	     sensor_msgs::JointState& wheel_input,
-	     sensor_msgs::JointState& steer_input,
-	     bool isPivotTurn);
+  void read(ros::Time time, ros::Duration period);
+
+  void write(ros::Time time, ros::Duration period);
   
  protected:
+  unsigned int n_dof_;
+  
   // 0 : front, 1 : middle, 2 : rear
   std::vector<double> tred_width_;
   
@@ -53,8 +52,18 @@ class Fr01Interface
   double angular_limit_min_;
   double linear_limit_max_;
   double linear_limit_min_;
- 
+
+  std::vector<std::string> transmission_names_;
+
+  std::vector<std::string> joint_names_;
+  std::vector<double> joint_pos_;
+  std::vector<double> joint_vel_;
+  std::vector<double> joint_eff_;
+  std::vector<double> joint_vel_cmd_;
+  
+  hardware_interface::JointStateInterface joint_state_interface_;
+  hardware_interface::VelocityJointInterface joint_vel_interface_;
+  
 };
 
-
-#endif /* FR01INTERFACE_H */
+#endif /* FR01_WHEEL_INTERFACE_H */
