@@ -38,9 +38,14 @@ class Fr01Interface
   void read(ros::Time time, ros::Duration period);
 
   void write(ros::Time time, ros::Duration period);
- 
- protected:
 
+  void wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state);
+
+  void steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state);
+  
+ protected:
+  ros::NodeHandle nh_;
+  
   std::shared_ptr<Fr01WheelInterface> fr01_wheel_ptr_;
   std::shared_ptr<Fr01SteerInterface> fr01_steer_ptr_;
   
@@ -54,11 +59,11 @@ class Fr01Interface
   hardware_interface::JointStateInterface steer_joint_state_interface_;
   hardware_interface::PositionJointInterface steer_pos_joint_interface_;
 
-  ros::Subscriber kondo_b3m_subscriber_;
-  ros::Subscriber ixis_imcs_subscriber_;
+  ros::Subscriber steer_pos_sub_;
+  ros::Subscriber wheel_vel_sub_;
 
-  ros::Publisher kondo_b3m_publisher_;
-  ros::Publisher ixis_imcs_subscriber_;
+  ros::Publisher steer_pos_pub_;
+  ros::Publisher wheel_vel_pub_;
   
 };
 

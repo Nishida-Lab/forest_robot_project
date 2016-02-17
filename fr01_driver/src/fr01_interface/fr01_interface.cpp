@@ -12,12 +12,12 @@ Fr01Interface::Fr01Interface()
 
   n.getParam("steer_joint_names", steer_joint_names_);
   n.getParam("wheel_joint_names", wheel_joint_names_);
- 
+  
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
   fr01_steer_ptr_.reset(new Fr01SteerInterface(steer_joint_names_));
 
   fr01_wheel_ptr_->register_interface(wheel_joint_state_interface_,
-				     wheel_vel_joint_interface_);
+				      wheel_vel_joint_interface_);
   fr01_steer_ptr_->register_interface(steer_joint_state_interface_,
 				      steer_pos_joint_interface_);
   
@@ -26,6 +26,10 @@ Fr01Interface::Fr01Interface()
   registerInterface(&steer_joint_state_interface_);
   registerInterface(&steer_pos_joint_interface_);
 
+  wheel_vel_sub_ = nh_.subscribe("/wheel_state", 100, &Fr01Interface::wheelStateCallback, this);
+  steer_pos_sub_ = nh_.subscribe("/steer_state", 100, &Fr01Interface::steerStateCallback, this);
+
+  
   // Position joint limits interface
   // TODO
 
@@ -38,6 +42,16 @@ void Fr01Interface::read(ros::Time now, ros::Duration period)
 }
 
 void Fr01Interface::write(ros::Time now, ros::Duration period)
+{
+  // TODO
+}
+
+void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state)
+{
+  // TODO
+}
+
+void Fr01Interface::steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state)
 {
   // TODO
 }
