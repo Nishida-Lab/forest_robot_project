@@ -6,58 +6,46 @@
 #include <joint_limits_interface/joint_limits_rosparam.h>
 
 
-Fr01SteerInterface::Fr01SteerInterface()
+Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
+  : joint_names_(joint_names)
 {
-  ros::NodeHandle n("~");
-  n.getParam("angular_limit_max", angular_limit_max_);
-  n.getParam("angular_limit_min", angular_limit_min_);
-  n.getParam("linear_limit_max", linear_limit_max_);
-  n.getParam("linear_limit_min", linear_limit_min_);
-  n.param("two_steer_mode", two_steer_mode_, false);
-
-  n.getParam("steer_joint_names", joint_names_);
-  // Cleanup
-  joint_pos_.clear();
-  joint_vel_.clear();
-  joint_eff_.clear();
-  joint_pos_cmd_.clear();
-
   n_dof_ = joint_names_.size();
-  
-  joint_pos_.resize(n_dof_);
-  joint_vel_.resize(n_dof_);
-  joint_eff_.resize(n_dof_);
-  joint_pos_cmd_.resize(n_dof_);
+  this->cleanup();
+  this->resize();
+}
 
+void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
+				       hardware_interface::PositionJointInterface &pos_joint_interface)
+{
   // Hardware interfaces
   for (size_t i = 0; i < n_dof_; ++i) {
     hardware_interface::JointStateHandle state_handle(joint_names_[i],
 						      &joint_pos_[i],
 						      &joint_vel_[i],
 						      &joint_eff_[i]);
-    joint_state_interface_.registerHandle(state_handle);
-    hardware_interface::JointHandle pos_handle(joint_state_interface_.getHandle(joint_names_[i]),
+    joint_state_interface.registerHandle(state_handle);
+    hardware_interface::JointHandle pos_handle(joint_state_interface.getHandle(joint_names_[i]),
 					       &joint_pos_cmd_[i]);
-    joint_pos_interface_.registerHandle(pos_handle);
+    pos_joint_interface.registerHandle(pos_handle);
 
     ROS_DEBUG_STREAM("Registered joint '" << joint_names_[i] << " ' in the PositionJointInterface");
   }
   
-  registerInterface(&joint_state_interface_);
-  registerInterface(&joint_pos_interface_);
-
-  // Position joint limits interface
-  // TODO
-
-  
 }
 
-void Fr01SteerInterface::read(ros::Time now, ros::Duration period)
+void Fr01SteerInterface::cleanup()
 {
-  // TODO
+  // Cleanup
+  joint_pos_.clear();
+  joint_vel_.clear();
+  joint_eff_.clear();
+  joint_pos_cmd_.clear();  
 }
 
-void Fr01SteerInterface::write(ros::Time now, ros::Duration period)
+void Fr01SteerInterface::resize()
 {
-  // TODO
+  joint_pos_.resize(n_dof_);
+  joint_vel_.resize(n_dof_);
+  joint_eff_.resize(n_dof_);
+  joint_pos_cmd_.resize(n_dof_);  
 }

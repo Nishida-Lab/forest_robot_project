@@ -11,49 +11,23 @@
 #include <hardware_interface/robot_hw.h>
 #include <realtime_tools/realtime_buffer.h>
 
-#ifndef MIN
-#define MIN(a,b) ((a < b) ? (a) : (b))
-#endif
-#ifndef MAX
-#define MAX(a,b) ((a > b) ? (a) : (b))
-#endif
-#ifndef NORMALIZE
-#define NORMALIZE(z) atan2(sin(z), cos(z))
-#endif
-
 class Fr01SteerInterface
-  : public hardware_interface::RobotHW
 {
  public:
-  Fr01SteerInterface();
-
-  ros::Time getTime() const { return ros::Time::now(); }
-  ros::Duration getPeriod() const { return ros::Duration(0.01); }
-  
-  void read(ros::Time time, ros::Duration period);
-
-  void write(ros::Time time, ros::Duration period);
-  
+  Fr01SteerInterface(std::vector<std::string> joint_names);
+  void cleanup();
+  void resize();
+  void register_interface(hardware_interface::JointStateInterface &joint_state_interface,
+			  hardware_interface::PositionJointInterface &pos_joint_interface);
  protected:
   unsigned int n_dof_;
   
-  bool two_steer_mode_;
-  double angular_limit_max_;
-  double angular_limit_min_;
-  double linear_limit_max_;
-  double linear_limit_min_;
-
-  std::vector<std::string> transmission_names_;
-
   std::vector<std::string> joint_names_;
   std::vector<double> joint_pos_;
   std::vector<double> joint_vel_;
   std::vector<double> joint_eff_;
-  std::vector<double> joint_pos_cmd_;
-  
-  hardware_interface::JointStateInterface joint_state_interface_;
-  hardware_interface::VelocityJointInterface joint_pos_interface_;
-  
+  std::vector<double> joint_pos_cmd_;  
+
 };
 
 
