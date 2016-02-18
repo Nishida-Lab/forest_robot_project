@@ -5,6 +5,7 @@
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <ixis_imcs01/ixis_imcs01.hpp>
+#include <boost/thread.hpp>
 
 class WheelControlPid;
 
@@ -34,6 +35,8 @@ protected:
   SerialPort imcs01_left_port_;
 
   sensor_msgs::JointState wheel_state_;
+
+  boost::mutex access_mutex_;
 };
 
 class WheelControlPid

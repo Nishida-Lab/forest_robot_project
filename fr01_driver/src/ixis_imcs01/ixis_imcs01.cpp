@@ -85,7 +85,6 @@ int IxisImcs01::parseEncoderCounts()
 void IxisImcs01::calculateAngularPosition()
 {
   for(int i = 0; i < 3; i++){
-    //state_.position[i] += delta_encoder_counts_[i]*0.000033*2.0*3.14159;
     state_.position[i] += delta_encoder_counts_[i]*0.000157;
   }
 }
