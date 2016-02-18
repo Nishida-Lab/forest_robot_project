@@ -20,7 +20,9 @@ IxisImcs01::IxisImcs01()
     for (int i = 0; i < 3; ++i) {
       encoder_counts_[i] = 0;
       last_encoder_counts_[i] = 0;
-      delta_encoder_counts_[i] = 0;
+      delta_encoder_counts_[i] = -1;
+      state_.position[i] = 0.0;
+      state_.velocity[i] = 0.0;
     }
 
   }
@@ -28,6 +30,7 @@ IxisImcs01::IxisImcs01()
 int IxisImcs01::update(SerialPort *port)
 {
   if(read(port->fd_, &received_data_, sizeof(received_data_)) != sizeof(received_data_)){
+    ROS_WARN_STREAM("IxisImcs01::update() read error");
     return -1;
   }else{
     parseEncoderCounts();
@@ -73,20 +76,24 @@ int IxisImcs01::parseEncoderCounts()
   return 0;
 }
 
+// edge evaluation     : 4(quad)
+// gear reduction rate : 50
+// encoder             : 100 pulse / motor axis revolution
+// As a result         : 20000 pulse / wheel revolution
+// angular positon     : (gained pulse / 20000) * \pi
+//                       => gained pulse * 0.00015707963
 void IxisImcs01::calculateAngularPosition()
 {
   for(int i = 0; i < 3; i++){
-    state_.position[i] += delta_encoder_counts_[i]*0.000033*2.0*3.14159;
+    //state_.position[i] += delta_encoder_counts_[i]*0.000033*2.0*3.14159;
+    state_.position[i] += delta_encoder_counts_[i]*0.000157;
   }
-  ROS_INFO_STREAM("pos[" << 0 << "] : " << state_.position[0] <<
-		  ", pos[" << 1 << "] : " << state_.position[1] <<
-		  ", pos[" << 2 << "] : " << state_.position[2]);
 }
 
 void IxisImcs01::calculateAngularVelocity()
 {
    for(int i = 0; i < 3; i++){
-      state_.velocity[i] = (delta_encoder_counts_[i]*0.000033/delta_encoder_time_);
+      state_.velocity[i] = (delta_encoder_counts_[i]*0.0000157/delta_encoder_time_);
     }
 }
 

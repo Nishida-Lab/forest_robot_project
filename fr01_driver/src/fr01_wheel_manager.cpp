@@ -9,13 +9,28 @@ Fr01WheelManager::Fr01WheelManager(ros::NodeHandle nh)
   imcs01_left_port_.openPort(n.param<std::string>("imcs01_left_port_name", "/dev/urbtc1"));
 
   wheel_cmd_.data.resize(6);
+  wheel_state_.velocity.resize(6);
+  wheel_state_.position.resize(6);
+  for (size_t i = 0; i < wheel_state_.velocity.size(); ++i) {
+    wheel_state_.velocity[i] = 0.0;
+    wheel_state_.position[i] = 0.0;  
+  }
+
+  wheel_state_.name.resize(6);
+  wheel_state_.name[0] = "left_rear";
+  wheel_state_.name[1] = "right_rear";
+  wheel_state_.name[2] = "left_middle";
+  wheel_state_.name[3] = "right_middle";
+  wheel_state_.name[4] = "left_front";
+  wheel_state_.name[5] = "right_front";
+  
   WheelControlPid pid_controller(80.0, 30.0, 0.0, 100, -100);
   for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
     pid_controllers_.push_back(pid_controller);
   }
 
   wheel_pwm_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/motor_input", 10);
-
+  wheel_state_pub_ = nh_.advertise<sensor_msgs::JointState>("/wheel_state", 10);
 }
 
 Fr01WheelManager::~Fr01WheelManager()
@@ -57,7 +72,7 @@ void Fr01WheelManager::setState(sensor_msgs::JointState &right_wheels,
     wheel_state_.velocity[2*i] = right_wheels.velocity[i];
     wheel_state_.position[2*i] = right_wheels.position[i];
     wheel_state_.velocity[2*i+1] = left_wheels.velocity[i];
-    wheel_state_.position[2*i+1] = left_wheels.velocity[i];
+    wheel_state_.position[2*i+1] = left_wheels.position[i];
   }
 }
 
