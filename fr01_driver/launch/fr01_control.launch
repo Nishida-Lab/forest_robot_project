@@ -1,0 +1,28 @@
+<launch>
+  <node name="fr01_driver" pkg="fr01_driver" type="fr01_driver_node" output="screen" >
+	<rosparam param="tred_width">[0.41, 0.41, 0.26]</rosparam>
+	<rosparam param="tred_length">[0.40, 0.40, 0.40, 0.40]</rosparam>
+	<rosparam param="wheel_diameters">[0.16, 0.16, 0.16, 0.16, 0.16, 0.16]</rosparam>
+	<rosparam param="angular_limit_max">0.78</rosparam>
+	<rosparam param="angular_limit_min">-0.78</rosparam>
+	<rosparam param="linear_limit_max">0.8</rosparam>
+	<rosparam param="linear_limit_min">-0.8</rosparam>
+	<rosparam param="two_steer_mode">true</rosparam>
+  </node>
+
+  <node name="fr01_wheel_manager_node" pkg="fr01_driver" type="fr01_wheel_manager_node" output="screen" >
+    <remap from="/wheel_vel_cmd" to="/wheel_joint_ctrl" />
+  </node>
+  
+  <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">
+	<param name="port" value="/dev/ttyACM0" />
+  </node>
+
+  <rosparam file="$(find b3m_servo)/config/b3m_driver_sample.yaml" 
+			command="load" ns="b3m_driver"/>
+  <node name="b3m_driver" pkg="b3m_servo" type="b3m_driver" 
+		args="joint_0_driver joint_1_driver joint_2_driver joint_3_driver" output="screen">
+	<remap from="/joint_states" to="/steer_joint_ctrl"/>
+  </node>
+
+</launch>
