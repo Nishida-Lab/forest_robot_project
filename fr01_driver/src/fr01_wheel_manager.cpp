@@ -31,6 +31,7 @@ Fr01WheelManager::Fr01WheelManager(ros::NodeHandle nh)
 
   wheel_pwm_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/motor_input", 10);
   wheel_state_pub_ = nh_.advertise<sensor_msgs::JointState>("/wheel_state", 10);
+  wheel_cmd_sub_ =  nh_.subscribe<sensor_msgs::JointState>("/wheel_vel_cmd", 10, &Fr01WheelManager::controlWheelVelCallback, this);
 }
 
 Fr01WheelManager::~Fr01WheelManager()
@@ -44,6 +45,9 @@ void Fr01WheelManager::controlWheelVelCallback(const sensor_msgs::JointStateCons
     boost::mutex::scoped_lock(access_mutex_);
     for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
       wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state_.velocity[i], wheel_vel_cmd->velocity[i]);
+      // ROS_INFO_STREAM("state[" << i << "] : " << wheel_state_.velocity[i] <<
+      // 		      ", cmd[" << i << "] : " << wheel_vel_cmd->velocity[i] <<
+      // 		      ", data[" << i << "] : " << wheel_cmd_.data[i]);
     }
   }
   wheel_pwm_pub_.publish(wheel_cmd_);
@@ -78,10 +82,10 @@ void Fr01WheelManager::setState(sensor_msgs::JointState &right_wheels,
 {
   // Left is opposite of right. So, left add minus sign
   for(int i = 0; i < 3; i++){
-    wheel_state_.velocity[2*i] = right_wheels.velocity[i];
-    wheel_state_.position[2*i] = right_wheels.position[i];
-    wheel_state_.velocity[2*i+1] = -left_wheels.velocity[i];
-    wheel_state_.position[2*i+1] = -left_wheels.position[i];
+    wheel_state_.velocity[2*i] = -right_wheels.velocity[i];
+    wheel_state_.position[2*i] = -right_wheels.position[i];
+    wheel_state_.velocity[2*i+1] = left_wheels.velocity[i];
+    wheel_state_.position[2*i+1] = left_wheels.position[i];
   }
 }
 
@@ -124,6 +128,6 @@ double WheelControlPid::compute(double input, double target)
 
       last_input_ = input;
       last_time_ = now;
-
     }
+    return output_;
 }
