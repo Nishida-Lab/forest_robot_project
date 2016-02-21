@@ -148,9 +148,23 @@
   <xacro:wheel_trans_v0 part="left_back"/>
 
   <!--==================== Gazebo ====================-->
+  <!-- firstly load diff_drive_controller without namespaces -->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/fr01</robotNamespace>
+    </plugin>
+  </gazebo>
+  <!-- Wheel -->
+  <xacro:wheel_gazebo_v0 part="right_front"/>
+  <xacro:wheel_gazebo_v0 part="right_middle"/>
+  <xacro:wheel_gazebo_v0 part="right_back"/>
+  <xacro:wheel_gazebo_v0 part="left_front"/>
+  <xacro:wheel_gazebo_v0 part="left_middle"/>
+  <xacro:wheel_gazebo_v0 part="left_back"/>
+
+  <!-- secondly load other controllers with namespace -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/fr01</robotNamespace> 
     </plugin>
   </gazebo>
   <!-- Body -->
@@ -170,12 +184,5 @@
   <xacro:steer_gazebo_v0 part="left_front"/>
   <xacro:steer_gazebo_v0 part="left_back"/>
 
-  <!-- Wheel -->
-  <xacro:wheel_gazebo_v0 part="right_front"/>
-  <xacro:wheel_gazebo_v0 part="right_middle"/>
-  <xacro:wheel_gazebo_v0 part="right_back"/>
-  <xacro:wheel_gazebo_v0 part="left_front"/>
-  <xacro:wheel_gazebo_v0 part="left_middle"/>
-  <xacro:wheel_gazebo_v0 part="left_back"/>  
   
 </robot>
