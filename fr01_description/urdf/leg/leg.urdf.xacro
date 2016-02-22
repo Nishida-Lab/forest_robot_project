@@ -10,7 +10,7 @@
 	  <parent link="${parent}"/>
 	  <child link="bogie_${side}_link"/>
 	  <insert_block name="joint_axis"/>
-	  <dynamics dampint="0.7" friction="0.7"/>
+	  <dynamics dampint="0.04" friction="0.01"/>
 	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
 	</joint>
 	
@@ -40,7 +40,7 @@
 	  <parent link="${parent}"/>
 	  <child link="rocker_${side}_link"/>
 	  <insert_block name="joint_axis"/>
-	  <dynamics dampint="0.7" friction="0.7"/>
+	  <dynamics dampint="1.4" friction="1.0"/>
 	  <limit effort="30.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="${2*M_PI}"/>
 	</joint>
 	

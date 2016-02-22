@@ -3,8 +3,8 @@
 
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.transmission.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.gazebo.xacro"/>
-  <xacro:property name="wheel_radius" value="0.03"/>
-  <xacro:property name="wheel_width" value="0.02"/>
+  <xacro:property name="wheel_radius" value="0.08"/>
+  <xacro:property name="wheel_width" value="0.16"/>
 
   <xacro:macro name="wheel_v0" params="part parent *link_origin *joint_origin *joint_axis">
 	<joint name="wheel_${part}_joint" type="continuous">
@@ -22,8 +22,9 @@
         </geometry>
       </visual>
       <collision>
-		<insert_block name="link_origin"/>
-        <geometry>
+          <!-- <insert_block name="link_origin"/> -->
+          <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
+          <geometry>
             <!-- <mesh filename="package://fr01_description/meshes/collision/wheel_link.stl"/> -->
             <cylinder radius="${wheel_radius}" length="${wheel_width}"/> 
         </geometry>
