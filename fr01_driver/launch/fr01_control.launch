@@ -10,8 +10,11 @@
 	<rosparam param="two_steer_mode">true</rosparam>
   </node>
 
-  <node name="fr01_wheel_manager_node" pkg="fr01_driver" type="fr01_wheel_manager_node" output="screen" >
+  <node name="fr01_wheel_controller_node" pkg="fr01_driver" type="fr01_wheel_controller_node" output="screen" >
     <remap from="/wheel_vel_cmd" to="/wheel_joint_ctrl" />
+  </node>
+
+  <node name="fr01_wheel_state_publisher_node" pkg="fr01_driver" type="fr01_wheel_state_publisher_node" output="screen" >
   </node>
   
   <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">

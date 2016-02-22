@@ -51,11 +51,9 @@ add_executable(fr01_control
   src/fr01_interface/fr01_steer_interface.cpp
   )
 
-add_executable(fr01_wheel_manager_node
-  src/ixis_imcs01/serial.cpp
-  src/ixis_imcs01/ixis_imcs01.cpp
-  src/fr01_wheel_manager.cpp
-  src/fr01_wheel_manager_node.cpp
+add_executable(fr01_wheel_controller_node
+  src/fr01_wheel_controller.cpp
+  src/fr01_wheel_controller_node.cpp
   )
 
 add_executable(fr01_driver_node
@@ -64,21 +62,23 @@ add_executable(fr01_driver_node
   src/Fr01Interface/Fr01Interface.cpp
   )
 
-add_executable(fr01_controller_node
-  src/fr01_controller_node.cpp
-  src/fr01_controller.cpp
+add_executable(fr01_wheel_state_publisher_node
+  src/ixis_imcs01/serial.cpp
+  src/ixis_imcs01/ixis_imcs01.cpp
+  src/fr01_wheel_state_publisher.cpp
+  src/fr01_wheel_state_publisher_node.cpp
   )
 
 target_link_libraries(fr01_driver_node
   ${catkin_LIBRARIES}
   )
-target_link_libraries(fr01_controller_node
+target_link_libraries(fr01_wheel_controller_node
   ${catkin_LIBRARIES}
   )
 target_link_libraries(fr01_control
   ${catkin_LIBRARIES}
   )
-target_link_libraries(fr01_wheel_manager_node
+target_link_libraries(fr01_wheel_state_publisher_node
   ${catkin_LIBRARIES}
   )
 
