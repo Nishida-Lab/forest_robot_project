@@ -19,6 +19,8 @@ class Fr01SteerInterface
   void resize();
   void register_interface(hardware_interface::JointStateInterface &joint_state_interface,
 			  hardware_interface::PositionJointInterface &pos_joint_interface);
+  void write();
+  void read(const sensor_msgs::JointState& state);
  protected:
   unsigned int n_dof_;
   
@@ -26,8 +28,11 @@ class Fr01SteerInterface
   std::vector<double> joint_pos_;
   std::vector<double> joint_vel_;
   std::vector<double> joint_eff_;
-  std::vector<double> joint_pos_cmd_;  
+  std::vector<double> joint_pos_cmd_;
 
+  sensor_msgs::JointState commands_;
+  ros::NodeHandle nh_;
+  ros::Publisher steer_pos_pub_;
 };
 
 

@@ -29,29 +29,50 @@ Fr01Interface::Fr01Interface()
   wheel_vel_sub_ = nh_.subscribe("/wheel_state", 100, &Fr01Interface::wheelStateCallback, this);
   steer_pos_sub_ = nh_.subscribe("/steer_state", 100, &Fr01Interface::steerStateCallback, this);
 
-  
-  // Position joint limits interface
-  // TODO
+  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>("/steer_pos_cmd", 10);
 
-  
+  // Position joint limits interface
+  // TODO  
 }
 
 void Fr01Interface::read(ros::Time now, ros::Duration period)
 {
-  // TODO
+  {
+    boost::mutex::scoped_lock(wheel_state_access_mutex_);
+    fr01_wheel_ptr_->read(wheel_state_);
+  }
+  {
+    boost::mutex::scoped_lock(steer_state_access_mutex_);
+    fr01_steer_ptr_->read(steer_state_);
+  }
 }
 
 void Fr01Interface::write(ros::Time now, ros::Duration period)
 {
-  // TODO
+  fr01_wheel_ptr_->write();
+  fr01_steer_ptr_->write();
 }
 
 void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state)
 {
-  // TODO
+  {
+    boost::mutex::scoped_lock(wheel_state_access_mutex_);
+    for (size_t i = 0; i < wheel_state_.name.size(); ++i) {
+      wheel_state_.position[i] = wheel_state->position[i];
+      wheel_state_.velocity[i] = wheel_state->velocity[i];
+      wheel_state_.effort[i]   = wheel_state->effort[i];
+    }
+  }
 }
 
 void Fr01Interface::steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state)
 {
-  // TODO
+  {
+    boost::mutex::scoped_lock(steer_state_access_mutex_);
+    for (size_t i = 0; i < steer_state_.name.size(); ++i) {
+      steer_state_.position[i] = steer_state->position[i];
+      steer_state_.velocity[i] = steer_state->velocity[i];
+      steer_state_.effort[i]   = steer_state->effort[i];
+    }
+  }
 }

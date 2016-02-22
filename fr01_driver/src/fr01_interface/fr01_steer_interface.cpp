@@ -12,6 +12,8 @@ Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
   n_dof_ = joint_names_.size();
   this->cleanup();
   this->resize();
+  commands_.name = joint_names_;
+  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>("/steer_pos_cmd", 100);
 }
 
 void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
@@ -39,7 +41,10 @@ void Fr01SteerInterface::cleanup()
   joint_pos_.clear();
   joint_vel_.clear();
   joint_eff_.clear();
-  joint_pos_cmd_.clear();  
+  joint_pos_cmd_.clear();
+  commands_.velocity.clear();
+  commands_.position.clear();
+  commands_.effort.clear();
 }
 
 void Fr01SteerInterface::resize()
@@ -47,5 +52,23 @@ void Fr01SteerInterface::resize()
   joint_pos_.resize(n_dof_);
   joint_vel_.resize(n_dof_);
   joint_eff_.resize(n_dof_);
-  joint_pos_cmd_.resize(n_dof_);  
+  joint_pos_cmd_.resize(n_dof_);
+  commands_.velocity.resize(n_dof_);
+  commands_.position.resize(n_dof_);
+  commands_.effort.resize(n_dof_);
+}
+
+void Fr01SteerInterface::write()
+{
+  commands_.position = joint_pos_cmd_;
+  steer_pos_pub_.publish(commands_);
+}
+
+void Fr01SteerInterface::read(const sensor_msgs::JointState& state)
+{
+  for (size_t i = 0; i < n_dof_; ++i) {
+    joint_pos_[i] = state.position[i];
+    joint_vel_[i] = state.velocity[i];
+    joint_eff_[i] = state.effort[i];
+  }
 }

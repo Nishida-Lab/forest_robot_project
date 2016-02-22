@@ -20,6 +20,8 @@ class Fr01WheelInterface
   void resize();
   void register_interface(hardware_interface::JointStateInterface &joint_state_interface,
 			  hardware_interface::VelocityJointInterface &vel_joint_interface);
+  void write();
+  void read(const sensor_msgs::JointState& state);
  protected:
   unsigned int n_dof_;
   
@@ -27,8 +29,11 @@ class Fr01WheelInterface
   std::vector<double> joint_pos_;
   std::vector<double> joint_vel_;
   std::vector<double> joint_eff_;
-  std::vector<double> joint_pos_cmd_;  
+  std::vector<double> joint_vel_cmd_;  
+  ros::NodeHandle nh_;
 
+  sensor_msgs::JointState commands_;
+  ros::Publisher wheel_vel_pub_;
 };
 
 #endif /* FR01_WHEEL_INTERFACE_H */

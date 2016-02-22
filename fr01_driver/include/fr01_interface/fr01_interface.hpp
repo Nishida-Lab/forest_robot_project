@@ -15,6 +15,7 @@
 #include <fr01_interface/fr01_steer_interface.hpp>
 
 #include <memory>
+#include <boost/thread.hpp>
 
 #ifndef MIN
 #define MIN(a,b) ((a < b) ? (a) : (b))
@@ -63,8 +64,11 @@ class Fr01Interface
   ros::Subscriber wheel_vel_sub_;
 
   ros::Publisher steer_pos_pub_;
-  ros::Publisher wheel_vel_pub_;
-  
+
+  sensor_msgs::JointState steer_state_;
+  sensor_msgs::JointState wheel_state_;
+  boost::mutex wheel_state_access_mutex_;
+  boost::mutex steer_state_access_mutex_;
 };
 
 #endif /* FR01_INTERFACE_H */
