@@ -3,10 +3,9 @@
 
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.transmission.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.gazebo.xacro"/>
-  <xacro:property name="wheel_radius" value="0.08"/>
-  <xacro:property name="wheel_width" value="0.16"/>
 
-  <xacro:macro name="wheel_v0" params="part parent *link_origin *joint_origin *joint_axis *collision_origin">
+  <xacro:macro name="wheel_v0" params="part parent wheel_radius wheel_width
+      *link_origin *joint_origin *joint_axis *collision_origin">
 	<joint name="wheel_${part}_joint" type="continuous">
 	  <insert_block name="joint_origin"/>
 	  <parent link="${parent}"/>
