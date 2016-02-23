@@ -85,36 +85,42 @@
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <xacro:wheel_v0 part="right_middle" parent="bogie_right_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="0.198 0.2485 -0.165" rpy="0 0 ${-M_PI/2}"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <xacro:wheel_v0 part="right_back" parent="steer_right_back_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <xacro:wheel_v0 part="left_front" parent="steer_left_front_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="-0.065 0 -0.2145" rpy="0 ${M_PI} 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <xacro:wheel_v0 part="left_middle" parent="bogie_left_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="0.198 -0.2485 -0.165" rpy="0 0 ${M_PI/2}"/>
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="0.198 -0.2485 -0.165" rpy="0 ${M_PI} ${M_PI/2}"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <xacro:wheel_v0 part="left_back" parent="steer_left_back_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="-0.065 0 -0.2145" rpy="0 ${M_PI} 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
   <link name="base_footprint"/>
@@ -165,15 +171,13 @@
   <xacro:body_gazebo_vo/>
 
   <!-- Rocker -->
-<!-- 
   <xacro:rocker_gazebo_v0 side="right"/>
   <xacro:rocker_gazebo_v0 side="left"/>
--->
+
   <!-- Bogie -->
-<!-- 
   <xacro:bogie_gazebo_v0 side="right"/>
   <xacro:bogie_gazebo_v0 side="left"/>
---> 
+
   <!-- Steer -->
   <xacro:steer_gazebo_v0 part="right_front"/>
   <xacro:steer_gazebo_v0 part="right_back"/>

@@ -6,7 +6,7 @@
   <xacro:property name="wheel_radius" value="0.08"/>
   <xacro:property name="wheel_width" value="0.16"/>
 
-  <xacro:macro name="wheel_v0" params="part parent *link_origin *joint_origin *joint_axis">
+  <xacro:macro name="wheel_v0" params="part parent *link_origin *joint_origin *joint_axis *collision_origin">
 	<joint name="wheel_${part}_joint" type="continuous">
 	  <insert_block name="joint_origin"/>
 	  <parent link="${parent}"/>
@@ -22,10 +22,10 @@
         </geometry>
       </visual>
       <collision>
-          <!-- <insert_block name="link_origin"/> -->
-          <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
+          <insert_block name="collision_origin"/>
           <geometry>
             <!-- <mesh filename="package://fr01_description/meshes/collision/wheel_link.stl"/> -->
+            <!-- diff drive controller assumese the collision is cylinder -->
             <cylinder radius="${wheel_radius}" length="${wheel_width}"/> 
         </geometry>
       </collision>
