@@ -1,0 +1,59 @@
+#fr01:
+# Publish all joint states -----------------------------------
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50    
+# Position Controllers ---------------------------------------
+# Steer 
+steer_right_front_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: steer_right_front_joint
+  pid: {p: 100, i: 10, d: 0, i_clamp: 100}
+steer_right_back_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: steer_right_back_joint
+  pid: {p: 100, i: 10, d: 0, i_clamp: 100}
+steer_left_front_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: steer_left_front_joint
+  pid: {p: 100, i: 10, d: 0, i_clamp: 100}
+steer_left_back_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: steer_left_back_joint
+  pid: {p: 100, i: 10, d: 0, i_clamp: 100}
+        
+
+# Wheel (diff_drive_controller should be used without namespace
+fr01_diff_drive_controller:
+    type        : "diff_drive_controller/DiffDriveController"
+    #left_wheel  : 'wheel_left_front_joint'
+    #right_wheel : 'wheel_right_front_joint'
+    left_wheel  : ['wheel_left_front_joint', 'wheel_left_back_joint']
+    right_wheel : ['wheel_right_front_joint', 'wheel_right_back_joint']
+    publish_rate: 100
+
+    pose_covariance_diagonal : [0.00001, 0.00001, 1000000000000.0, 1000000000000.0, 1000000000000.0, 0.001]
+    twist_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    wheel_separation_multiplier: 1.0
+    wheel_radius_multiplier    : 1.0
+    cmd_vel_timeout: 20
+    base_frame_id: base_link
+
+    enable_odom_tf: false
+    wheel_separation : 0.6
+
+    linear:
+      x:
+        has_velocity_limits    : true
+        max_velocity           : 0.9  # m/s
+        min_velocity           : -0.9 # m/s
+        has_acceleration_limits: true
+        max_acceleration       : 1.7  # m/s^2
+        min_acceleration       : -0.4 # m/s^2
+    angular:
+      z:
+        has_velocity_limits    : true
+        max_velocity           : 0.5  # rad/s
+        has_acceleration_limits: true
+        max_acceleration       : 1.5  # rad/s^2  #  wheel_right_front_joint_position_controller:
+
