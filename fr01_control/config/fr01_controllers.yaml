@@ -25,7 +25,8 @@ steer_left_back_joint_position_controller:
 
 # Wheel (diff_drive_controller should be used without namespace
 fr01_diff_drive_controller:
-    type        : "diff_drive_controller/DiffDriveController"
+    #type        : "diff_drive_controller/DiffDriveController"
+    type        : "rocker_bogie_controller/RockerBogieController"
     #left_wheel  : 'wheel_left_front_joint'
     #right_wheel : 'wheel_right_front_joint'
     left_wheel  : ['wheel_left_front_joint', 'wheel_left_back_joint']
