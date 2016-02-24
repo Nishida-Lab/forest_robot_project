@@ -9,11 +9,14 @@
 Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
   this->resize();
+
   commands_.name = joint_names_;
-  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>("/steer_pos_cmd", 100);
+
+  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("steer_cmd_topic_name", "/steer_pos_cmd"), 10);
 }
 
 void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,

@@ -9,11 +9,13 @@
 Fr01WheelInterface::Fr01WheelInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
   this->resize();
   commands_.name = joint_names_;
-  wheel_vel_pub_ = nh_.advertise<sensor_msgs::JointState>("/wheel_vel_cmd", 100);
+  wheel_vel_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name","/wheel_vel_cmd"), 100);
+  
 }
 
 void Fr01WheelInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,

@@ -26,10 +26,9 @@ Fr01Interface::Fr01Interface()
   registerInterface(&steer_joint_state_interface_);
   registerInterface(&steer_pos_joint_interface_);
 
-  wheel_vel_sub_ = nh_.subscribe("/wheel_state", 100, &Fr01Interface::wheelStateCallback, this);
-  steer_pos_sub_ = nh_.subscribe("/steer_state", 100, &Fr01Interface::steerStateCallback, this);
+  wheel_vel_sub_ = nh_.subscribe(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 100, &Fr01Interface::wheelStateCallback, this);
+  steer_pos_sub_ = nh_.subscribe(n.param<std::string>("steer_state_topic_name", "/steer_states"), 100, &Fr01Interface::steerStateCallback, this);
 
-  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>("/steer_pos_cmd", 10);
 
   // Position joint limits interface
   // TODO  
