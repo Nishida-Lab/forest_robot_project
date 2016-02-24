@@ -22,8 +22,8 @@ Fr01WheelStatePublisher::Fr01WheelStatePublisher(ros::NodeHandle nh)
   wheel_state_.name[3] = "right_middle";
   wheel_state_.name[4] = "left_front";
   wheel_state_.name[5] = "right_front";
+  wheel_state_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 10);
   
-  wheel_state_pub_ = nh_.advertise<sensor_msgs::JointState>("/wheel_state", 10);
 }
 
 Fr01WheelStatePublisher::~Fr01WheelStatePublisher()

@@ -15,7 +15,7 @@ typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::JointState,
 class Fr01WheelController
 {
 public:
-  Fr01WheelController(ros::NodeHandle nh);
+  Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n);
  ~Fr01WheelController();
   void controlWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_state,
 			       const sensor_msgs::JointStateConstPtr& wheel_vel_cmd);
