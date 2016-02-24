@@ -1,11 +1,12 @@
 #include <fr01_wheel_controller.hpp>
 
-Fr01WheelController::Fr01WheelController(ros::NodeHandle nh)
+Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
   : nh_(nh),
     rate_(100),
+    wheel_state_sub_(nh_, n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1),
+    wheel_vel_cmd_sub_(nh_, n.param<std::string>("wheel_cmd_topic_name", "/wheel_vel_cmd"), 1),
     sync_(MySyncPolicy(10), wheel_state_sub_, wheel_vel_cmd_sub_)
 {
-  ros::NodeHandle n("~");
 
   wheel_cmd_.data.resize(6);
 
