@@ -3,12 +3,12 @@
   
   <xacro:include filename="$(find fr01_description)/urdf/body/body.gazebo.xacro"/>
   
-  <xacro:macro name="base_v0" params="parent *link_origin *joint_origin">
+  <xacro:macro name="base_link_v0" params="parent *link_origin *joint_origin *joint_axis">
 	<joint name="base_link_joint" type="continuous">
-      <insert_block name="joint_origin" />
-      <parent link="${parent}"/>
-      <child link="base_link"/>
-	  <axis xyz="1 1 0"/>
+	  <insert_block name="joint_origin" />
+	  <parent link="${parent}"/>
+	  <child link="base_link"/>
+	  <insert_block name="joint_axis"/>
 	</joint>
 	
     <link name="base_link">
@@ -32,5 +32,30 @@
       </inertial>
     </link>
   </xacro:macro>
+
+  <xacro:macro name="base_stabilized_v0" params="parent *link_origin *joint_origin">
+	<joint name="base_stabilized_joint" type="fixed">
+      <insert_block name="joint_origin" />
+      <parent link="${parent}"/>
+      <child link="base_stabilized"/>
+	</joint>
+	
+    <link name="base_stabilized">
+      <collision>
+		<insert_block name="link_origin"/>
+		<visual/>
+        <geometry>
+		  <mesh filename="package://fr01_description/meshes/collision/base_link.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="6.441"/>
+        <inertia ixx="0.004" ixy="0.000000000792" ixz="-0.000000001557"
+				 iyy="0.002" iyz="-0.0000000001274"
+				 izz="0.005" />
+      </inertial>
+    </link>
+  </xacro:macro>
+	
   
 </robot>
