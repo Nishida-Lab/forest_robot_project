@@ -13,11 +13,18 @@
   <xacro:property name="wheel_width" value="0.16"/>
 
   <!--==================== Link & Joint ====================-->
-  <!-- Body -->
-  <link name="fake_base_footprint"/>
-  <xacro:base_v0 parent="fake_base_footprint">
-	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
 	<origin xyz="0 0 0.370" rpy="0 0 0"/>
+	<parent link="base_footprint"/>
+	<child link="stabilized_base_link"/>
+  </joint>
+  
+  <!-- Body -->
+  <link name="stabilized_base_link"/>
+  <xacro:base_v0 parent="stabilized_base_link">
+	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
+	<origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:base_v0>
   
   <!-- Rocker -->
@@ -131,13 +138,6 @@
   	<axis xyz="1 0 0"/>
   	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
-
-  <link name="base_footprint"/>
-  <joint name="base_footprint_joint" type="fixed">
-	<origin xyz="0 0.213 -0.398" rpy="0 0 0"/>
-	<parent link="rocker_right_link"/>
-	<child link="base_footprint"/>
-  </joint>
   
   <!--==================== Transmission ====================-->
   <!-- Rocker -->
