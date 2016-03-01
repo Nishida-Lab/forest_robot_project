@@ -138,6 +138,9 @@
   </xacro:wheel_v0>
   
   <!--==================== Transmission ====================-->
+  <!-- base_link -->
+  <xacro:base_link_trans_v0 />
+  
   <!-- Rocker -->
   <xacro:rocker_trans_v0 side="right"/>
   <xacro:rocker_trans_v0 side="left"/>
