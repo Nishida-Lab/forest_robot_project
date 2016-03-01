@@ -8,7 +8,6 @@
         output="screen" 
         args="fr01_diff_drive_controller
               joint_state_controller
-	      base_link_position_controller
               steer_right_front_joint_position_controller
               steer_right_back_joint_position_controller
               steer_left_front_joint_position_controller
