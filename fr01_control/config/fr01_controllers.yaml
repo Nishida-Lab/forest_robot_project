@@ -38,10 +38,11 @@ fr01_rocker_bogie_controller:
     wheel_separation_multiplier: 1.0
     wheel_radius_multiplier    : 1.0
     cmd_vel_timeout: 20
-    base_frame_id: base_link
+    base_frame_id: base_footprint
 
-    enable_odom_tf: false
+    enable_odom_tf: true
     wheel_separation : 0.6
+    wheel_radius : 0.3
 
     linear:
       x:
