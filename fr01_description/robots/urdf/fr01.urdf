@@ -417,6 +417,17 @@
     <child link="base_footprint"/>
   </joint>
   <!--==================== Transmission ====================-->
+  <!-- base_stabilized -->
+  <transmission name="base_stabilized_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="base_link_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="base_link_joint_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <!-- Rocker -->
   <transmission name="rocker_right_trans">
     <type>transmission_interface/SimpleTransmission</type>
