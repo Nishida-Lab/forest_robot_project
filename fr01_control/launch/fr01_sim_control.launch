@@ -1,13 +1,26 @@
 <launch>
     <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find fr01_control)/config/fr01_controllers.yaml" command="load"/>
+    <!-- <rosparam file="$(find fr01_control)/config/fr01_controllers.yaml" command="load"/> -->
+    <rosparam file="$(find fr01_control)/config/fr01_rocker_bogie_controllers.yaml" command="load"/>
 
     <!-- load the controllers -->
+    <!--
     <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
         output="screen" 
         args="fr01_rocker_bogie_controller
         joint_state_controller
+        steer_right_front_joint_position_controller
+        steer_right_back_joint_position_controller
+        steer_left_front_joint_position_controller
+        steer_left_back_joint_position_controller
+        " />
+    -->
+
+    <node name="controller_spawner" pkg="controller_manager"
+        type="spawner" respawn="false"
+        output="screen" 
+        args="joint_state_controller
         steer_right_front_joint_position_controller
         steer_right_back_joint_position_controller
         steer_left_front_joint_position_controller
