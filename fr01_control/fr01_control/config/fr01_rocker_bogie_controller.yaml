@@ -4,7 +4,7 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50    
 
-# Wheel & Steer (diff_drive_controller should be used without namespace)
+# Wheel & Steer (rocker_bogie_controller should be used without namespace)
 fr01_rocker_bogie_controller:
     type        : "rocker_bogie_controller/RockerBogieController"
     left_wheel  : ['wheel_left_front_joint', 'wheel_left_middle_joint', 'wheel_left_back_joint']
