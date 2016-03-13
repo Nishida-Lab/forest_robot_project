@@ -1,7 +1,6 @@
 #include <ros/ros.h>
 #include <Fr01Interface/Fr01Interface.hpp>
 
-
 Fr01Interface::Fr01Interface()
 {
   ros::NodeHandle n("~");
@@ -13,12 +12,13 @@ Fr01Interface::Fr01Interface()
   n.getParam("linear_limit_max", linear_limit_max_);
   n.getParam("linear_limit_min", linear_limit_min_);
   n.param("two_steer_mode", two_steer_mode_, false);
-}
 
+}
 Fr01Interface::~Fr01Interface()
 {
 
 }
+
 
 void Fr01Interface::calculateOdometry(const sensor_msgs::JointStateConstPtr& wheel_state,
                                       const sensor_msgs::JointStateConstPtr& steer_state)
