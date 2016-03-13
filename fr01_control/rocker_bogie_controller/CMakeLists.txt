@@ -29,18 +29,18 @@ install(TARGETS ${PROJECT_NAME}
 install(FILES rocker_bogie_controller_plugins.xml
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-add_executable(rocker_bogie_test src/rocker_bogie_test.cpp src/rocker_bogie_controller.cpp src/odometry.cpp src/speed_limiter.cpp)
+add_executable(rocker_bogie_test test/rocker_bogie_test.cpp src/rocker_bogie_controller.cpp src/odometry.cpp src/speed_limiter.cpp)
 target_link_libraries(rocker_bogie_test ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(catkin COMPONENTS rostest std_srvs controller_manager tf)
-  include_directories(include ${catkin_INCLUDE_DIRS})
-
-  #  add_executable(rocker_bogie_bot test/diffbot.cpp)
-  #  target_link_libraries(rocker_bogie_bot ${catkin_LIBRARIES})
-
-  add_executable(rocker_bogie_bot test/skidsteerbot.cpp)
-  target_link_libraries(rocker_bogie_bot ${catkin_LIBRARIES})
+#  find_package(catkin COMPONENTS rostest std_srvs controller_manager tf)
+#  include_directories(include ${catkin_INCLUDE_DIRS})
+#
+#  #  add_executable(rocker_bogie_bot test/diffbot.cpp)
+#  #  target_link_libraries(rocker_bogie_bot ${catkin_LIBRARIES})
+#
+#  add_executable(rocker_bogie_bot test/skidsteerbot.cpp)
+#  target_link_libraries(rocker_bogie_bot ${catkin_LIBRARIES})
 
 endif()
 #  add_dependencies(tests diffbot skidsteerbot)
