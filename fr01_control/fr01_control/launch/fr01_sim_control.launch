@@ -1,0 +1,20 @@
+<launch>
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <!-- <rosparam file="$(find fr01_control)/config/fr01_diff_drive_controller.yaml" command="load"/> -->
+    <rosparam file="$(find fr01_control)/config/fr01_rocker_bogie_controller.yaml" command="load"/> 
+
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager"
+        type="spawner" respawn="false"
+        output="screen" 
+        args="fr01_rocker_bogie_controller
+        joint_state_controller
+        " />
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+        <!-- <remap from="/joint_states" to="/fr01/joint_states" /> -->
+    </node>
+
+</launch>

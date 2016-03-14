@@ -1,3 +1,13 @@
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# qtcreator
+*.user
+*.autosave
+
 /*.mod
 /fr01_driver/include/ixis_imcs01/imcs01_driver/driver/Module.symvers
 /fr01_driver/include/ixis_imcs01/imcs01_driver/driver/modules.order
