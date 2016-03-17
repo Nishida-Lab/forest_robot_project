@@ -14,11 +14,16 @@
 
   <!--==================== Link & Joint ====================-->
   <!-- Body -->
-  <link name="fake_base_footprint"/>
-  <xacro:base_v0 parent="fake_base_footprint">
+  <link name="base_footprint"/>
+  <xacro:base_stabilized_v0 parent="base_footprint">
 	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
 	<origin xyz="0 0 0.370" rpy="0 0 0"/>
-  </xacro:base_v0>
+  </xacro:base_stabilized_v0>
+  <xacro:base_link_v0 parent="base_stabilized">
+	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
+	<origin xyz="0 0 0" rpy="0 0 0"/>
+	<axis xyz="0 1 0"/>
+  </xacro:base_link_v0>
   
   <!-- Rocker -->
   <xacro:rocker_v0 side="right" parent="base_link">
@@ -131,15 +136,11 @@
   	<axis xyz="1 0 0"/>
   	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
-
-  <link name="base_footprint"/>
-  <joint name="base_footprint_joint" type="fixed">
-	<origin xyz="0 0.213 -0.398" rpy="0 0 0"/>
-	<parent link="rocker_right_link"/>
-	<child link="base_footprint"/>
-  </joint>
   
   <!--==================== Transmission ====================-->
+  <!-- base_link -->
+  <xacro:base_link_trans_v0 />
+  
   <!-- Rocker -->
   <xacro:rocker_trans_v0 side="right"/>
   <xacro:rocker_trans_v0 side="left"/>
@@ -177,7 +178,8 @@
   <xacro:wheel_gazebo_v0 part="left_back"/>
 
   <!-- Body -->
-  <xacro:body_gazebo_vo/>
+  <xacro:base_link_gazebo_v0/>
+  <xacro:base_stabilized_gazebo_v0/>
 
   <!-- Rocker -->
   <xacro:rocker_gazebo_v0 side="right"/>

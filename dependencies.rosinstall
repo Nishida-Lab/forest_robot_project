@@ -10,3 +10,7 @@
     local-name: fr01/hokuyo3d
     uri: https://github.com/at-wat/hokuyo3d.git
     version: master
+- git:
+    local-name: fr01/rt_usb_9axisimu_driver
+    uri: https://github.com/rt-net/rt_usb_9axisimu_driver.git
+    version: master

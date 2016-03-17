@@ -4,6 +4,7 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50    
 # Position Controllers ---------------------------------------
+
 # Steer 
 steer_right_front_joint_position_controller:
   type: position_controllers/JointPositionController
