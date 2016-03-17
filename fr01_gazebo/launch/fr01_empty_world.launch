@@ -27,5 +27,6 @@
 		args="-urdf -model fr01 -param robot_description"/>
 
   <!-- ros_control r01 launch file -->
-  <include file="$(find fr01_control)/launch/fr01_sim_control.launch" />
+  <!-- <include file="$(find fr01_control)/launch/fr01_sim_control.launch" /> -->
+  <include file="$(find fr01_control)/launch/fr01_diff_drive_control.launch" />
 </launch>

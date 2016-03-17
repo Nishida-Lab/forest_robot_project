@@ -456,6 +456,8 @@ namespace rocker_bogie_controller{
       right_wheel_joints_[INDX_WHEEL_MID].setCommand(right_middle_wheel_vel);
       left_wheel_joints_[INDX_WHEEL_MID].setCommand(left_middle_wheel_vel);
     }
+
+    this->brake();
     /*
     // Compute wheels velocities:
     const double vel_left  = (curr_cmd.lin - curr_cmd.ang * ws_w / 2.0)/wr;
@@ -487,11 +489,17 @@ namespace rocker_bogie_controller{
 
   void RockerBogieController::brake()
   {
-    const double vel = 0.0;
+    const double steer_pos = 0.0;
+    for (size_t i = 0; i < steer_joints_size_; ++i)
+    {
+        left_steer_joints_[i].setCommand(steer_pos);
+        right_steer_joints_[i].setCommand(steer_pos);
+    }
+    const double wheel_vel = 0.0;
     for (size_t i = 0; i < wheel_joints_size_; ++i)
     {
-      left_wheel_joints_[i].setCommand(vel);
-      right_wheel_joints_[i].setCommand(vel);
+      left_wheel_joints_[i].setCommand(wheel_vel);
+      right_wheel_joints_[i].setCommand(wheel_vel);
     }
   }
 
