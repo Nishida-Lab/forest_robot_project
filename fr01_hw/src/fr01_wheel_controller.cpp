@@ -29,6 +29,7 @@ void Fr01WheelController::controlWheelVelCallback(const sensor_msgs::JointStateC
 {
   for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
     wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state->velocity[i], wheel_vel_cmd->velocity[i]);
+    ROS_INFO_STREAM("wheel_cmd[" <<  i << "]:" << wheel_cmd_.data[i]);
   }
   wheel_pwm_pub_.publish(wheel_cmd_);
 }
