@@ -79,3 +79,4 @@ target_link_libraries(fr01_wheel_state_publisher_node
 #############
 
 find_package(roslaunch)
+roslaunch_add_file_check(test/fr01_hw_test.xml)
