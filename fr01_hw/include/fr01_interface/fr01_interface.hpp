@@ -35,7 +35,7 @@ class Fr01Interface
 
   ros::Time getTime() const { return ros::Time::now(); }
   ros::Duration getPeriod() const { return ros::Duration(0.01); }
-  
+
   void read(ros::Time time, ros::Duration period);
 
   void write(ros::Time time, ros::Duration period);
@@ -43,13 +43,19 @@ class Fr01Interface
   void wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state);
 
   void steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state);
-  
+
+  bool getWheelNames(ros::NodeHandle& nh, const std::string& steer_joint_name_param,
+		     std::vector<std::string>& steer_names);
+
+  bool getSteerNames(ros::NodeHandle& nh, const std::string& steer_joint_name_param,
+		     std::vector<std::string>& steer_names);
+
  protected:
   ros::NodeHandle nh_;
-  
+
   std::shared_ptr<Fr01WheelInterface> fr01_wheel_ptr_;
   std::shared_ptr<Fr01SteerInterface> fr01_steer_ptr_;
-  
+
   std::vector<std::string> transmission_names_;
   std::vector<std::string> steer_joint_names_;
   std::vector<std::string> wheel_joint_names_;

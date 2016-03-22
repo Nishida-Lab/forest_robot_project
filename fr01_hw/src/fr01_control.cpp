@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "fr01_control");
   ROS_INFO("FR01 control node");
-  
+
   ros::NodeHandle nh;
   Fr01Interface fr01_interface;
   controller_manager::ControllerManager cm(&fr01_interface, nh);
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     rate.sleep();
   }
   spinner.stop();
-  
+
 
   return 0;
 }

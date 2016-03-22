@@ -20,7 +20,7 @@ Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
 }
 
 void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
-				       hardware_interface::PositionJointInterface &pos_joint_interface)
+					    hardware_interface::PositionJointInterface &pos_joint_interface)
 {
   // Hardware interfaces
   for (size_t i = 0; i < n_dof_; ++i) {
@@ -33,9 +33,9 @@ void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterf
 					       &joint_pos_cmd_[i]);
     pos_joint_interface.registerHandle(pos_handle);
 
-    ROS_DEBUG_STREAM("Registered joint '" << joint_names_[i] << " ' in the PositionJointInterface");
+    ROS_INFO_STREAM("Registered joint '" << joint_names_[i] << " ' in the PositionJointInterface");
   }
-  
+
 }
 
 void Fr01SteerInterface::cleanup()

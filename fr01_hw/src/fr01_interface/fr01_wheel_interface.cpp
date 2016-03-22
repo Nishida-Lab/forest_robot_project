@@ -15,11 +15,10 @@ Fr01WheelInterface::Fr01WheelInterface(std::vector<std::string> joint_names)
   this->resize();
   commands_.name = joint_names_;
   wheel_vel_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name","/wheel_vel_cmd"), 100);
-  
 }
 
 void Fr01WheelInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
-				       hardware_interface::VelocityJointInterface &vel_joint_interface)
+					    hardware_interface::VelocityJointInterface &vel_joint_interface)
 {
   // Hardware interfaces
   for (size_t i = 0; i < n_dof_; ++i) {
@@ -32,9 +31,8 @@ void Fr01WheelInterface::register_interface(hardware_interface::JointStateInterf
 					       &joint_vel_cmd_[i]);
     vel_joint_interface.registerHandle(vel_handle);
 
-    ROS_DEBUG_STREAM("Registered joint '" << joint_names_[i] << " ' in the VelocityJointInterface");
+    ROS_INFO_STREAM("Registered joint '" << joint_names_[i] << " ' in the VelocityJointInterface");
   }
-  
 }
 
 void Fr01WheelInterface::cleanup()

@@ -10,7 +10,6 @@ Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
 
   wheel_cmd_.data.resize(6);
 
-  
   WheelControlPid pid_controller(80.0, 30.0, 0.0, 100, -100);
   for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
     pid_controllers_.push_back(pid_controller);
@@ -23,7 +22,7 @@ Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
 
 Fr01WheelController::~Fr01WheelController()
 {
-  
+
 }
 
 void Fr01WheelController::controlWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_state, const sensor_msgs::JointStateConstPtr &wheel_vel_cmd)
@@ -38,7 +37,7 @@ void Fr01WheelController::run()
 {
   sensor_msgs::JointState right_wheels;
   sensor_msgs::JointState left_wheels;
-  
+
   while(nh_.ok())
     {
       ros::spinOnce();
@@ -61,7 +60,7 @@ double WheelControlPid::compute(double input, double target)
 {
   ros::Time now = ros::Time::now();
   ros::Duration timeChange = now - last_time_;
- 
+
   if(timeChange.toSec() >= sample_time_)
     {
       double error = target - input;
@@ -74,7 +73,7 @@ double WheelControlPid::compute(double input, double target)
 	  ITerm_ = min_;
 	}
       double dInput = input - last_input_;
-    
+
       output_ = Kp_ * error + ITerm_ - Kd_ * dInput;
 
       if(output_ > max_){

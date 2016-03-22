@@ -9,10 +9,48 @@
 Fr01Interface::Fr01Interface()
 {
   ros::NodeHandle n("~");
+  std::vector<std::string> left_wheel_names;
+  std::vector<std::string> right_wheel_names;
+  std::vector<std::string> left_steer_names;
+  std::vector<std::string> right_steer_names;
 
-  n.getParam("steer_joint_names", steer_joint_names_);
-  n.getParam("wheel_joint_names", wheel_joint_names_);
-  
+  // Wheel
+  if(!getWheelNames(n, "fr01_rocker_bogie_controller/left_wheel", left_wheel_names) |
+     !getWheelNames(n, "fr01_rocker_bogie_controller/right_wheel", right_wheel_names))
+    {
+      ROS_ERROR_STREAM("getWheelNames() error");
+    }
+  else
+    {
+      wheel_joint_names_.reserve(left_wheel_names.size() + right_wheel_names.size());
+      wheel_joint_names_.insert(wheel_joint_names_.end(), left_wheel_names.begin(), left_wheel_names.end());
+      wheel_joint_names_.insert(wheel_joint_names_.end(), right_wheel_names.begin(), right_wheel_names.end());
+    }
+  // Steer
+  if(!getSteerNames(n, "fr01_rocker_bogie_controller/left_steer", left_steer_names) |
+     !getSteerNames(n, "fr01_rocker_bogie_controller/right_steer", right_steer_names))
+    {
+      ROS_ERROR_STREAM("getSteerNames() error");
+    }
+  else
+    {
+      steer_joint_names_.reserve(left_steer_names.size() + right_steer_names.size());
+      steer_joint_names_.insert(steer_joint_names_.end(), left_steer_names.begin(), left_steer_names.end());
+      steer_joint_names_.insert(steer_joint_names_.end(), right_steer_names.begin(), right_steer_names.end());
+    }
+
+  wheel_state_.position.resize(wheel_joint_names_.size());
+  wheel_state_.velocity.resize(wheel_joint_names_.size());
+  wheel_state_.effort.resize(wheel_joint_names_.size());
+
+  steer_state_.position.resize(steer_joint_names_.size());
+  steer_state_.velocity.resize(steer_joint_names_.size());
+  steer_state_.effort.resize(steer_joint_names_.size());
+
+  // n.param("left_wheel", wheel)
+  // n.getParam("wheel_joint_names", wheel_joint_names_);
+  // n.getParam("steer_joint_names", steer_joint_names_);
+
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
   fr01_steer_ptr_.reset(new Fr01SteerInterface(steer_joint_names_));
 
@@ -20,7 +58,7 @@ Fr01Interface::Fr01Interface()
 				      wheel_vel_joint_interface_);
   fr01_steer_ptr_->register_interface(steer_joint_state_interface_,
 				      steer_pos_joint_interface_);
-  
+
   registerInterface(&wheel_joint_state_interface_);
   registerInterface(&wheel_vel_joint_interface_);
   registerInterface(&steer_joint_state_interface_);
@@ -31,7 +69,7 @@ Fr01Interface::Fr01Interface()
 
 
   // Position joint limits interface
-  // TODO  
+  // TODO
 }
 
 void Fr01Interface::read(ros::Time now, ros::Duration period)
@@ -74,4 +112,97 @@ void Fr01Interface::steerStateCallback(const sensor_msgs::JointStateConstPtr& st
       steer_state_.effort[i]   = steer_state->effort[i];
     }
   }
+}
+
+bool Fr01Interface::getWheelNames(ros::NodeHandle& nh, const std::string& wheel_joint_name_param,
+				  std::vector<std::string>& wheel_names)
+{
+  XmlRpc::XmlRpcValue wheel_list;
+  if (!nh.getParam(wheel_joint_name_param, wheel_list))
+    {
+      ROS_ERROR_STREAM("Couldn't retrieve wheel param '" << wheel_joint_name_param << "'.");
+      return false;
+    }
+
+  if (wheel_list.getType() == XmlRpc::XmlRpcValue::TypeArray)
+    {
+      if (wheel_list.size() == 0)
+        {
+          ROS_ERROR_STREAM("Wheel param '" << wheel_joint_name_param << "' is an empty list");
+          return false;
+        }
+      for (int i = 0; i < wheel_list.size(); ++i)
+        {
+          if (wheel_list[i].getType() != XmlRpc::XmlRpcValue::TypeString)
+	    {
+	      ROS_ERROR_STREAM("Wheel param '" << wheel_joint_name_param << "' #" << i <<
+			       " isn't a string.");
+	      return false;
+	    }
+        }
+
+      wheel_names.resize(wheel_list.size());
+      for (int i = 0; i < wheel_list.size(); ++i)
+        {
+          wheel_names[i] = static_cast<std::string>(wheel_list[i]);
+        }
+    }
+  else if (wheel_list.getType() == XmlRpc::XmlRpcValue::TypeString)
+    {
+      wheel_names.push_back(wheel_list);
+    }
+  else
+    {
+      ROS_ERROR_STREAM("Wheel param '" << wheel_joint_name_param <<
+		       "' is neither a list of strings nor a string.");
+      return false;
+    }
+
+  return true;
+}
+
+bool Fr01Interface::getSteerNames(ros::NodeHandle& nh, const std::string& steer_joint_name_param,
+				  std::vector<std::string>& steer_names)
+{
+  XmlRpc::XmlRpcValue steer_list;
+  if (!nh.getParam(steer_joint_name_param, steer_list))
+    {
+      ROS_ERROR_STREAM("Couldn't retrieve steer param '" << steer_joint_name_param << "'.");
+      return false;
+    }
+  if (steer_list.getType() == XmlRpc::XmlRpcValue::TypeArray)
+    {
+      if (steer_list.size() == 0)
+        {
+          ROS_ERROR_STREAM("Steer param '" << steer_joint_name_param << "' is an empty list");
+          return false;
+        }
+        for (int i = 0; i < steer_list.size(); ++i)
+	  {
+	    if (steer_list[i].getType() != XmlRpc::XmlRpcValue::TypeString)
+	      {
+		ROS_ERROR_STREAM("Steer param '" << steer_joint_name_param << "' #" << i <<
+				 " isn't a string.");
+		return false;
+          }
+        }
+
+        steer_names.resize(steer_list.size());
+        for (int i = 0; i < steer_list.size(); ++i)
+	  {
+	    steer_names[i] = static_cast<std::string>(steer_list[i]);
+	  }
+    }
+  else if (steer_list.getType() == XmlRpc::XmlRpcValue::TypeString)
+    {
+      steer_names.push_back(steer_list);
+    }
+  else
+    {
+      ROS_ERROR_STREAM("Steer param '" << steer_joint_name_param <<
+		       "' is neither a list of strings nor a string.");
+      return false;
+    }
+
+  return true;
 }

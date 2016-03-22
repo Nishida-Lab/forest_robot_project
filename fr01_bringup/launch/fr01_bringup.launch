@@ -10,8 +10,11 @@
 
   <!-- Load the URDF into the ROS Parameter Server -->
   <param name="robot_description"
-		 command="$(find xacro)/xacro.py '$(arg model)'" />
-  
+	 command="$(find xacro)/xacro.py '$(arg model)'" />
+
   <!-- ros_control r01 launch file -->
   <include file="$(find fr01_control)/launch/fr01_sim_control.launch" />
+
+  <!-- hardware interface for real -->
+  <include file="$(find fr01_hw)/launch/fr01_hardware.launch" />
 </launch>
