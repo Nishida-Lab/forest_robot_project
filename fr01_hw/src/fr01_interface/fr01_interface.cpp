@@ -47,10 +47,6 @@ Fr01Interface::Fr01Interface()
   steer_state_.velocity.resize(steer_joint_names_.size());
   steer_state_.effort.resize(steer_joint_names_.size());
 
-  // n.param("left_wheel", wheel)
-  // n.getParam("wheel_joint_names", wheel_joint_names_);
-  // n.getParam("steer_joint_names", steer_joint_names_);
-
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
   fr01_steer_ptr_.reset(new Fr01SteerInterface(steer_joint_names_));
 
