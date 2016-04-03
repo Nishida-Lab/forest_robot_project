@@ -10,8 +10,8 @@
   
   <!-- Joint -->
   <joint name="joint_hokuyo3d" type="fixed">
-    <origin rpy="${M_PI} 0 0" xyz="0.315 0 0.835"/>
-    <parent link="base_footprint"/>
+    <origin rpy="${M_PI} 0 0" xyz="0.315 0 0.435"/>
+    <parent link="base_stabilized"/>
     <child link="hokuyo3d_link"/>
   </joint>
   
