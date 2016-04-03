@@ -8,14 +8,22 @@
   <xacro:include filename="$(find fr01_description)/urdf/leg/leg.urdf.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.urdf.xacro"/>
 
+  <!-- wheel parameters -->
+  <xacro:property name="wheel_radius" value="0.08"/>
+  <xacro:property name="wheel_width" value="0.16"/>
 
   <!--==================== Link & Joint ====================-->
   <!-- Body -->
-  <link name="fake_base_footprint"/>
-  <xacro:base_v0 parent="fake_base_footprint">
+  <link name="base_footprint"/>
+  <xacro:base_stabilized_v0 parent="base_footprint">
 	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
 	<origin xyz="0 0 0.370" rpy="0 0 0"/>
-  </xacro:base_v0>
+  </xacro:base_stabilized_v0>
+  <xacro:base_link_v0 parent="base_stabilized">
+	<origin xyz="0 0 0" rpy="0 0 ${-M_PI/2}"/>
+	<origin xyz="0 0 0" rpy="0 0 0"/>
+	<axis xyz="0 1 0"/>
+  </xacro:base_link_v0>
   
   <!-- Rocker -->
   <xacro:rocker_v0 side="right" parent="base_link">
@@ -81,50 +89,58 @@
   </xacro:steer_v0>
   
   <!-- Wheel -->
-  <xacro:wheel_v0 part="right_front" parent="steer_right_front_link">
+  <xacro:wheel_v0 part="right_front" parent="steer_right_front_link"
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="right_middle" parent="bogie_right_link">
+  <xacro:wheel_v0 part="right_middle" parent="bogie_right_link"
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="0.198 0.2485 -0.165" rpy="0 0 ${-M_PI/2}"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="right_back" parent="steer_right_back_link">
+  <xacro:wheel_v0 part="right_back" parent="steer_right_back_link" 
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="left_front" parent="steer_left_front_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
+  <xacro:wheel_v0 part="left_front" parent="steer_left_front_link" 
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="-0.065 0 -0.2145" rpy="0 ${M_PI} 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="left_middle" parent="bogie_left_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="0.198 -0.2485 -0.165" rpy="0 0 ${M_PI/2}"/>
+  <xacro:wheel_v0 part="left_middle" parent="bogie_left_link" 
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="0.198 -0.2485 -0.165" rpy="0 ${M_PI} ${M_PI/2}"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
 
-  <xacro:wheel_v0 part="left_back" parent="steer_left_back_link">
-  	<origin xyz="0 0 0" rpy="0 0 0"/>
-  	<origin xyz="-0.065 0 -0.2145" rpy="0 0 0"/>
+  <xacro:wheel_v0 part="left_back" parent="steer_left_back_link" 
+      wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
+  	<origin xyz="0 0 0" rpy="0 ${M_PI} 0"/>
+  	<origin xyz="-0.065 0 -0.2145" rpy="0 ${M_PI} 0"/>
   	<axis xyz="1 0 0"/>
+  	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
-
-  <link name="base_footprint"/>
-  <joint name="base_footprint_joint" type="fixed">
-	<origin xyz="0 0.213 -0.398" rpy="0 0 0"/>
-	<parent link="rocker_right_link"/>
-	<child link="base_footprint"/>
-  </joint>
   
   <!--==================== Transmission ====================-->
+  <!-- base_link -->
+  <xacro:base_link_trans_v0 />
+  
   <!-- Rocker -->
   <xacro:rocker_trans_v0 side="right"/>
   <xacro:rocker_trans_v0 side="left"/>
@@ -148,14 +164,23 @@
   <xacro:wheel_trans_v0 part="left_back"/>
 
   <!--==================== Gazebo ====================-->
+  <!-- firstly load diff_drive_controller without namespaces -->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/fr01</robotNamespace>
     </plugin>
   </gazebo>
+  <!-- Wheel -->
+  <xacro:wheel_gazebo_v0 part="right_front"/>
+  <xacro:wheel_gazebo_v0 part="right_middle"/>
+  <xacro:wheel_gazebo_v0 part="right_back"/>
+  <xacro:wheel_gazebo_v0 part="left_front"/>
+  <xacro:wheel_gazebo_v0 part="left_middle"/>
+  <xacro:wheel_gazebo_v0 part="left_back"/>
+
   <!-- Body -->
-  <xacro:body_gazebo_vo/>
-  
+  <xacro:base_link_gazebo_v0/>
+  <xacro:base_stabilized_gazebo_v0/>
+
   <!-- Rocker -->
   <xacro:rocker_gazebo_v0 side="right"/>
   <xacro:rocker_gazebo_v0 side="left"/>
@@ -163,19 +188,12 @@
   <!-- Bogie -->
   <xacro:bogie_gazebo_v0 side="right"/>
   <xacro:bogie_gazebo_v0 side="left"/>
-  
+
   <!-- Steer -->
   <xacro:steer_gazebo_v0 part="right_front"/>
   <xacro:steer_gazebo_v0 part="right_back"/>
   <xacro:steer_gazebo_v0 part="left_front"/>
   <xacro:steer_gazebo_v0 part="left_back"/>
 
-  <!-- Wheel -->
-  <xacro:wheel_gazebo_v0 part="right_front"/>
-  <xacro:wheel_gazebo_v0 part="right_middle"/>
-  <xacro:wheel_gazebo_v0 part="right_back"/>
-  <xacro:wheel_gazebo_v0 part="left_front"/>
-  <xacro:wheel_gazebo_v0 part="left_middle"/>
-  <xacro:wheel_gazebo_v0 part="left_back"/>  
   
 </robot>
