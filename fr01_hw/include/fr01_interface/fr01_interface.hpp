@@ -66,6 +66,8 @@ class Fr01Interface
   hardware_interface::JointStateInterface steer_joint_state_interface_;
   hardware_interface::PositionJointInterface steer_pos_joint_interface_;
 
+  hardware_interface::JointStateInterface joint_state_interface_;
+
   ros::Subscriber steer_pos_sub_;
   ros::Subscriber wheel_vel_sub_;
 

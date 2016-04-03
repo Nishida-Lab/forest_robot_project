@@ -50,14 +50,18 @@ Fr01Interface::Fr01Interface()
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
   fr01_steer_ptr_.reset(new Fr01SteerInterface(steer_joint_names_));
 
-  fr01_wheel_ptr_->register_interface(wheel_joint_state_interface_,
-				      wheel_vel_joint_interface_);
-  fr01_steer_ptr_->register_interface(steer_joint_state_interface_,
-				      steer_pos_joint_interface_);
+  // fr01_wheel_ptr_->register_interface(wheel_joint_state_interface_,
+  // 				      wheel_vel_joint_interface_);
+  // fr01_steer_ptr_->register_interface(steer_joint_state_interface_,
+  // 				      steer_pos_joint_interface_);
+  fr01_wheel_ptr_->register_interface(joint_state_interface_,
+  				      wheel_vel_joint_interface_);
+  fr01_steer_ptr_->register_interface(joint_state_interface_,
+  				      steer_pos_joint_interface_);
 
-  registerInterface(&wheel_joint_state_interface_);
+  registerInterface(&joint_state_interface_);
   registerInterface(&wheel_vel_joint_interface_);
-  registerInterface(&steer_joint_state_interface_);
+  //registerInterface(&steer_joint_state_interface_);
   registerInterface(&steer_pos_joint_interface_);
 
   wheel_vel_sub_ = nh_.subscribe(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 100, &Fr01Interface::wheelStateCallback, this);
