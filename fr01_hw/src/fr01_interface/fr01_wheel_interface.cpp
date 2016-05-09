@@ -60,6 +60,7 @@ void Fr01WheelInterface::resize()
 
 void Fr01WheelInterface::write()
 {
+  commands_.header.stamp = ros::Time::now();
   commands_.velocity = joint_vel_cmd_;
   wheel_vel_pub_.publish(commands_);
 }
