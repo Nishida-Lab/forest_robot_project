@@ -6,10 +6,9 @@
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
-        output="screen" 
-        args="fr01_rocker_bogie_controller
-        joint_state_controller
-        " />
+        output="screen"
+        args="fr01_rocker_bogie_controller joint_state_controller"
+    	/>
 
     <!-- convert joint states to TF transforms for rviz, etc -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
