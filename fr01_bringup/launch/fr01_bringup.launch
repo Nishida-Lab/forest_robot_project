@@ -2,11 +2,11 @@
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <arg name="model" default="$(find fr01_description)/robots/fr01.urdf.xacro"/>
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
+  <!-- <arg name="paused" default="false"/> -->
+  <!-- <arg name="use_sim_time" default="false"/> -->
+  <!-- <arg name="gui" default="true"/> -->
+  <!-- <arg name="headless" default="false"/> -->
+  <!-- <arg name="debug" default="false"/> -->
 
   <!-- Load the URDF into the ROS Parameter Server -->
   <param name="robot_description"
@@ -17,4 +17,6 @@
 
   <!-- hardware interface for real -->
   <include file="$(find fr01_hw)/launch/fr01_hardware.launch" />
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 </launch>
