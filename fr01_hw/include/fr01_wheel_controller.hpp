@@ -44,6 +44,9 @@ class WheelControlPid
   double Ki_;
   double Kd_;
   double ITerm_; // Integral Term(積分項)
+  double previous_error;
+  double integral_;
+  double derivative_;
   double max_;
   double min_;
   double last_input_;

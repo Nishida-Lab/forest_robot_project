@@ -11,7 +11,7 @@ Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
   wheel_vel_cmd_.velocity.resize(6);
   wheel_state_.velocity.resize(6);
 
-  WheelControlPid pid_controller(80.0, 30.0, 0.0, 100, -100);
+  WheelControlPid pid_controller(80, 30.0, 1.0, 100, -100);
   for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
     pid_controllers_.push_back(pid_controller);
   }
@@ -56,13 +56,6 @@ void Fr01WheelController::run()
 	    wheel_pwm_pub_.publish(wheel_cmd_);
 	    rate_.sleep();
 	    ticks_since_target_ += 1;
-	    if(ticks_since_target_ == timeout_ticks_)
-	      {
-		for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
-		  wheel_cmd_.data[i] = 0;
-		}
-		wheel_pwm_pub_.publish(wheel_cmd_);
-	      }
 	}
       ros::spinOnce();
     }
@@ -82,29 +75,29 @@ WheelControlPid::WheelControlPid(double Kp, double Ki, double Kd, double max, do
 double WheelControlPid::compute(double input, double target)
 {
   ros::Time now = ros::Time::now();
-  ros::Duration timeChange = now - last_time_;
+  ros::Duration time_duration = now - last_time_;
+  double pid_dt = time_duration.toSec();
 
-  if(timeChange.toSec() >= sample_time_)
+  if(time_duration.toSec() >= sample_time_)
     {
       double error = target - input;
       ITerm_ += Ki_ * error;
       if(ITerm_ > max_)
-	{
-	  ITerm_ = max_;
-	}else if(ITerm_ < min_)
-	{
-	  ITerm_ = min_;
-	}
+  	{
+  	  ITerm_ = max_;
+  	}else if(ITerm_ < min_)
+  	{
+  	  ITerm_ = min_;
+  	}
       double dInput = input - last_input_;
 
       output_ = Kp_ * error + ITerm_ - Kd_ * dInput;
 
       if(output_ > max_){
-	output_ = max_;
-      }else if(output_ < min_)
-	{
-	  output_ = min_;
-	}
+  	output_ = max_;
+      }else if(output_ < min_){
+	output_ = min_;
+      }
 
       last_input_ = input;
       last_time_ = now;
