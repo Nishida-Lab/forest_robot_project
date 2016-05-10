@@ -3,13 +3,10 @@
 Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
   : nh_(nh),
     rate_(100)
-    // ,wheel_state_sub_(nh_, n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1),
-    // wheel_vel_cmd_sub_(nh_, n.param<std::string>("wheel_cmd_topic_name", "/wheel_vel_cmd"), 1),
-    // sync_(MySyncPolicy(10), wheel_state_sub_, wheel_vel_cmd_sub_)
 {
   ticks_since_target_ = 0;
   timeout_ticks_ = 4;
-  
+
   wheel_cmd_.data.resize(6);
   wheel_vel_cmd_.velocity.resize(6);
   wheel_state_.velocity.resize(6);
@@ -24,7 +21,6 @@ Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
   wheel_vel_cmd_sub_ = nh_.subscribe<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name", "/wheel_vel_cmd"), 1, boost::bind(&Fr01WheelController::targetWheelVelCallback, this, _1));
   wheel_state_sub_ = nh_.subscribe<sensor_msgs::JointState>(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1, boost::bind(&Fr01WheelController::stateWheelVelCallback, this, _1));
 
-  //sync_.registerCallback(boost::bind(&Fr01WheelController::controlWheelVelCallback, this, _1, _2));
 }
 
 Fr01WheelController::~Fr01WheelController()
@@ -37,7 +33,6 @@ void Fr01WheelController::targetWheelVelCallback(const sensor_msgs::JointStateCo
   for (size_t i = 0;  i < wheel_vel_cmd_.velocity.size(); ++ i) {
     wheel_vel_cmd_.velocity[i] = wheel_vel_cmd->velocity[i];
   }
-  //ROS_INFO("targetcallback");
   ticks_since_target_ = 0;
 }
 
@@ -46,26 +41,15 @@ void Fr01WheelController::stateWheelVelCallback(const sensor_msgs::JointStateCon
   for(size_t i = 0; i < wheel_state_.velocity.size(); ++i){
     wheel_state_.velocity[i] = wheel_state->velocity[i];
   }
-  //ROS_INFO("statecallback");
 }
 
-void Fr01WheelController::controlWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_state,
-						  const sensor_msgs::JointStateConstPtr& wheel_vel_cmd)
-{
-  for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
-    wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state->velocity[i], wheel_vel_cmd->velocity[i]);
-  }
-  wheel_pwm_pub_.publish(wheel_cmd_);
-}
 
 void Fr01WheelController::run()
 {
   while(nh_.ok())
     {
-      //ROS_INFO("running");
       while(ticks_since_target_ < timeout_ticks_)
 	{
-	  
 	    for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
 	      wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state_.velocity[i], wheel_vel_cmd_.velocity[i]);
 	    }
