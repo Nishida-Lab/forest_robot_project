@@ -1,0 +1,45 @@
+<launch>
+
+  <arg name="wheel_state_topic_name" default="/wheel_states" />
+  <arg name="steer_state_topic_name" default="/steer_states" />
+  <arg name="wheel_cmd_topic_name" default="/wheel_vel_cmd" />
+  <arg name="steer_cmd_topic_name" default="/steer_pos_cmd" />
+
+  <node name="fr01_hardware_control" pkg="fr01_hw" type="fr01_control" output="screen" >
+    <rosparam file="$(find fr01_control)/config/fr01_rocker_bogie_controller.yaml" command="load"/>
+    <param name="wheel_state_topic_name" value="$(arg wheel_state_topic_name)" />
+    <param name="steer_state_topic_name" value="$(arg steer_state_topic_name)" />
+    <param name="wheel_cmd_topic_name" value="$(arg wheel_cmd_topic_name)" />
+    <param name="steer_cmd_topic_name" value="$(arg steer_cmd_topic_name)" />
+  </node>
+
+  <node name="fr01_wheel_controller_node" pkg="fr01_hw"
+	type="fr01_wheel_controller_node" output="screen" >
+    <param name="wheel_state_topic_name" value="$(arg wheel_state_topic_name)" />
+    <param name="wheel_cmd_topic_name" value="$(arg wheel_cmd_topic_name)" />
+  </node>
+
+
+  <node name="fr01_wheel_state_publisher_node" pkg="fr01_hw"
+	type="fr01_wheel_state_publisher_node" output="screen" >
+    <param name="imcs01_right_port_name" value="/dev/urbtc0" />
+    <param name="imcs01_left_port_name" value="/dev/urbtc1" />
+    <param name="wheel_state_topic_name" value="$(arg wheel_state_topic_name)" />
+  </node>
+
+
+  <rosparam file="$(find fr01_hw)/config/b3m_driver.yaml"
+	    command="load" ns="b3m_driver"/>
+  <node name="b3m_driver" pkg="b3m_servo" type="b3m_driver"
+	args="joint_0_driver joint_1_driver joint_2_driver joint_3_driver"
+	output="screen" >
+    <param name="joint_cmd_topic_name" value="$(arg steer_cmd_topic_name)" />
+    <param name="joint_state_topic_name" value="$(arg steer_state_topic_name)" />
+  </node>
+
+
+  <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">
+	<param name="port" value="/dev/ttyACM0" />
+  </node>
+
+</launch>

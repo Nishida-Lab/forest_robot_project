@@ -3,3 +3,19 @@
 *.un~
 Session.vim
 .netrwhist
+
+# qtcreator
+*.user
+*.autosave
+
+/*.mod
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/Module.symvers
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/modules.order
+/fr01_driver/include/ixis_imcs01/imcs01_driver/uread
+/fr01_driver/include/ixis_imcs01/imcs01_driver/urobotm
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/urbtc.ko
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/urbtc.mod.o
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/.urbtc.o.cmd
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/.urbtc.mod.o.cmd
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/.urbtc.ko.cmd
+/fr01_driver/include/ixis_imcs01/imcs01_driver/driver/.tmp_versions/

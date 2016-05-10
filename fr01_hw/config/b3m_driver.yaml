@@ -1,0 +1,23 @@
+joint_0_driver:
+  joint_name: joint_0
+  id: 2
+  min_angle: -50
+  max_angle: 200
+
+joint_1_driver:
+  joint_name: joint_1
+  id: 0
+  min_angle: -200
+  max_angle: 60
+
+joint_2_driver:
+  joint_name: joint_2
+  id: 3
+  min_angle: -200
+  max_angle: 50
+
+joint_3_driver:
+  joint_name: joint_3
+  id: 1
+  min_angle: -50
+  max_angle: 200
