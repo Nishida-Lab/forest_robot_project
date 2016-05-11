@@ -2,22 +2,25 @@
 
 Fr01WheelController::Fr01WheelController(ros::NodeHandle nh, ros::NodeHandle n)
   : nh_(nh),
-    rate_(100),
-    wheel_state_sub_(nh_, n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1),
-    wheel_vel_cmd_sub_(nh_, n.param<std::string>("wheel_cmd_topic_name", "/wheel_vel_cmd"), 1),
-    sync_(MySyncPolicy(10), wheel_state_sub_, wheel_vel_cmd_sub_)
+    rate_(100)
 {
+  ticks_since_target_ = 0;
+  timeout_ticks_ = 4;
 
   wheel_cmd_.data.resize(6);
+  wheel_vel_cmd_.velocity.resize(6);
+  wheel_state_.velocity.resize(6);
 
-  WheelControlPid pid_controller(80.0, 30.0, 0.0, 100, -100);
+  WheelControlPid pid_controller(80, 30.0, 1.0, 100, -100);
   for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
     pid_controllers_.push_back(pid_controller);
   }
 
   wheel_pwm_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/motor_input", 10);
 
-  sync_.registerCallback(boost::bind(&Fr01WheelController::controlWheelVelCallback, this, _1, _2));
+  wheel_vel_cmd_sub_ = nh_.subscribe<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name", "/wheel_vel_cmd"), 1, boost::bind(&Fr01WheelController::targetWheelVelCallback, this, _1));
+  wheel_state_sub_ = nh_.subscribe<sensor_msgs::JointState>(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1, boost::bind(&Fr01WheelController::stateWheelVelCallback, this, _1));
+
 }
 
 Fr01WheelController::~Fr01WheelController()
@@ -25,24 +28,36 @@ Fr01WheelController::~Fr01WheelController()
 
 }
 
-void Fr01WheelController::controlWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_state,
-						  const sensor_msgs::JointStateConstPtr& wheel_vel_cmd)
+void Fr01WheelController::targetWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_vel_cmd)
 {
-  for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
-    wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state->velocity[i], wheel_vel_cmd->velocity[i]);
+  for (size_t i = 0;  i < wheel_vel_cmd_.velocity.size(); ++ i) {
+    wheel_vel_cmd_.velocity[i] = wheel_vel_cmd->velocity[i];
   }
-  wheel_pwm_pub_.publish(wheel_cmd_);
+  ticks_since_target_ = 0;
 }
+
+void Fr01WheelController::stateWheelVelCallback(const sensor_msgs::JointStateConstPtr& wheel_state)
+{
+  for(size_t i = 0; i < wheel_state_.velocity.size(); ++i){
+    wheel_state_.velocity[i] = wheel_state->velocity[i];
+  }
+}
+
 
 void Fr01WheelController::run()
 {
-  sensor_msgs::JointState right_wheels;
-  sensor_msgs::JointState left_wheels;
-
   while(nh_.ok())
     {
+      while(ticks_since_target_ < timeout_ticks_)
+	{
+	    for (size_t i = 0; i < wheel_cmd_.data.size(); ++i) {
+	      wheel_cmd_.data[i] = (int)pid_controllers_[i].compute(wheel_state_.velocity[i], wheel_vel_cmd_.velocity[i]);
+	    }
+	    wheel_pwm_pub_.publish(wheel_cmd_);
+	    rate_.sleep();
+	    ticks_since_target_ += 1;
+	}
       ros::spinOnce();
-      rate_.sleep();
     }
 }
 
@@ -60,32 +75,32 @@ WheelControlPid::WheelControlPid(double Kp, double Ki, double Kd, double max, do
 double WheelControlPid::compute(double input, double target)
 {
   ros::Time now = ros::Time::now();
-  ros::Duration timeChange = now - last_time_;
+  ros::Duration time_duration = now - last_time_;
+  double pid_dt = time_duration.toSec();
 
-  if(timeChange.toSec() >= sample_time_)
+  if(time_duration.toSec() >= sample_time_)
     {
       double error = target - input;
       ITerm_ += Ki_ * error;
       if(ITerm_ > max_)
-	{
-	  ITerm_ = max_;
-	}else if(ITerm_ < min_)
-	{
-	  ITerm_ = min_;
-	}
+  	{
+  	  ITerm_ = max_;
+  	}else if(ITerm_ < min_)
+  	{
+  	  ITerm_ = min_;
+  	}
       double dInput = input - last_input_;
 
       output_ = Kp_ * error + ITerm_ - Kd_ * dInput;
 
       if(output_ > max_){
-	output_ = max_;
-      }else if(output_ < min_)
-	{
-	  output_ = min_;
-	}
+  	output_ = max_;
+      }else if(output_ < min_){
+	output_ = min_;
+      }
 
       last_input_ = input;
       last_time_ = now;
     }
-    return output_;
+  return output_;
 }
