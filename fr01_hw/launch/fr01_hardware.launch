@@ -11,6 +11,7 @@
     <param name="steer_state_topic_name" value="$(arg steer_state_topic_name)" />
     <param name="wheel_cmd_topic_name" value="$(arg wheel_cmd_topic_name)" />
     <param name="steer_cmd_topic_name" value="$(arg steer_cmd_topic_name)" />
+    <remap from="/joint_states" to="/wheel_and_steer_joint_states" />
   </node>
 
   <node name="fr01_wheel_controller_node" pkg="fr01_hw"
@@ -19,14 +20,12 @@
     <param name="wheel_cmd_topic_name" value="$(arg wheel_cmd_topic_name)" />
   </node>
 
-
   <node name="fr01_wheel_state_publisher_node" pkg="fr01_hw"
 	type="fr01_wheel_state_publisher_node" output="screen" >
     <param name="imcs01_right_port_name" value="/dev/urbtc0" />
     <param name="imcs01_left_port_name" value="/dev/urbtc1" />
     <param name="wheel_state_topic_name" value="$(arg wheel_state_topic_name)" />
   </node>
-
 
   <rosparam file="$(find fr01_hw)/config/b3m_driver.yaml"
 	    command="load" ns="b3m_driver"/>
@@ -36,7 +35,6 @@
     <param name="joint_cmd_topic_name" value="$(arg steer_cmd_topic_name)" />
     <param name="joint_state_topic_name" value="$(arg steer_state_topic_name)" />
   </node>
-
 
   <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">
 	<param name="port" value="/dev/ttyACM0" />
