@@ -21,7 +21,6 @@ int main(int argc, char** argv)
 
     fr01_interface.read(now, dt);
     cm.update(now, dt);
-
     fr01_interface.write(now, dt);
     rate.sleep();
   }

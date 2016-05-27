@@ -20,10 +20,10 @@ class Fr01SteerInterface
   void register_interface(hardware_interface::JointStateInterface &joint_state_interface,
 			  hardware_interface::PositionJointInterface &pos_joint_interface);
   void write();
-  void read(const sensor_msgs::JointState& state);
+  void read(sensor_msgs::JointStateConstPtr &state);
  protected:
   unsigned int n_dof_;
-  
+
   std::vector<std::string> joint_names_;
   std::vector<double> joint_pos_;
   std::vector<double> joint_vel_;
