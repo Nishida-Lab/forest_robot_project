@@ -9,6 +9,7 @@
 Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ROS_INFO_STREAM_NAMED("Fr01SteerInterface", "Fr01SteerInterface Constructor is called.");
   ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
@@ -69,7 +70,8 @@ void Fr01SteerInterface::write()
 
 void Fr01SteerInterface::read(sensor_msgs::JointStateConstPtr &state)
 {
-  for (size_t i = 0; i < n_dof_; ++i) {
+  ROS_INFO_STREAM_NAMED("Fr01SteerInterface", "in read()");
+  for (std::size_t i = 0; i < n_dof_; ++i) {
     joint_pos_[i] = state->position[i];
     joint_vel_[i] = state->velocity[i];
     joint_eff_[i] = state->effort[i];
