@@ -25,6 +25,6 @@ class IxisImcs01{
   void calculateAngularVelocity();
   sensor_msgs::JointState getState();
 };
-  
 
-#endif 
+
+#endif
