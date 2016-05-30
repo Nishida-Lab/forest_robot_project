@@ -39,14 +39,6 @@ Fr01Interface::Fr01Interface()
       steer_joint_names_.insert(steer_joint_names_.end(), right_steer_names.begin(), right_steer_names.end());
     }
 
-  // wheel_state_.position.resize(wheel_joint_names_.size());
-  // wheel_state_.velocity.resize(wheel_joint_names_.size());
-  // wheel_state_.effort.resize(wheel_joint_names_.size());
-
-  // steer_state_.position.resize(steer_joint_names_.size());
-  // steer_state_.velocity.resize(steer_joint_names_.size());
-  // steer_state_.effort.resize(steer_joint_names_.size());
-
   wheel_vel_sub_ = nh_.subscribe(n.param<std::string>("wheel_state_topic_name", "/wheel_states"), 1, &Fr01Interface::wheelStateCallback, this);
   steer_pos_sub_ = nh_.subscribe(n.param<std::string>("steer_state_topic_name", "/steer_states"), 1, &Fr01Interface::steerStateCallback, this);
 
@@ -69,14 +61,9 @@ Fr01Interface::Fr01Interface()
     } while (steer_state_ptr_->name.size() != 4);
   ROS_INFO_STREAM_NAMED("hardware_interface", "Done for first steer state message to be recieved");
 
-  ROS_INFO_STREAM_NAMED("hardware_interface", "Complete to road msg.");
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
   fr01_steer_ptr_.reset(new Fr01SteerInterface(steer_joint_names_));
 
-  // fr01_wheel_ptr_->register_interface(wheel_joint_state_interface_,
-  // 				      wheel_vel_joint_interface_);
-  // fr01_steer_ptr_->register_interface(steer_joint_state_interface_,
-  // 				      steer_pos_joint_interface_);
   fr01_wheel_ptr_->register_interface(joint_state_interface_,
   				      wheel_vel_joint_interface_);
   fr01_steer_ptr_->register_interface(joint_state_interface_,
@@ -84,7 +71,6 @@ Fr01Interface::Fr01Interface()
 
   registerInterface(&joint_state_interface_);
   registerInterface(&wheel_vel_joint_interface_);
-  //registerInterface(&steer_joint_state_interface_);
   registerInterface(&steer_pos_joint_interface_);
 
   ROS_INFO_STREAM_NAMED("hardware_interface", "Complete register Interfaces.");
@@ -95,14 +81,6 @@ Fr01Interface::Fr01Interface()
 
 void Fr01Interface::read(ros::Time now, ros::Duration period)
 {
-  // {
-  //   boost::mutex::scoped_lock(wheel_state_access_mutex_);
-  //   fr01_wheel_ptr_->read(wheel_state_);
-  // }
-  // {
-  //   boost::mutex::scoped_lock(steer_state_access_mutex_);
-  //   fr01_steer_ptr_->read(steer_state_);
-  // }
   ROS_INFO_STREAM_NAMED("hardware_interface", "Fr01Interface::read() is called");
   fr01_wheel_ptr_->read(wheel_state_ptr_);
   ROS_INFO_STREAM_NAMED("hardware_interface", "wheel_ptr read");
@@ -121,15 +99,6 @@ void Fr01Interface::write(ros::Time now, ros::Duration period)
 
 void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state)
 {
-  // {
-  //   boost::mutex::scoped_lock(wheel_state_access_mutex_);
-  //   for (size_t i = 0; i < wheel_state_.name.size(); ++i) {
-  //     wheel_state_.position[i] = wheel_state->position[i];
-  //     wheel_state_.velocity[i] = wheel_state->velocity[i];
-  //     wheel_state_.effort[i]   = wheel_state->effort[i];
-  //   }
-  // }
-  //ROS_INFO_STREAM_NAMED("Fr01Interface", "wheelStateCallback is called");
   if (wheel_state->name.size() != 6) {
     return;
   }
@@ -139,15 +108,6 @@ void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wh
 
 void Fr01Interface::steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state)
 {
-  // {
-  //   boost::mutex::scoped_lock(steer_state_access_mutex_);
-  //   for (size_t i = 0; i < steer_state_.name.size(); ++i) {
-  //     steer_state_.position[i] = steer_state->position[i];
-  //     steer_state_.velocity[i] = steer_state->velocity[i];
-  //     steer_state_.effort[i]   = steer_state->effort[i];
-  //   }
-  // }
-  //ROS_INFO_STREAM_NAMED("Fr01Interface", "steerStateCallback is called");
   if(steer_state->name.size() != 4){
     return;
   }
