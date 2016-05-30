@@ -81,7 +81,7 @@ class Fr01Interface
 
   ros::Time steer_state_timestamp_;
   ros::Time wheel_state_timestamp_;
-  
+
   boost::mutex wheel_state_access_mutex_;
   boost::mutex steer_state_access_mutex_;
 };
