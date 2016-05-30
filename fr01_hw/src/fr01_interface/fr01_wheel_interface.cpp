@@ -71,6 +71,6 @@ void Fr01WheelInterface::read(sensor_msgs::JointStateConstPtr &state)
   for (size_t i = 0; i < n_dof_; ++i) {
     joint_pos_[i] = state->position[i];
     joint_vel_[i] = state->velocity[i];
-    joint_eff_[i] = state->effort[i];
+    //joint_eff_[i] = state->effort[i];
   }
 }

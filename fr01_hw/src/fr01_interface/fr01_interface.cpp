@@ -81,20 +81,14 @@ Fr01Interface::Fr01Interface()
 
 void Fr01Interface::read(ros::Time now, ros::Duration period)
 {
-  ROS_INFO_STREAM_NAMED("hardware_interface", "Fr01Interface::read() is called");
   fr01_wheel_ptr_->read(wheel_state_ptr_);
-  ROS_INFO_STREAM_NAMED("hardware_interface", "wheel_ptr read");
   fr01_steer_ptr_->read(steer_state_ptr_);
-  ROS_INFO_STREAM_NAMED("hardware_interface", "steer_ptr read");
 }
 
 void Fr01Interface::write(ros::Time now, ros::Duration period)
 {
-  ROS_INFO_STREAM_NAMED("hardware_interface", "Fr01Interface::write() is called");
   fr01_wheel_ptr_->write();
-  ROS_INFO_STREAM_NAMED("hardware_interface", "wheel_ptr wrote");
   fr01_steer_ptr_->write();
-  ROS_INFO_STREAM_NAMED("hardware_interface", "steer_ptr wrote");
 }
 
 void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wheel_state)

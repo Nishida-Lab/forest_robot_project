@@ -70,7 +70,6 @@ void Fr01SteerInterface::write()
 
 void Fr01SteerInterface::read(sensor_msgs::JointStateConstPtr &state)
 {
-  ROS_INFO_STREAM_NAMED("Fr01SteerInterface", "in read()");
   for (std::size_t i = 0; i < n_dof_; ++i) {
     joint_pos_[i] = state->position[i];
     joint_vel_[i] = state->velocity[i];
