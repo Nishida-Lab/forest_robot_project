@@ -9,6 +9,7 @@
 Fr01WheelInterface::Fr01WheelInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ROS_INFO_STREAM_NAMED("Fr01WheelInterface", "Fr01WheelInterface constructor is called.");
   ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
