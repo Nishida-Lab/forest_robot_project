@@ -21,15 +21,15 @@ class Fr01WheelInterface
   void register_interface(hardware_interface::JointStateInterface &joint_state_interface,
 			  hardware_interface::VelocityJointInterface &vel_joint_interface);
   void write();
-  void read(const sensor_msgs::JointState& state);
+  void read(sensor_msgs::JointStateConstPtr &state);
  protected:
   unsigned int n_dof_;
-  
+
   std::vector<std::string> joint_names_;
   std::vector<double> joint_pos_;
   std::vector<double> joint_vel_;
   std::vector<double> joint_eff_;
-  std::vector<double> joint_vel_cmd_;  
+  std::vector<double> joint_vel_cmd_;
   ros::NodeHandle nh_;
 
   sensor_msgs::JointState commands_;

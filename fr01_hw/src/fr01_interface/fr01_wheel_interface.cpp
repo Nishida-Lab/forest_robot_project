@@ -9,12 +9,13 @@
 Fr01WheelInterface::Fr01WheelInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ROS_INFO_STREAM_NAMED("Fr01WheelInterface", "Fr01WheelInterface constructor is called.");
   ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
   this->resize();
   commands_.name = joint_names_;
-  wheel_vel_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name","/wheel_vel_cmd"), 100);
+  wheel_vel_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("wheel_cmd_topic_name","/wheel_vel_cmd"), 1);
 }
 
 void Fr01WheelInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
@@ -65,11 +66,11 @@ void Fr01WheelInterface::write()
   wheel_vel_pub_.publish(commands_);
 }
 
-void Fr01WheelInterface::read(const sensor_msgs::JointState& state)
+void Fr01WheelInterface::read(sensor_msgs::JointStateConstPtr &state)
 {
   for (size_t i = 0; i < n_dof_; ++i) {
-    joint_pos_[i] = state.position[i];
-    joint_vel_[i] = state.velocity[i];
-    joint_eff_[i] = state.effort[i];
+    joint_pos_[i] = state->position[i];
+    joint_vel_[i] = state->velocity[i];
+    //joint_eff_[i] = state->effort[i];
   }
 }

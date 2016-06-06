@@ -53,8 +53,8 @@ class Fr01Interface
  protected:
   ros::NodeHandle nh_;
 
-  std::shared_ptr<Fr01WheelInterface> fr01_wheel_ptr_;
-  std::shared_ptr<Fr01SteerInterface> fr01_steer_ptr_;
+  boost::shared_ptr<Fr01WheelInterface> fr01_wheel_ptr_;
+  boost::shared_ptr<Fr01SteerInterface> fr01_steer_ptr_;
 
   std::vector<std::string> transmission_names_;
   std::vector<std::string> steer_joint_names_;
@@ -73,8 +73,15 @@ class Fr01Interface
 
   ros::Publisher steer_pos_pub_;
 
-  sensor_msgs::JointState steer_state_;
-  sensor_msgs::JointState wheel_state_;
+  // sensor_msgs::JointState steer_state_;
+  // sensor_msgs::JointState wheel_state_;
+
+  sensor_msgs::JointStateConstPtr steer_state_ptr_;
+  sensor_msgs::JointStateConstPtr wheel_state_ptr_;
+
+  ros::Time steer_state_timestamp_;
+  ros::Time wheel_state_timestamp_;
+
   boost::mutex wheel_state_access_mutex_;
   boost::mutex steer_state_access_mutex_;
 };

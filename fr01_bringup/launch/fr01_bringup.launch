@@ -18,5 +18,7 @@
   <!-- hardware interface for real -->
   <include file="$(find fr01_hw)/launch/fr01_hardware.launch" />
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+    <rosparam param="source_list">['/wheel_and_steer_joint_states']</rosparam>
+  </node>
 </launch>

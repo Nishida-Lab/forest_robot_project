@@ -9,6 +9,7 @@
 Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
   : joint_names_(joint_names)
 {
+  ROS_INFO_STREAM_NAMED("Fr01SteerInterface", "Fr01SteerInterface Constructor is called.");
   ros::NodeHandle n("~");
   n_dof_ = joint_names_.size();
   this->cleanup();
@@ -16,7 +17,7 @@ Fr01SteerInterface::Fr01SteerInterface(std::vector<std::string> joint_names)
 
   commands_.name = joint_names_;
 
-  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("steer_cmd_topic_name", "/steer_pos_cmd"), 10);
+  steer_pos_pub_ = nh_.advertise<sensor_msgs::JointState>(n.param<std::string>("steer_cmd_topic_name", "/steer_pos_cmd"), 1);
 }
 
 void Fr01SteerInterface::register_interface(hardware_interface::JointStateInterface &joint_state_interface,
@@ -67,11 +68,11 @@ void Fr01SteerInterface::write()
   steer_pos_pub_.publish(commands_);
 }
 
-void Fr01SteerInterface::read(const sensor_msgs::JointState& state)
+void Fr01SteerInterface::read(sensor_msgs::JointStateConstPtr &state)
 {
-  for (size_t i = 0; i < n_dof_; ++i) {
-    joint_pos_[i] = state.position[i];
-    joint_vel_[i] = state.velocity[i];
-    joint_eff_[i] = state.effort[i];
+  for (std::size_t i = 0; i < n_dof_; ++i) {
+    joint_pos_[i] = state->position[i];
+    joint_vel_[i] = state->velocity[i];
+    joint_eff_[i] = state->effort[i];
   }
 }
