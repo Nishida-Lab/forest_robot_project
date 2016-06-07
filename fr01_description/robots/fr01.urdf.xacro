@@ -3,7 +3,7 @@
 
   <xacro:include filename="$(find fr01_description)/urdf/common.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/materials.xacro"/>
-  
+
   <xacro:include filename="$(find fr01_description)/urdf/body/body.urdf.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/leg/leg.urdf.xacro"/>
   <xacro:include filename="$(find fr01_description)/urdf/wheel/wheel.urdf.xacro"/>
@@ -24,7 +24,7 @@
 	<origin xyz="0 0 0" rpy="0 0 0"/>
 	<axis xyz="0 1 0"/>
   </xacro:base_link_v0>
-  
+
   <!-- Rocker -->
   <xacro:rocker_v0 side="right" parent="base_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
@@ -43,7 +43,7 @@
   	<origin xyz="0 0.213 0.028 " rpy="0 0 0"/>
 	<axis xyz="0 1 0"/>
   </xacro:rocker_v0>
-  
+
   <!-- Bogie -->
   <xacro:bogie_v0 side="right" parent="rocker_right_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
@@ -87,7 +87,7 @@
   	<origin xyz="-0.4 0.05 -0.1" rpy="0 0 ${-M_PI/2}"/>
   	<axis xyz="0 0 1"/>
   </xacro:steer_v0>
-  
+
   <!-- Wheel -->
   <xacro:wheel_v0 part="right_front" parent="steer_right_front_link"
       wheel_radius="${wheel_radius}" wheel_width="${wheel_width}">
@@ -136,11 +136,11 @@
   	<axis xyz="1 0 0"/>
   	<origin xyz="-0.065 0 0" rpy="0 ${M_PI/2} 0"/>
   </xacro:wheel_v0>
-  
+
   <!--==================== Transmission ====================-->
   <!-- base_link -->
   <xacro:base_link_trans_v0 />
-  
+
   <!-- Rocker -->
   <xacro:rocker_trans_v0 side="right"/>
   <xacro:rocker_trans_v0 side="left"/>
@@ -148,7 +148,7 @@
   <!-- Bogie -->
   <xacro:bogie_trans_v0 side="right"/>
   <xacro:bogie_trans_v0 side="left"/>
-  
+
   <!-- Steer -->
   <xacro:steer_trans_v0 part="right_front"/>
   <xacro:steer_trans_v0 part="right_back"/>
@@ -195,5 +195,4 @@
   <xacro:steer_gazebo_v0 part="left_front"/>
   <xacro:steer_gazebo_v0 part="left_back"/>
 
-  
 </robot>
