@@ -28,18 +28,18 @@
   <!-- Rocker -->
   <xacro:rocker_v0 side="right" parent="base_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
-	<inertia ixx="0.0002582" ixy="-0.0000001417" ixz="-0.00004954"
-			 iyy="0.0004952" iyz="0.00000007736"
-			 izz="0.0003856"/>
+	<inertia ixx="0.001" ixy="-0.0000001417" ixz="-0.00004954"
+		 iyy="0.001" iyz="0.00000007736"
+		 izz="0.001"/>
   	<origin xyz="0 -0.213 0.028 " rpy="0 0 0"/>
 	<axis xyz="0 1 0"/>
   </xacro:rocker_v0>
 
   <xacro:rocker_v0 side="left" parent="base_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
-	<inertia ixx="0.0002507" ixy="0.0000001419" ixz="-0.00004954"
-			 iyy="0.0004952" iyz="-0.0004669"
-			 izz="0.0003932"/>
+	<inertia ixx="0.001" ixy="0.0000001419" ixz="-0.00004954"
+		 iyy="0.001" iyz="-0.0004669"
+		 izz="0.001"/>
   	<origin xyz="0 0.213 0.028 " rpy="0 0 0"/>
 	<axis xyz="0 1 0"/>
   </xacro:rocker_v0>
@@ -48,8 +48,8 @@
   <xacro:bogie_v0 side="right" parent="rocker_right_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<inertia ixx="0.002" ixy="0.0000006258" ixz="-0.000002349"
-  			 iyy="0.002" iyz="-0.0000001149"
-  			 izz="0.003"/>
+  		 iyy="0.002" iyz="-0.0000001149"
+  		 izz="0.003"/>
   	<origin xyz="0.2 -0.019945 -0.15" rpy="0 0 ${M_PI}"/>
   	<axis xyz="0 1 0"/>
   </xacro:bogie_v0>
@@ -57,8 +57,8 @@
   <xacro:bogie_v0 side="left" parent="rocker_left_link">
   	<origin xyz="0 0 0" rpy="0 0 0"/>
   	<inertia ixx="0.002" ixy="-0.0000006528" ixz="-0.000002349"
-  			 iyy="0.002" iyz="0.0000001156"
-  			 izz="0.003"/>
+  		 iyy="0.002" iyz="0.0000001156"
+  		 izz="0.003"/>
   	<origin xyz="0.2 0.019945 -0.15" rpy="0 0 ${M_PI}"/>
   	<axis xyz="0 1 0"/>
   </xacro:bogie_v0>
