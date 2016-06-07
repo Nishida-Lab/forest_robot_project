@@ -8,7 +8,7 @@
       <visual>
         <geometry>
 	  <!-- <box size="0.106 0.085 0.105"/> -->
-	  <mesh filename="package://fr01_description/meshes/visual/yvt-x002.stl"/>
+	  <mesh filename="package://fr01_description/meshes/visual/yvt-x002.dae"/>
         </geometry>
       </visual>
       <collision>
