@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.71.0 commit date:2014-06-12, commit time:18:39, hash:169c95b</authoring_tool>
     </contributor>
-    <created>2016-06-08T07:05:20</created>
-    <modified>2016-06-08T07:05:20</modified>
+    <created>2016-06-08T07:24:47</created>
+    <modified>2016-06-08T07:24:47</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -551,7 +551,7 @@
         <instance_light url="#Lamp_003-light"/>
       </node>
       <node id="Yvt-X002-Bar" name="Yvt-X002-Bar" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 -6.39758e-7 -1 0 0 1 -6.39758e-7 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 -6.39758e-7 1 0 0 -1 -6.39758e-7 0 0 0 0 1</matrix>
         <instance_geometry url="#Yvt-X002-Bar-mesh">
           <bind_material>
             <technique_common>

@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <xacro:include filename="$(find fr01_description)/urdf/sensor/hokuyo3d.gazebo.xacro"/>
-  
+
   <xacro:macro name="hokuyo3d_link_base_link" params="name">
     <link name="${name}">
       <visual>
