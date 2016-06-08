@@ -130,183 +130,183 @@ namespace rocker_bogie_controller{
   {
   }
 
-  bool RockerBogieController::init(hardware_interface::RobotHW* robot_hw,
-                                   ros::NodeHandle& root_nh,
-                                   ros::NodeHandle& controller_nh)
+bool RockerBogieController::init(hardware_interface::RobotHW* robot_hw,
+                                 ros::NodeHandle& root_nh,
+                                 ros::NodeHandle& controller_nh)
+{
+  typedef hardware_interface::VelocityJointInterface VelIface;
+  typedef hardware_interface::PositionJointInterface PosIface;
+
+  // get multiple types of hardware_interface
+  VelIface *vel_joint_if = robot_hw->get<VelIface>(); // vel for wheels
+  PosIface *pos_joint_if = robot_hw->get<PosIface>(); // pos for steers
+
+  const std::string complete_ns = controller_nh.getNamespace();
+
+  std::size_t id = complete_ns.find_last_of("/");
+  name_ = complete_ns.substr(id + 1);
+
+  // Get joint names from the parameter server
+  //-- wheels
+  std::vector<std::string> left_wheel_names, right_wheel_names;
+  if (!getWheelNames(controller_nh, ns_ + "left_wheel", left_wheel_names) or
+      !getWheelNames(controller_nh, ns_ + "right_wheel", right_wheel_names))
   {
-    typedef hardware_interface::VelocityJointInterface VelIface;
-    typedef hardware_interface::PositionJointInterface PosIface;
-
-    // get multiple types of hardware_interface
-    VelIface *vel_joint_if = robot_hw->get<VelIface>(); // vel for wheels
-    PosIface *pos_joint_if = robot_hw->get<PosIface>(); // pos for steers
-
-    const std::string complete_ns = controller_nh.getNamespace();
-
-    std::size_t id = complete_ns.find_last_of("/");
-    name_ = complete_ns.substr(id + 1);
-
-    // Get joint names from the parameter server
-    //-- wheels
-    std::vector<std::string> left_wheel_names, right_wheel_names;
-    if (!getWheelNames(controller_nh, ns_ + "left_wheel", left_wheel_names) or
-        !getWheelNames(controller_nh, ns_ + "right_wheel", right_wheel_names))
-    {
-      return false;
-    }
-
-    if (left_wheel_names.size() != right_wheel_names.size())
-    {
-      ROS_ERROR_STREAM_NAMED(name_,
-          "#left wheels (" << left_wheel_names.size() << ") != " <<
-          "#right wheels (" << right_wheel_names.size() << ").");
-      return false;
-    }
-    else
-    {
-      wheel_joints_size_ = left_wheel_names.size();
-
-      left_wheel_joints_.resize(wheel_joints_size_);
-      right_wheel_joints_.resize(wheel_joints_size_);
-    }
-
-    //-- steers
-    std::vector<std::string> left_steer_names, right_steer_names;
-    if (!getSteerNames(controller_nh, ns_ + "left_steer", left_steer_names) or
-        !getSteerNames(controller_nh, ns_ + "right_steer", right_steer_names))
-    {
-      return false;
-    }
-
-    if (left_steer_names.size() != right_steer_names.size())
-    {
-      ROS_ERROR_STREAM_NAMED(name_,
-          "#left steers (" << left_steer_names.size() << ") != " <<
-          "#right steers (" << right_steer_names.size() << ").");
-      return false;
-    }
-    else
-    {
-      steer_joints_size_ = left_steer_names.size();
-
-      left_steer_joints_.resize(steer_joints_size_);
-      right_steer_joints_.resize(steer_joints_size_);
-    }
-
-    // Odometry related:
-    double publish_rate;
-    controller_nh.param("publish_rate", publish_rate, 50.0);
-    ROS_INFO_STREAM_NAMED(name_, "Controller state will be published at "
-                          << publish_rate << "Hz.");
-    publish_period_ = ros::Duration(1.0 / publish_rate);
-
-    controller_nh.param(ns_ + "open_loop", open_loop_, open_loop_);
-
-    controller_nh.param(ns_ + "wheel_separation_multiplier", wheel_separation_multiplier_, wheel_separation_multiplier_);
-    ROS_INFO_STREAM_NAMED(name_, "Wheel separation will be multiplied by "
-                          << wheel_separation_multiplier_ << ".");
-
-    controller_nh.param(ns_ + "wheel_radius_multiplier", wheel_radius_multiplier_, wheel_radius_multiplier_);
-    ROS_INFO_STREAM_NAMED(name_, "Wheel radius will be multiplied by "
-                          << wheel_radius_multiplier_ << ".");
-
-    int velocity_rolling_window_size = 10;
-    controller_nh.param(ns_ + "velocity_rolling_window_size", velocity_rolling_window_size, velocity_rolling_window_size);
-    ROS_INFO_STREAM_NAMED(name_, "Velocity rolling window size of "
-                          << velocity_rolling_window_size << ".");
-
-    odometry_.setVelocityRollingWindowSize(velocity_rolling_window_size);
-
-    // Twist command related:
-    controller_nh.param(ns_ + "cmd_vel_timeout", cmd_vel_timeout_, cmd_vel_timeout_);
-    ROS_INFO_STREAM_NAMED(name_, "Velocity commands will be considered old if they are older than "
-                          << cmd_vel_timeout_ << "s.");
-
-    controller_nh.param(ns_ + "allow_multiple_cmd_vel_publishers", allow_multiple_cmd_vel_publishers_, allow_multiple_cmd_vel_publishers_);
-    ROS_INFO_STREAM_NAMED(name_, "Allow mutiple cmd_vel publishers is "
-                          << (allow_multiple_cmd_vel_publishers_?"enabled":"disabled"));
-
-    controller_nh.param(ns_ + "base_frame_id", base_frame_id_, base_frame_id_);
-    ROS_INFO_STREAM_NAMED(name_, "Base frame_id set to " << base_frame_id_);
-
-    controller_nh.param(ns_ + "odom_frame_id", odom_frame_id_, odom_frame_id_);
-    ROS_INFO_STREAM_NAMED(name_, "Odometry frame_id set to " << odom_frame_id_);
-
-    controller_nh.param(ns_ + "enable_odom_tf", enable_odom_tf_, enable_odom_tf_);
-    ROS_INFO_STREAM_NAMED(name_, "Publishing to tf is " << (enable_odom_tf_?"enabled":"disabled"));
-
-    // Velocity and acceleration limits:
-    controller_nh.param(ns_ + "linear/x/has_velocity_limits"    , limiter_lin_.has_velocity_limits    , limiter_lin_.has_velocity_limits    );
-    controller_nh.param(ns_ + "linear/x/has_acceleration_limits", limiter_lin_.has_acceleration_limits, limiter_lin_.has_acceleration_limits);
-    controller_nh.param(ns_ + "linear/x/has_jerk_limits"        , limiter_lin_.has_jerk_limits        , limiter_lin_.has_jerk_limits        );
-    controller_nh.param(ns_ + "linear/x/max_velocity"           , limiter_lin_.max_velocity           ,  limiter_lin_.max_velocity          );
-    controller_nh.param(ns_ + "linear/x/min_velocity"           , limiter_lin_.min_velocity           , -limiter_lin_.max_velocity          );
-    controller_nh.param(ns_ + "linear/x/max_acceleration"       , limiter_lin_.max_acceleration       ,  limiter_lin_.max_acceleration      );
-    controller_nh.param(ns_ + "linear/x/min_acceleration"       , limiter_lin_.min_acceleration       , -limiter_lin_.max_acceleration      );
-    controller_nh.param(ns_ + "linear/x/max_jerk"               , limiter_lin_.max_jerk               ,  limiter_lin_.max_jerk              );
-    controller_nh.param(ns_ + "linear/x/min_jerk"               , limiter_lin_.min_jerk               , -limiter_lin_.max_jerk              );
-
-    controller_nh.param(ns_ + "angular/z/has_velocity_limits"    , limiter_ang_.has_velocity_limits    , limiter_ang_.has_velocity_limits    );
-    controller_nh.param(ns_ + "angular/z/has_acceleration_limits", limiter_ang_.has_acceleration_limits, limiter_ang_.has_acceleration_limits);
-    controller_nh.param(ns_ + "angular/z/has_jerk_limits"        , limiter_ang_.has_jerk_limits        , limiter_ang_.has_jerk_limits        );
-    controller_nh.param(ns_ + "angular/z/max_velocity"           , limiter_ang_.max_velocity           ,  limiter_ang_.max_velocity          );
-    controller_nh.param(ns_ + "angular/z/min_velocity"           , limiter_ang_.min_velocity           , -limiter_ang_.max_velocity          );
-    controller_nh.param(ns_ + "angular/z/max_acceleration"       , limiter_ang_.max_acceleration       ,  limiter_ang_.max_acceleration      );
-    controller_nh.param(ns_ + "angular/z/min_acceleration"       , limiter_ang_.min_acceleration       , -limiter_ang_.max_acceleration      );
-    controller_nh.param(ns_ + "angular/z/max_jerk"               , limiter_ang_.max_jerk               ,  limiter_ang_.max_jerk              );
-    controller_nh.param(ns_ + "angular/z/min_jerk"               , limiter_ang_.min_jerk               , -limiter_ang_.max_jerk              );
-
-    // If either parameter is not available, we need to look up the value in the URDF
-    bool lookup_wheel_separation_w = !controller_nh.getParam(ns_ + "wheel_separation_w", wheel_separation_w_);
-    bool lookup_wheel_separation_h = !controller_nh.getParam(ns_ + "wheel_separation_h", wheel_separation_h_);
-    bool lookup_wheel_radius = !controller_nh.getParam(ns_ + "wheel_radius", wheel_radius_);
-
-    if (!setOdomParamsFromUrdf(root_nh,
-                              left_wheel_names[0],
-                              right_wheel_names[0],
-                              lookup_wheel_separation_w,
-                              lookup_wheel_radius))
-    {
-      return false;
-    }
-
-    // Regardless of how we got the separation and radius, use them
-    // to set the odometry parameters
-    const double ws_w = wheel_separation_multiplier_ * wheel_separation_w_;
-    const double ws_h = wheel_separation_multiplier_ * wheel_separation_h_;
-    const double wr = wheel_radius_multiplier_     * wheel_radius_;
-    odometry_.setWheelParams(ws_w, wr);
-    ROS_INFO_STREAM_NAMED(name_,
-                          "Odometry params : wheel separation width" << ws_w
-                          << ", wheel separation height" << ws_h
-                          << ", wheel radius " << wr);
-
-    setOdomPubFields(root_nh, controller_nh);
-
-    // Get the joint object to use in the realtime loop
-    //-- wheels
-    for (int i = 0; i < wheel_joints_size_; ++i)
-    {
-      ROS_INFO_STREAM_NAMED(name_,
-                            "Adding left wheel with joint name: " << left_wheel_names[i]
-                            << " and right wheel with joint name: " << right_wheel_names[i]);
-      left_wheel_joints_[i] = vel_joint_if->getHandle(left_wheel_names[i]);  // throws on failure
-      right_wheel_joints_[i] = vel_joint_if->getHandle(right_wheel_names[i]);  // throws on failure
-    }
-    //-- steers
-    for (int i = 0; i < steer_joints_size_; ++i)
-    {
-      ROS_INFO_STREAM_NAMED(name_,
-                            "Adding left steer with joint name: " << left_steer_names[i]
-                            << " and right steer with joint name: " << right_steer_names[i]);
-      left_steer_joints_[i] = pos_joint_if->getHandle(left_steer_names[i]);  // throws on failure
-      right_steer_joints_[i] = pos_joint_if->getHandle(right_steer_names[i]);  // throws on failure
-    }
-
-    sub_command_ = controller_nh.subscribe("cmd_vel", 1, &RockerBogieController::cmdVelCallback, this);
-
-    return true;
+    return false;
   }
+
+  if (left_wheel_names.size() != right_wheel_names.size())
+  {
+    ROS_ERROR_STREAM_NAMED(name_,
+                           "#left wheels (" << left_wheel_names.size() << ") != " <<
+                           "#right wheels (" << right_wheel_names.size() << ").");
+    return false;
+  }
+  else
+  {
+    wheel_joints_size_ = left_wheel_names.size();
+
+    left_wheel_joints_.resize(wheel_joints_size_);
+    right_wheel_joints_.resize(wheel_joints_size_);
+  }
+
+  //-- steers
+  std::vector<std::string> left_steer_names, right_steer_names;
+  if (!getSteerNames(controller_nh, ns_ + "left_steer", left_steer_names) or
+      !getSteerNames(controller_nh, ns_ + "right_steer", right_steer_names))
+  {
+    return false;
+  }
+
+  if (left_steer_names.size() != right_steer_names.size())
+  {
+    ROS_ERROR_STREAM_NAMED(name_,
+                           "#left steers (" << left_steer_names.size() << ") != " <<
+                           "#right steers (" << right_steer_names.size() << ").");
+    return false;
+  }
+  else
+  {
+    steer_joints_size_ = left_steer_names.size();
+
+    left_steer_joints_.resize(steer_joints_size_);
+    right_steer_joints_.resize(steer_joints_size_);
+  }
+
+  // Odometry related:
+  double publish_rate;
+  controller_nh.param("publish_rate", publish_rate, 50.0);
+  ROS_INFO_STREAM_NAMED(name_, "Controller state will be published at "
+                        << publish_rate << "Hz.");
+  publish_period_ = ros::Duration(1.0 / publish_rate);
+
+  controller_nh.param(ns_ + "open_loop", open_loop_, open_loop_);
+
+  controller_nh.param(ns_ + "wheel_separation_multiplier", wheel_separation_multiplier_, wheel_separation_multiplier_);
+  ROS_INFO_STREAM_NAMED(name_, "Wheel separation will be multiplied by "
+                        << wheel_separation_multiplier_ << ".");
+
+  controller_nh.param(ns_ + "wheel_radius_multiplier", wheel_radius_multiplier_, wheel_radius_multiplier_);
+  ROS_INFO_STREAM_NAMED(name_, "Wheel radius will be multiplied by "
+                        << wheel_radius_multiplier_ << ".");
+
+  int velocity_rolling_window_size = 10;
+  controller_nh.param(ns_ + "velocity_rolling_window_size", velocity_rolling_window_size, velocity_rolling_window_size);
+  ROS_INFO_STREAM_NAMED(name_, "Velocity rolling window size of "
+                        << velocity_rolling_window_size << ".");
+
+  odometry_.setVelocityRollingWindowSize(velocity_rolling_window_size);
+
+  // Twist command related:
+  controller_nh.param(ns_ + "cmd_vel_timeout", cmd_vel_timeout_, cmd_vel_timeout_);
+  ROS_INFO_STREAM_NAMED(name_, "Velocity commands will be considered old if they are older than "
+                        << cmd_vel_timeout_ << "s.");
+
+  controller_nh.param(ns_ + "allow_multiple_cmd_vel_publishers", allow_multiple_cmd_vel_publishers_, allow_multiple_cmd_vel_publishers_);
+  ROS_INFO_STREAM_NAMED(name_, "Allow mutiple cmd_vel publishers is "
+                        << (allow_multiple_cmd_vel_publishers_?"enabled":"disabled"));
+
+  controller_nh.param(ns_ + "base_frame_id", base_frame_id_, base_frame_id_);
+  ROS_INFO_STREAM_NAMED(name_, "Base frame_id set to " << base_frame_id_);
+
+  controller_nh.param(ns_ + "odom_frame_id", odom_frame_id_, odom_frame_id_);
+  ROS_INFO_STREAM_NAMED(name_, "Odometry frame_id set to " << odom_frame_id_);
+
+  controller_nh.param(ns_ + "enable_odom_tf", enable_odom_tf_, enable_odom_tf_);
+  ROS_INFO_STREAM_NAMED(name_, "Publishing to tf is " << (enable_odom_tf_?"enabled":"disabled"));
+
+  // Velocity and acceleration limits:
+  controller_nh.param(ns_ + "linear/x/has_velocity_limits"    , limiter_lin_.has_velocity_limits    , limiter_lin_.has_velocity_limits    );
+  controller_nh.param(ns_ + "linear/x/has_acceleration_limits", limiter_lin_.has_acceleration_limits, limiter_lin_.has_acceleration_limits);
+  controller_nh.param(ns_ + "linear/x/has_jerk_limits"        , limiter_lin_.has_jerk_limits        , limiter_lin_.has_jerk_limits        );
+  controller_nh.param(ns_ + "linear/x/max_velocity"           , limiter_lin_.max_velocity           ,  limiter_lin_.max_velocity          );
+  controller_nh.param(ns_ + "linear/x/min_velocity"           , limiter_lin_.min_velocity           , -limiter_lin_.max_velocity          );
+  controller_nh.param(ns_ + "linear/x/max_acceleration"       , limiter_lin_.max_acceleration       ,  limiter_lin_.max_acceleration      );
+  controller_nh.param(ns_ + "linear/x/min_acceleration"       , limiter_lin_.min_acceleration       , -limiter_lin_.max_acceleration      );
+  controller_nh.param(ns_ + "linear/x/max_jerk"               , limiter_lin_.max_jerk               ,  limiter_lin_.max_jerk              );
+  controller_nh.param(ns_ + "linear/x/min_jerk"               , limiter_lin_.min_jerk               , -limiter_lin_.max_jerk              );
+
+  controller_nh.param(ns_ + "angular/z/has_velocity_limits"    , limiter_ang_.has_velocity_limits    , limiter_ang_.has_velocity_limits    );
+  controller_nh.param(ns_ + "angular/z/has_acceleration_limits", limiter_ang_.has_acceleration_limits, limiter_ang_.has_acceleration_limits);
+  controller_nh.param(ns_ + "angular/z/has_jerk_limits"        , limiter_ang_.has_jerk_limits        , limiter_ang_.has_jerk_limits        );
+  controller_nh.param(ns_ + "angular/z/max_velocity"           , limiter_ang_.max_velocity           ,  limiter_ang_.max_velocity          );
+  controller_nh.param(ns_ + "angular/z/min_velocity"           , limiter_ang_.min_velocity           , -limiter_ang_.max_velocity          );
+  controller_nh.param(ns_ + "angular/z/max_acceleration"       , limiter_ang_.max_acceleration       ,  limiter_ang_.max_acceleration      );
+  controller_nh.param(ns_ + "angular/z/min_acceleration"       , limiter_ang_.min_acceleration       , -limiter_ang_.max_acceleration      );
+  controller_nh.param(ns_ + "angular/z/max_jerk"               , limiter_ang_.max_jerk               ,  limiter_ang_.max_jerk              );
+  controller_nh.param(ns_ + "angular/z/min_jerk"               , limiter_ang_.min_jerk               , -limiter_ang_.max_jerk              );
+
+  // If either parameter is not available, we need to look up the value in the URDF
+  bool lookup_wheel_separation_w = !controller_nh.getParam(ns_ + "wheel_separation_w", wheel_separation_w_);
+  bool lookup_wheel_separation_h = !controller_nh.getParam(ns_ + "wheel_separation_h", wheel_separation_h_);
+  bool lookup_wheel_radius = !controller_nh.getParam(ns_ + "wheel_radius", wheel_radius_);
+
+  if (!setOdomParamsFromUrdf(root_nh,
+                             left_wheel_names[0],
+                             right_wheel_names[0],
+                             lookup_wheel_separation_w,
+                             lookup_wheel_radius))
+  {
+    return false;
+  }
+
+  // Regardless of how we got the separation and radius, use them
+  // to set the odometry parameters
+  const double ws_w = wheel_separation_multiplier_ * wheel_separation_w_;
+  const double ws_h = wheel_separation_multiplier_ * wheel_separation_h_;
+  const double wr = wheel_radius_multiplier_     * wheel_radius_;
+  odometry_.setWheelParams(ws_w, wr);
+  ROS_INFO_STREAM_NAMED(name_,
+                        "Odometry params : wheel separation width" << ws_w
+                        << ", wheel separation height" << ws_h
+                        << ", wheel radius " << wr);
+
+  setOdomPubFields(root_nh, controller_nh);
+
+  // Get the joint object to use in the realtime loop
+  //-- wheels
+  for (int i = 0; i < wheel_joints_size_; ++i)
+  {
+    ROS_INFO_STREAM_NAMED(name_,
+                          "Adding left wheel with joint name: " << left_wheel_names[i]
+                          << " and right wheel with joint name: " << right_wheel_names[i]);
+    left_wheel_joints_[i] = vel_joint_if->getHandle(left_wheel_names[i]);  // throws on failure
+    right_wheel_joints_[i] = vel_joint_if->getHandle(right_wheel_names[i]);  // throws on failure
+  }
+  //-- steers
+  for (int i = 0; i < steer_joints_size_; ++i)
+  {
+    ROS_INFO_STREAM_NAMED(name_,
+                          "Adding left steer with joint name: " << left_steer_names[i]
+                          << " and right steer with joint name: " << right_steer_names[i]);
+    left_steer_joints_[i] = pos_joint_if->getHandle(left_steer_names[i]);  // throws on failure
+    right_steer_joints_[i] = pos_joint_if->getHandle(right_steer_names[i]);  // throws on failure
+  }
+
+  sub_command_ = controller_nh.subscribe("cmd_vel", 1, &RockerBogieController::cmdVelCallback, this);
+
+  return true;
+}
 
   void RockerBogieController::update(const ros::Time& time, const ros::Duration& period)
   {
@@ -420,10 +420,10 @@ namespace rocker_bogie_controller{
       //-- compute commands
       const double tan_cmd_ang = tan(curr_cmd.ang);
       //---- front
-      const double right_front_steer_pos = atan2(2.0*ws_h*tan_cmd_ang,
-                                                 2.0*ws_h + ws_w*tan_cmd_ang);
-      const double left_front_steer_pos = atan2(2.0*ws_h*tan_cmd_ang,
-                                                2.0*ws_h - ws_w*tan_cmd_ang);
+      const double right_front_steer_pos = atan2(2.0*1.5*ws_h*tan_cmd_ang,
+                                                 2.0*1.5*ws_h + 2.0*ws_w*tan_cmd_ang);
+      const double left_front_steer_pos = atan2(2.0*1.5*ws_h*tan_cmd_ang,
+                                                2.0*1.5*ws_h - 2.0*ws_w*tan_cmd_ang);
       //---- back
       const double right_back_steer_pos = - right_front_steer_pos;
       const double left_back_steer_pos = - left_front_steer_pos;
