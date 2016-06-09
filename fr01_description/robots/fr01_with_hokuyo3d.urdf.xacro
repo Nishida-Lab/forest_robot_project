@@ -7,15 +7,15 @@
   <!-- add Hokuyo3d -->
   <!-- Link -->
   <xacro:hokuyo3d_link_base_link name="hokuyo3d_link"/>
-  
+
   <!-- Joint -->
   <joint name="joint_hokuyo3d" type="fixed">
-    <origin rpy="${M_PI} 0 0" xyz="0.315 0 0.835"/>
-    <parent link="base_footprint"/>
+    <origin rpy="${M_PI} 0 0" xyz="0.3405 0 0.463"/>
+    <parent link="base_link"/>
     <child link="hokuyo3d_link"/>
   </joint>
-  
+
   <!-- Gazebo -->
-  <!-- <xacro:hokuyo3d_gazebo name="hokuyo3d"/> -->
-  
+  <xacro:hokuyo3d_gazebo/>
+
 </robot>
