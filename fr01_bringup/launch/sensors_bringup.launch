@@ -29,7 +29,7 @@
       <param name="frame_rate" value="30"/>
 
       <param name="timestamp_method" value="start"/> <!-- start of frame -->
-      <param name="camera_info_url" value="file:///tmp/cam.yaml"/>
+      <param name="camera_info_url" value="$(find fr01_bringup)/config/c930-calib.yaml"/>
 
       <param name="auto_exposure" value="3"/> <!-- use aperture_priority auto exposure -->
       <param name="auto_white_balance" value="false"/>
