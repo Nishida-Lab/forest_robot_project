@@ -103,11 +103,11 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
   tf::Matrix3x3 init_rotation;
 
   // 一個前のposeと引き算してx, y ,zの偏差を出す
-  offset_x_ = odom->pose.pose.position.x - last_pose_.pose.position.x;
-  offset_y_ = odom->pose.pose.position.y - last_pose_.pose.position.y;
+  offset_x_ = 0;//odom->pose.pose.position.x - last_pose_.pose.position.x;
+  offset_y_ = 0;//odom->pose.pose.position.y - last_pose_.pose.position.y;
   double roll, pitch, yaw = 0;
   getRPY(odom->pose.pose.orientation, roll, pitch, yaw);
-  offset_yaw_ = yaw - last_yaw_;
+  offset_yaw_ = 0;//yaw - last_yaw_;
 
   guess_pos_.x = previous_pos_.x + offset_x_;
   guess_pos_.y = previous_pos_.y + offset_y_;
