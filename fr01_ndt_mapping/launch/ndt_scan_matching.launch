@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="$(find fr01_ndt_mapping)/param/ukf.yaml" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="ndtodom_2_ndtpc" args="0.3405 0 0.463 3.14 0 0 /map /matched_point_cloud 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="baselink2imu" args="0 0 0 0 3.14 0 /base_link /imu_link 100"/>
+  <!-- <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_node" name="ndt_scan_matching_node" output="screen"/> -->
+
+</launch>
