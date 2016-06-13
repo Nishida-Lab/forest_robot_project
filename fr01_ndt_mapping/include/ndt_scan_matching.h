@@ -21,6 +21,7 @@
 #include <pcl/registration/ndt.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl_ros/impl/transforms.hpp>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -68,7 +69,7 @@ private:
 
   geometry_msgs::PoseStamped last_pose_;
   tf::TransformBroadcaster br_;
-
+  tf::TransformListener tf_;
   int initial_scan_loaded_;
   int count_;
 };

@@ -65,9 +65,22 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
   Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
   tf::Transform transform;
 
-  pcl::fromROSMsg(*points, scan);
+  //点群をhokuyo3d座標系からbase_link座標系に変換
+  //変換されたデータはtrans_pcに格納される．
+  pcl::PointCloud<pcl::PointXYZI> trans_pc;
+  pcl::fromROSMsg(*points, trans_pc);
+  try {
+    //pcl_ros::transformPointCloud("base_link", *points, trans_pc, tf_);
+    pcl_ros::transformPointCloud("base_link", ros::Time(0), trans_pc, "hokuyo3d_link", scan, tf_);
+  } catch (tf::ExtrapolationException e) {
+    ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
+  }
+
+  // pcl::fromROSMsg(*points, scan);
+  //pcl::fromROSMsg(trans_pc, scan);
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(scan));
+  //pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(trans_pc));
 
   if(initial_scan_loaded_ == 0)
   {
