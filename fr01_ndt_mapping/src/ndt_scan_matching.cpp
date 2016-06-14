@@ -1,25 +1,27 @@
 #include <ndt_scan_matching.h>
+#include <rosbag/bag.h>
 
 NDTScanMatching::NDTScanMatching()
   : rate_(10), point_cloud_sub_(nh_, "/hokuyo3d/hokuyo_cloud2", 10),
     odom_sub_(nh_, "/fr01_rocker_bogie_controller/odom", 10),
     sync_(PC2andOdomSyncPolicy(10), point_cloud_sub_, odom_sub_)
 {
-  ros::NodeHandle n("~");
+  init();
+}
+
+void NDTScanMatching::init()
+{
+   ros::NodeHandle n("~");
   // rosparam の設定
   sync_.registerCallback(boost::bind(&NDTScanMatching::scan_matching_callback, this, _1, _2));
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
-
   //filtered_cloud_ = new pcl::PointCloud<pcl::PointXYZI>();
-
   offset_x_ = 0;
   offset_y_ = 0;
   offset_z_ = 0;
   offset_yaw_ = 0;
-
   last_yaw_ = 0;
-
   current_pos_.x = 0;
   current_pos_.y = 0;
   current_pos_.z = 0;
@@ -43,6 +45,66 @@ NDTScanMatching::NDTScanMatching()
 
   initial_scan_loaded_ = 0;
   count_ = 0;
+}
+
+void NDTScanMatching::startLiveSlam()
+{
+  point_cloud_pub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, "/hokuyo3d/hokuyo_cloud2", 5);
+  point_cloud_
+}
+
+void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_topic)
+{
+  double transform_publish_period;
+  ros::NodeHandle private_nh_("~");
+
+  rosbag::Bag bag;
+  bag.open(bag_name, rosbag::bagmode::Read);
+
+  std::vector<std::string> topics;
+  topics.push_back(std::string("/tf"));
+  topics.push_back(scan_topic);
+  rosbag::View viewall(bag, rosbga::TopicQuery(topics));
+
+  //Store up to 5 messages and there error message
+  std::queue<std::pair<sensor_msgs::PointCloud2::ConstPtr, std::string> > s_queue;
+  foreach(rosbag::MessageInstance const m, viewall)
+  {
+    tf::tfMessage::ConstPtr cur_tf = m.instantiate<tf::tfMessage>();
+    if(cur_tf != NULL){
+      for (size_t i = 0;  i < cur_tf->transform.size(); ++i ) {
+        geometry_msgs::TransformStamped transformStamped;
+        tf::StampedTransform stampedTf;
+        transformStamped = cur_tf->transforms[i];
+        tf::transformStampedMsgToTF(transformStamped, stampedTf);
+        tf_.setTransform(stampedTf);
+      }
+    }
+    sensor_msgs::PointCloud2::ConstPtr s = m.instantiate<sensor_msgs::PointCloud2>();
+    if(s != NULL){
+      if(!(ros::Time(s->header.stamp)).is_zero()){
+        s_queue.push(std::make_pair(s, ""));
+      }
+      // Just like in live processing, only process the latest 5 scans
+      if(s_queue.size() > 5){
+        ROS_WARN_STREAM("Dropping old scan: " << s_queue.front().second);
+        s_queue.pop();
+      }
+      // ignoring un-timestamped tf data
+    }
+    // Only process a scan if it has tf data
+    while(!s_queue.empty())
+    {
+      try {
+        this->scan_matching_callback(s_queue.front().first);
+        s_queue.pop();
+      } catch (tf2::TransformException& e) {
+        s_queue.front().second = std::string(e.what());
+        break;
+      }
+    }
+  }
+  bag.close();
 }
 
 void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
