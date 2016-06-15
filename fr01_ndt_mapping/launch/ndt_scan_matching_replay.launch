@@ -2,4 +2,10 @@
   <node pkg="tf" type="static_transform_publisher" name="ndtodom_2_ndtpc" args="0 0 0 0 0 0 /map /matched_point_cloud 100"/>
   <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_replay_node" name="ndt_scan_matching_node" output="screen" />
 
+  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+    <remap from="cloud_in" to="scan_match_point_cloud" />
+    <param name="resolution" value="0.05" />
+    <param name="frame_id" type="string" value="map" />
+  </node>
+
 </launch>
