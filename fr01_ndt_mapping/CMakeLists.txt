@@ -133,6 +133,9 @@ include_directories(
 add_executable(ndt_scan_matching_node src/ndt_scan_matching_node.cpp src/ndt_scan_matching.cpp)
 target_link_libraries(ndt_scan_matching_node ${catkin_LIBRARIES})
 
+add_executable(ndt_scan_matching_replay_node src/ndt_scan_matching_replay_node.cpp src/ndt_scan_matching.cpp)
+target_link_libraries(ndt_scan_matching_replay_node ${catkin_LIBRARIES})
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(fr01_ndt_mapping_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

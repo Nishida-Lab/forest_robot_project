@@ -1,10 +1,13 @@
 #include <ndt_scan_matching.h>
 #include <rosbag/bag.h>
+#include <rosbag/view.h>
+#include <boost/foreach.hpp>
+#define foreach BOOST_FOREACH
 
 NDTScanMatching::NDTScanMatching()
-  : rate_(10), point_cloud_sub_(nh_, "/hokuyo3d/hokuyo_cloud2", 10),
-    odom_sub_(nh_, "/fr01_rocker_bogie_controller/odom", 10),
-    sync_(PC2andOdomSyncPolicy(10), point_cloud_sub_, odom_sub_)
+  : rate_(10)// , point_cloud_sub_(nh_, "/hokuyo3d/hokuyo_cloud2", 10),
+    // odom_sub_(nh_, "/fr01_rocker_bogie_controller/odom", 10),
+    // sync_(PC2andOdomSyncPolicy(10), point_cloud_sub_, odom_sub_)
 {
   init();
 }
@@ -13,7 +16,7 @@ void NDTScanMatching::init()
 {
    ros::NodeHandle n("~");
   // rosparam の設定
-  sync_.registerCallback(boost::bind(&NDTScanMatching::scan_matching_callback, this, _1, _2));
+  // sync_.registerCallback(boost::bind(&NDTScanMatching::scan_matching_callback, this, _1, _2));
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
   //filtered_cloud_ = new pcl::PointCloud<pcl::PointXYZI>();
@@ -36,6 +39,14 @@ void NDTScanMatching::init()
   previous_pos_.pitch = 0;
   previous_pos_.yaw = 0;
 
+  last_pose_.pose.position.x = 0;
+  last_pose_.pose.position.y = 0;
+  last_pose_.pose.position.z = 0;
+  last_pose_.pose.orientation.x = 0;
+  last_pose_.pose.orientation.y = 0;
+  last_pose_.pose.orientation.z = 0;
+  last_pose_.pose.orientation.w = 1;
+
   guess_pos_.x = 0;
   guess_pos_.y = 0;
   guess_pos_.z = 0;
@@ -45,12 +56,23 @@ void NDTScanMatching::init()
 
   initial_scan_loaded_ = 0;
   count_ = 0;
+
+  transform_publish_period_ = 0.05;
+  tf_delay_ = transform_publish_period_;
+  basefoot_frame_ = "/base_footprint";
+  odom_frame_ = "/ndt_odom";
+  map2ndt_odom_.setOrigin(tf::Vector3(0, 0, 0));
+  tf::Quaternion q;
+  q.setRPY(0, 0, 0);
+  map2ndt_odom_.setRotation(q);
 }
 
 void NDTScanMatching::startLiveSlam()
 {
-  point_cloud_pub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, "/hokuyo3d/hokuyo_cloud2", 5);
-  point_cloud_
+  point_cloud_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, "/hokuyo3d/hokuyo_cloud2", 5);
+  point_cloud_filter_ = new tf::MessageFilter<sensor_msgs::PointCloud2>(*point_cloud_sub_, tf_, basefoot_frame_, 5);
+  point_cloud_filter_->registerCallback(boost::bind(&NDTScanMatching::scanMatchingCallback, this, _1));
+  transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
 }
 
 void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_topic)
@@ -64,15 +86,17 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
   std::vector<std::string> topics;
   topics.push_back(std::string("/tf"));
   topics.push_back(scan_topic);
-  rosbag::View viewall(bag, rosbga::TopicQuery(topics));
+  rosbag::View viewall(bag, rosbag::TopicQuery(topics));
 
+  // transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
+  
   //Store up to 5 messages and there error message
   std::queue<std::pair<sensor_msgs::PointCloud2::ConstPtr, std::string> > s_queue;
   foreach(rosbag::MessageInstance const m, viewall)
   {
     tf::tfMessage::ConstPtr cur_tf = m.instantiate<tf::tfMessage>();
     if(cur_tf != NULL){
-      for (size_t i = 0;  i < cur_tf->transform.size(); ++i ) {
+      for (size_t i = 0;  i < cur_tf->transforms.size(); ++i ) {
         geometry_msgs::TransformStamped transformStamped;
         tf::StampedTransform stampedTf;
         transformStamped = cur_tf->transforms[i];
@@ -96,10 +120,16 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
     while(!s_queue.empty())
     {
       try {
-        this->scan_matching_callback(s_queue.front().first);
+        tf::StampedTransform t;
+        tf_.lookupTransform(s_queue.front().first->header.frame_id, basefoot_frame_,
+                            s_queue.front().first->header.stamp, t);
+        this->scanMatchingCallback(s_queue.front().first);
         s_queue.pop();
-      } catch (tf2::TransformException& e) {
+      } catch (tf::TransformException& e) {
         s_queue.front().second = std::string(e.what());
+        break;
+      } catch(...){
+        ROS_WARN_STREAM("Any exception");
         break;
       }
     }
@@ -114,8 +144,7 @@ void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
 }
 
 
-void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::ConstPtr& points,
-                                             const nav_msgs::Odometry::ConstPtr& odom)
+void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
 {
   ros::Time scan_time = ros::Time::now();
 
@@ -125,29 +154,25 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
   tf::Quaternion q;
 
   Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
-  tf::Transform transform;
+  //tf::Transform transform;
 
   //点群をhokuyo3d座標系からbase_link座標系に変換
   //変換されたデータはtrans_pcに格納される．
   pcl::PointCloud<pcl::PointXYZI> trans_pc;
-  pcl::fromROSMsg(*points, trans_pc);
-  try {
-    //pcl_ros::transformPointCloud("base_link", *points, trans_pc, tf_);
-    pcl_ros::transformPointCloud("base_link", ros::Time(0), trans_pc, "hokuyo3d_link", scan, tf_);
-  } catch (tf::ExtrapolationException e) {
-    ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
-  }
-
-  // pcl::fromROSMsg(*points, scan);
-  //pcl::fromROSMsg(trans_pc, scan);
+  pcl::fromROSMsg(*points, scan);
+  //pcl::fromROSMsg(*points, trans_pc);
+  // try {
+  //   pcl_ros::transformPointCloud("base_link", ros::Time(0), trans_pc, "hokuyo3d_link", scan, tf_);
+  // } catch (tf::ExtrapolationException e) {
+  //   ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
+  // }
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(scan));
-  //pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(trans_pc));
 
   if(initial_scan_loaded_ == 0)
   {
     last_scan_ = *scan_ptr;
-    last_pose_.pose = odom->pose.pose;
+    //last_pose_.pose = odom->pose.pose;
     initial_scan_loaded_ = 1;
     ROS_INFO_STREAM("Initial scan loaded.");
     return;
@@ -181,7 +206,7 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
   offset_x_ = 0;//odom->pose.pose.position.x - last_pose_.pose.position.x;
   offset_y_ = 0;//odom->pose.pose.position.y - last_pose_.pose.position.y;
   double roll, pitch, yaw = 0;
-  getRPY(odom->pose.pose.orientation, roll, pitch, yaw);
+  //getRPY(odom->pose.pose.orientation, roll, pitch, yaw);
   offset_yaw_ = 0;//yaw - last_yaw_;
 
   guess_pos_.x = previous_pos_.x + offset_x_;
@@ -230,13 +255,15 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
 
   tf3d.getRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw, 1);
 
-  transform.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
+  map2ndt_odom_mutex_.lock();
+  //transform.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
+  map2ndt_odom_.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   q.setRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw);
-  transform.setRotation(q);
-
-
+  //transform.setRotation(q);
+  map2ndt_odom_.setRotation(q);
+  map2ndt_odom_mutex_.unlock();
   // "map"に対する"base_link"の位置を発行する
-  br_.sendTransform(tf::StampedTransform(transform, scan_time, "map", "ndt_base_link"));
+  // br_.sendTransform(tf::StampedTransform(transform, scan_time, "map", "ndt_base_link"));
 
   sensor_msgs::PointCloud2 scan_matched;
   pcl::toROSMsg(*output_cloud_ptr, scan_matched);
@@ -251,19 +278,27 @@ void NDTScanMatching::scan_matching_callback(const sensor_msgs::PointCloud2::Con
 
   // save current scan
   last_scan_ += *output_cloud_ptr;
-  last_pose_.pose = odom->pose.pose;
-  // last_pose_ = *pose;
+  //last_pose_.pose = odom->pose.pose;
   last_yaw_ = yaw;
-  // geometry_msgs::TransformStamped ndt_trans;
-  // ndt_trans.header.stamp = scan_time;
-  // ndt_trans.header.frame_id = "map";
-  // ndt_trans.child_frame_id = "base_link";
-
-  // ndt_trans.transform.translation.x = curren_pos.x;
-  // ndt_trans.transform.translation.y = curren_pos.y;
-  // ndt_trans.transform.translation.z = curren_pos.z;
-  // ndt_trans.transform.rotation = q;
-
-  // ndt_broadcaster_.sendTransform(ndt_trans);
   count_++;
+}
+
+void NDTScanMatching::publishLoop(double transform_publish_period){
+  if(transform_publish_period == 0)
+    return;
+
+  ros::Rate r(1.0 / transform_publish_period);
+  while(ros::ok()){
+    publishTransform();
+    r.sleep();
+  }
+}
+
+void NDTScanMatching::publishTransform()
+{
+  map2ndt_odom_mutex_.lock();
+  ros::Time tf_expiration = ros::Time::now();// + ros::Duration(tf_delay_);
+  br_->sendTransform(tf::StampedTransform(map2ndt_odom_, tf_expiration,
+                                          map_frame_, odom_frame_));
+  map2ndt_odom_mutex_.unlock();
 }
