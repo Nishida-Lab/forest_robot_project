@@ -5,21 +5,24 @@
 #define foreach BOOST_FOREACH
 
 NDTScanMatching::NDTScanMatching()
-  : rate_(10)// , point_cloud_sub_(nh_, "/hokuyo3d/hokuyo_cloud2", 10),
-    // odom_sub_(nh_, "/fr01_rocker_bogie_controller/odom", 10),
-    // sync_(PC2andOdomSyncPolicy(10), point_cloud_sub_, odom_sub_)
+  : rate_(10)
 {
   init();
 }
 
 void NDTScanMatching::init()
 {
-   ros::NodeHandle n("~");
+  ros::NodeHandle n("~");
   // rosparam の設定
-  // sync_.registerCallback(boost::bind(&NDTScanMatching::scan_matching_callback, this, _1, _2));
+  scanner_frame_ = n.param<std::string>("scanner_frame_", "scanner_link");
+  basefoot_frame_ = n.param<std::string>("base_frame", "base_footprint");
+  odom_frame_ = n.param<std::string>("odom_frame_", "ndt_odom");
+  map_frame_ = n.param<std::string>("map_frame_", "map");
+  n.param("transform_publish_period", transform_publish_period_, 0.05);
+  tf_delay_ = transform_publish_period_;
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
-  //filtered_cloud_ = new pcl::PointCloud<pcl::PointXYZI>();
+ 
   offset_x_ = 0;
   offset_y_ = 0;
   offset_z_ = 0;
@@ -57,10 +60,6 @@ void NDTScanMatching::init()
   initial_scan_loaded_ = 0;
   count_ = 0;
 
-  transform_publish_period_ = 0.05;
-  tf_delay_ = transform_publish_period_;
-  basefoot_frame_ = "/base_footprint";
-  odom_frame_ = "/ndt_odom";
   map2ndt_odom_.setOrigin(tf::Vector3(0, 0, 0));
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
@@ -88,8 +87,6 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
   topics.push_back(scan_topic);
   rosbag::View viewall(bag, rosbag::TopicQuery(topics));
 
-  // transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
-  
   //Store up to 5 messages and there error message
   std::queue<std::pair<sensor_msgs::PointCloud2::ConstPtr, std::string> > s_queue;
   foreach(rosbag::MessageInstance const m, viewall)
@@ -154,25 +151,22 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   tf::Quaternion q;
 
   Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
-  //tf::Transform transform;
 
   //点群をhokuyo3d座標系からbase_link座標系に変換
   //変換されたデータはtrans_pcに格納される．
   pcl::PointCloud<pcl::PointXYZI> trans_pc;
-  pcl::fromROSMsg(*points, scan);
-  //pcl::fromROSMsg(*points, trans_pc);
-  // try {
-  //   pcl_ros::transformPointCloud("base_link", ros::Time(0), trans_pc, "hokuyo3d_link", scan, tf_);
-  // } catch (tf::ExtrapolationException e) {
-  //   ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
-  // }
+  pcl::fromROSMsg(*points, trans_pc);
+  try {
+    pcl_ros::transformPointCloud("base_link", points->header.stamp, trans_pc, "hokuyo3d_link", scan, tf_);
+  } catch (tf::ExtrapolationException e) {
+    ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
+  }
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(scan));
 
   if(initial_scan_loaded_ == 0)
   {
     last_scan_ = *scan_ptr;
-    //last_pose_.pose = odom->pose.pose;
     initial_scan_loaded_ = 1;
     ROS_INFO_STREAM("Initial scan loaded.");
     return;
