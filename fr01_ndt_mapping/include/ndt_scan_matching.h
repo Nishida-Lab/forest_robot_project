@@ -87,9 +87,13 @@ private:
   double transform_publish_period_;
   double tf_delay_;
 
-  std::string basefoot_frame_;
-  std::string map_frame_;
+  std::string scanner_frame_;
+  std::string scanner_topic_;
+  std::string base_frame_;
   std::string odom_frame_;
+  std::string map_frame_;
 
   boost::mutex map2ndt_odom_mutex_;
+
+  int skip_num_;
 };

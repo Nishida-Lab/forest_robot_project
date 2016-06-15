@@ -2,6 +2,7 @@
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include <boost/foreach.hpp>
+#include <boost/progress.hpp>
 #define foreach BOOST_FOREACH
 
 NDTScanMatching::NDTScanMatching()
@@ -14,11 +15,13 @@ void NDTScanMatching::init()
 {
   ros::NodeHandle n("~");
   // rosparam の設定
-  scanner_frame_ = n.param<std::string>("scanner_frame_", "scanner_link");
-  basefoot_frame_ = n.param<std::string>("base_frame", "base_footprint");
-  odom_frame_ = n.param<std::string>("odom_frame_", "ndt_odom");
-  map_frame_ = n.param<std::string>("map_frame_", "map");
+  scanner_frame_ = n.param<std::string>("scanner_frame", "scanner_link");
+  scanner_topic_ = n.param<std::string>("scanner_topic", "/point_cloud");
+  base_frame_ = n.param<std::string>("base_frame", "base_footprint");
+  odom_frame_ = n.param<std::string>("odom_frame", "ndt_odom");
+  map_frame_ = n.param<std::string>("map_frame", "map");
   n.param("transform_publish_period", transform_publish_period_, 0.05);
+  n.param<int>("skip_num", skip_num_, 0);
   tf_delay_ = transform_publish_period_;
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
@@ -68,8 +71,8 @@ void NDTScanMatching::init()
 
 void NDTScanMatching::startLiveSlam()
 {
-  point_cloud_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, "/hokuyo3d/hokuyo_cloud2", 5);
-  point_cloud_filter_ = new tf::MessageFilter<sensor_msgs::PointCloud2>(*point_cloud_sub_, tf_, basefoot_frame_, 5);
+  point_cloud_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, scanner_topic_, 5);
+  point_cloud_filter_ = new tf::MessageFilter<sensor_msgs::PointCloud2>(*point_cloud_sub_, tf_, base_frame_, 5);
   point_cloud_filter_->registerCallback(boost::bind(&NDTScanMatching::scanMatchingCallback, this, _1));
   transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
 }
@@ -84,13 +87,21 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
 
   std::vector<std::string> topics;
   topics.push_back(std::string("/tf"));
-  topics.push_back(scan_topic);
+  topics.push_back(scanner_topic_);
   rosbag::View viewall(bag, rosbag::TopicQuery(topics));
 
   //Store up to 5 messages and there error message
   std::queue<std::pair<sensor_msgs::PointCloud2::ConstPtr, std::string> > s_queue;
+  boost::progress_display show_progress(viewall.size());
+  int replay_count = 0;
   foreach(rosbag::MessageInstance const m, viewall)
   {
+    if(replay_count < skip_num_){
+      replay_count += 1;
+      continue;
+    }else{
+      replay_count = 0;
+    }
     tf::tfMessage::ConstPtr cur_tf = m.instantiate<tf::tfMessage>();
     if(cur_tf != NULL){
       for (size_t i = 0;  i < cur_tf->transforms.size(); ++i ) {
@@ -118,7 +129,7 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
     {
       try {
         tf::StampedTransform t;
-        tf_.lookupTransform(s_queue.front().first->header.frame_id, basefoot_frame_,
+        tf_.lookupTransform(s_queue.front().first->header.frame_id, base_frame_,
                             s_queue.front().first->header.stamp, t);
         this->scanMatchingCallback(s_queue.front().first);
         s_queue.pop();
@@ -130,6 +141,7 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
         break;
       }
     }
+    ++show_progress;
   }
   bag.close();
 }
@@ -157,7 +169,7 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   pcl::PointCloud<pcl::PointXYZI> trans_pc;
   pcl::fromROSMsg(*points, trans_pc);
   try {
-    pcl_ros::transformPointCloud("base_link", points->header.stamp, trans_pc, "hokuyo3d_link", scan, tf_);
+    pcl_ros::transformPointCloud(base_frame_, points->header.stamp, trans_pc, scanner_frame_, scan, tf_);
   } catch (tf::ExtrapolationException e) {
     ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
   }
