@@ -34,7 +34,6 @@ void NDTScanMatching::init()
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
   br_ = new tf::TransformBroadcaster();
 
- 
   offset_x_ = 0;
   offset_y_ = 0;
   offset_z_ = 0;
@@ -270,27 +269,20 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   std::cout << "x : " << current_pos_.x << std::endl;
   std::cout << "y : " << current_pos_.y << std::endl;
   std::cout << "z : " << current_pos_.z << std::endl;
-  //std::cout << "/////////////////////////////////////////////" << std::endl;
 
   tf3d.getRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw, 1);
 
   map2ndt_odom_mutex_.lock();
-  //transform.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   map2ndt_odom_.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   q.setRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw);
-  //transform.setRotation(q);
   map2ndt_odom_.setRotation(q);
   map2ndt_odom_mutex_.unlock();
-  // "map"に対する"base_link"の位置を発行する
-  // br_.sendTransform(tf::StampedTransform(transform, scan_time, "map", "ndt_base_link"));
+
 
   sensor_msgs::PointCloud2 scan_matched;
-  //pcl::toROSMsg(*output_cloud_ptr, scan_matched);
   pcl::toROSMsg(scan, scan_matched);
-  //scan_matched = *points;
-  
+
   scan_matched.header.stamp = scan_time;
-  //scan_matched.header.frame_id = "matched_point_cloud";
   scan_matched.header.frame_id = odom_frame_;
 
   point_cloud_pub_.publish(scan_matched);
@@ -300,7 +292,6 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
 
   // save current scan
   last_scan_ += *output_cloud_ptr;
-  //last_pose_.pose = odom->pose.pose;
   last_yaw_ = yaw;
   count_++;
 }
