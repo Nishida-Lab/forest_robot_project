@@ -1,20 +1,19 @@
 <launch>
-  <node pkg="tf" type="static_transform_publisher" name="ndtodom_2_ndtpc" args="0 0 0 0 0 0 /map /matched_point_cloud 100"/>
   <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_replay_node" name="ndt_scan_matching_node" output="screen">
     <param name="scanner_frame" type="string" value="hokuyo3d_link" />
     <param name="scanner_topic" type="string" value="/hokuyo3d/hokuyo_cloud2" />
     <param name="base_frame" type="string" value="base_footprint" />
     <param name="odom_frame" type="string" value="ndt_odom" />
     <param name="map_frame" type="string" value="map" />
-    <param name="skim_num" type="int" value="5" />
+    <param name="skip_num" type="int" value="1" />
   </node>
 
   <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
     <remap from="cloud_in" to="scan_match_point_cloud" />
-    <param name="resolution" value="0.05" />
+    <param name="resolution" value="0.1" />
     <param name="frame_id" type="string" value="map" />
-    <param name="sensor_model_hit" value="0.5" />
-    <param name="sensor_model_miss" value="0.1" />
+    <param name="sensor_model_hit" value="1.0" />
+    <param name="sensor_model_miss" value="0.01" />
     <param name="latch" value="false" />
   </node>
 

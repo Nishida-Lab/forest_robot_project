@@ -16,15 +16,24 @@ void NDTScanMatching::init()
   ros::NodeHandle n("~");
   // rosparam の設定
   scanner_frame_ = n.param<std::string>("scanner_frame", "scanner_link");
+  ROS_INFO_STREAM("scanner_frame : " << scanner_frame_);
   scanner_topic_ = n.param<std::string>("scanner_topic", "/point_cloud");
+  ROS_INFO_STREAM("scanner_topic : " << scanner_topic_);
   base_frame_ = n.param<std::string>("base_frame", "base_footprint");
+  ROS_INFO_STREAM("base_frame : " << base_frame_);
   odom_frame_ = n.param<std::string>("odom_frame", "ndt_odom");
+  ROS_INFO_STREAM("odom_frame : " << odom_frame_);
   map_frame_ = n.param<std::string>("map_frame", "map");
+  ROS_INFO_STREAM("map_frame : " << map_frame_);
   n.param("transform_publish_period", transform_publish_period_, 0.05);
+  ROS_INFO_STREAM("transform_publish_period : " << transform_publish_period_);
   n.param<int>("skip_num", skip_num_, 0);
+  ROS_INFO_STREAM("skip_num : " << skip_num_);
   tf_delay_ = transform_publish_period_;
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
+  br_ = new tf::TransformBroadcaster();
+
  
   offset_x_ = 0;
   offset_y_ = 0;
@@ -96,12 +105,6 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
   int replay_count = 0;
   foreach(rosbag::MessageInstance const m, viewall)
   {
-    if(replay_count < skip_num_){
-      replay_count += 1;
-      continue;
-    }else{
-      replay_count = 0;
-    }
     tf::tfMessage::ConstPtr cur_tf = m.instantiate<tf::tfMessage>();
     if(cur_tf != NULL){
       for (size_t i = 0;  i < cur_tf->transforms.size(); ++i ) {
@@ -127,21 +130,30 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
     // Only process a scan if it has tf data
     while(!s_queue.empty())
     {
-      try {
-        tf::StampedTransform t;
-        tf_.lookupTransform(s_queue.front().first->header.frame_id, base_frame_,
-                            s_queue.front().first->header.stamp, t);
-        this->scanMatchingCallback(s_queue.front().first);
+      if(replay_count < skip_num_){
+        replay_count += 1;
         s_queue.pop();
-      } catch (tf::TransformException& e) {
-        s_queue.front().second = std::string(e.what());
-        break;
-      } catch(...){
-        ROS_WARN_STREAM("Any exception");
-        break;
+        continue;
+      }else{
+        replay_count = 0;
+        try {
+          tf::StampedTransform t;
+          tf_.lookupTransform(s_queue.front().first->header.frame_id, base_frame_,
+                              s_queue.front().first->header.stamp, t);
+          this->scanMatchingCallback(s_queue.front().first);
+          br_->sendTransform(tf::StampedTransform(map2ndt_odom_, ros::Time::now(),
+                                                map_frame_, odom_frame_));
+          s_queue.pop();
+        } catch (tf::TransformException& e) {
+          s_queue.front().second = std::string(e.what());
+          break;
+        } catch(...){
+          ROS_WARN_STREAM("Any exception");
+          break;
+        }
       }
+      ++show_progress;
     }
-    ++show_progress;
   }
   bag.close();
 }
@@ -180,13 +192,13 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   {
     last_scan_ = *scan_ptr;
     initial_scan_loaded_ = 1;
-    ROS_INFO_STREAM("Initial scan loaded.");
+    //ROS_INFO_STREAM("Initial scan loaded.");
     return;
   }
   // Filtering input scan to roughly 10% of original size to increase speed of registration.
   pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud_ptr (new pcl::PointCloud<pcl::PointXYZI>);
   pcl::ApproximateVoxelGrid<pcl::PointXYZI> approximate_voxel_filter;
-  approximate_voxel_filter.setLeafSize (0.1, 0.1, 0.1);
+  approximate_voxel_filter.setLeafSize (1.0, 1.0, 1.0);
   approximate_voxel_filter.setInputCloud (scan_ptr);
   approximate_voxel_filter.filter (*filtered_cloud_ptr);
   // Setting scale dependent NDT parameters
@@ -233,8 +245,7 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   ros::Time ndt_start = ros::Time::now();
   ndt_.align (*output_cloud_ptr, init_guess);
   ros::Duration ndt_delta_t = ros::Time::now() - ndt_start;
-  std::cout << "Normal Distributions Transform has converged:" << ndt_.hasConverged ()
-            << " score: " << ndt_.getFitnessScore () << std::endl;
+ 
 
   t = ndt_.getFinalTransformation();
 
@@ -254,10 +265,12 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   std::cout << "/////////////////////////////////////////////" << std::endl;
   std::cout << "count : " << count_ << std::endl;
   std::cout << "Process time : " << ndt_delta_t.toSec() << std::endl;
+  std::cout << "NDT has converged :" << ndt_.hasConverged () << std::endl;
+  std::cout << " score : " << ndt_.getFitnessScore () << std::endl;
   std::cout << "x : " << current_pos_.x << std::endl;
   std::cout << "y : " << current_pos_.y << std::endl;
   std::cout << "z : " << current_pos_.z << std::endl;
-  std::cout << "/////////////////////////////////////////////" << std::endl;
+  //std::cout << "/////////////////////////////////////////////" << std::endl;
 
   tf3d.getRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw, 1);
 
@@ -272,10 +285,13 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   // br_.sendTransform(tf::StampedTransform(transform, scan_time, "map", "ndt_base_link"));
 
   sensor_msgs::PointCloud2 scan_matched;
-  pcl::toROSMsg(*output_cloud_ptr, scan_matched);
-
+  //pcl::toROSMsg(*output_cloud_ptr, scan_matched);
+  pcl::toROSMsg(scan, scan_matched);
+  //scan_matched = *points;
+  
   scan_matched.header.stamp = scan_time;
-  scan_matched.header.frame_id = "matched_point_cloud";
+  //scan_matched.header.frame_id = "matched_point_cloud";
+  scan_matched.header.frame_id = odom_frame_;
 
   point_cloud_pub_.publish(scan_matched);
 
