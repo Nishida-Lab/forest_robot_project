@@ -352,3 +352,4 @@ std::string NDTScanMatching::getTimeAsString()
   std::string str(buffer);
   return str;
 }
+
