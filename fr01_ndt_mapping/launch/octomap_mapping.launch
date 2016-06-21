@@ -1,9 +1,0 @@
-
-<launch>
-  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
-    <remap from="cloud_in" to="scan_match_point_cloud" />
-    <param name="resolution" value="0.01" />
-    <!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
-    <param name="frame_id" type="string" value="map" />
-  </node>
-</launch>
