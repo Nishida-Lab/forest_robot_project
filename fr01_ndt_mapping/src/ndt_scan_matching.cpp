@@ -1,6 +1,7 @@
 #include <ndt_scan_matching.h>
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
+#include <ros/package.h>
 #include <boost/foreach.hpp>
 #include <boost/progress.hpp>
 #define foreach BOOST_FOREACH
@@ -34,6 +35,7 @@ void NDTScanMatching::init()
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
   br_ = new tf::TransformBroadcaster();
 
+ 
   offset_x_ = 0;
   offset_y_ = 0;
   offset_z_ = 0;
@@ -88,6 +90,8 @@ void NDTScanMatching::startLiveSlam()
 void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_topic)
 {
   double transform_publish_period;
+  transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
+
   ros::NodeHandle private_nh_("~");
 
   rosbag::Bag bag;
@@ -140,8 +144,8 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
           tf_.lookupTransform(s_queue.front().first->header.frame_id, base_frame_,
                               s_queue.front().first->header.stamp, t);
           this->scanMatchingCallback(s_queue.front().first);
-          br_->sendTransform(tf::StampedTransform(map2ndt_odom_, ros::Time::now(),
-                                                map_frame_, odom_frame_));
+          // br_->sendTransform(tf::StampedTransform(map2ndt_odom_, ros::Time::now(),
+          //                                       map_frame_, odom_frame_));
           s_queue.pop();
         } catch (tf::TransformException& e) {
           s_queue.front().second = std::string(e.what());
@@ -155,6 +159,7 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
     }
   }
   bag.close();
+  savePointCloud();
 }
 
 void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
@@ -269,20 +274,27 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   std::cout << "x : " << current_pos_.x << std::endl;
   std::cout << "y : " << current_pos_.y << std::endl;
   std::cout << "z : " << current_pos_.z << std::endl;
+  //std::cout << "/////////////////////////////////////////////" << std::endl;
 
   tf3d.getRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw, 1);
 
   map2ndt_odom_mutex_.lock();
+  //transform.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   map2ndt_odom_.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   q.setRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw);
+  //transform.setRotation(q);
   map2ndt_odom_.setRotation(q);
   map2ndt_odom_mutex_.unlock();
-
+  // "map"に対する"base_link"の位置を発行する
+  // br_.sendTransform(tf::StampedTransform(transform, scan_time, "map", "ndt_base_link"));
 
   sensor_msgs::PointCloud2 scan_matched;
+  //pcl::toROSMsg(*output_cloud_ptr, scan_matched);
   pcl::toROSMsg(scan, scan_matched);
-
+  //scan_matched = *points;
+  
   scan_matched.header.stamp = scan_time;
+  //scan_matched.header.frame_id = "matched_point_cloud";
   scan_matched.header.frame_id = odom_frame_;
 
   point_cloud_pub_.publish(scan_matched);
@@ -292,6 +304,7 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
 
   // save current scan
   last_scan_ += *output_cloud_ptr;
+  //last_pose_.pose = odom->pose.pose;
   last_yaw_ = yaw;
   count_++;
 }
@@ -310,8 +323,32 @@ void NDTScanMatching::publishLoop(double transform_publish_period){
 void NDTScanMatching::publishTransform()
 {
   map2ndt_odom_mutex_.lock();
-  ros::Time tf_expiration = ros::Time::now();// + ros::Duration(tf_delay_);
+  ros::Time tf_expiration = ros::Time::now() + ros::Duration(tf_delay_);
   br_->sendTransform(tf::StampedTransform(map2ndt_odom_, tf_expiration,
                                           map_frame_, odom_frame_));
   map2ndt_odom_mutex_.unlock();
+}
+
+void NDTScanMatching::savePointCloud()
+{
+  std::string resultfilepath = ros::package::getPath("fr01_ndt_mapping");
+  resultfilepath += "/result";
+  resultfilepath += getTimeAsString();
+  resultfilepath += ".pcd";
+  pcl::io::savePCDFileASCII(resultfilepath, last_scan_);
+  ROS_INFO_STREAM("Saved " << last_scan_.points.size() << "data points to result.");
+}
+
+std::string NDTScanMatching::getTimeAsString()
+{
+  time_t rawtime;
+  struct tm * timeinfo;
+  char buffer[80];
+
+  time (&rawtime);
+  timeinfo = localtime(&rawtime);
+
+  strftime(buffer,80,"%Y%m%d%I%M%S",timeinfo);
+  std::string str(buffer);
+  return str;
 }

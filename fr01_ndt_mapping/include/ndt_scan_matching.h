@@ -51,7 +51,10 @@ public:
   void publishTransform();
   void startLiveSlam();
   void startReplay(const std::string &bag_name, std::string scan_topic);
+  void savePointCloud();
 private:
+  std::string getTimeAsString();
+
   ros::NodeHandle nh_;
   ros::NodeHandle private_nh_;
   ros::Rate rate_;
@@ -97,6 +100,3 @@ private:
 
   int skip_num_;
 };
-
-
-
