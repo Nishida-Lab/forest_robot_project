@@ -50,7 +50,7 @@ public:
   void publishLoop(double transform_publish_period);
   void publishTransform();
   void startLiveSlam();
-  void startReplay(const std::string &bag_name, std::string scan_topic);
+  void startReplay(const std::string &bag_name);
   void savePointCloud(std::string dstfilename);
 private:
   std::string getTimeAsString();
