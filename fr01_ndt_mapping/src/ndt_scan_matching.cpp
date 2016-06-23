@@ -159,7 +159,7 @@ void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_
     }
   }
   bag.close();
-  savePointCloud();
+  //savePointCloud();
 }
 
 void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
