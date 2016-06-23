@@ -87,7 +87,7 @@ void NDTScanMatching::startLiveSlam()
   transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
 }
 
-void NDTScanMatching::startReplay(const std::string &bag_name, std::string scan_topic)
+void NDTScanMatching::startReplay(const std::string &bag_name)
 {
   double transform_publish_period;
   transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
