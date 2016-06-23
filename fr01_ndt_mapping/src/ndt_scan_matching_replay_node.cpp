@@ -46,15 +46,13 @@ int main(int argc, char **argv)
   }
 
   std::string bagfilename = vm["bag_filename"].as<std::string>();
-  std::string scantopicname = vm["scan_topic"].as<std::string>();
   std::string dstfilename = vm["dst_filename"].as<std::string>();
-  
-  
+
   ros::init(argc, argv, "ndt_scan_matching");
 
   NDTScanMatching ndt_scan_matcher;
   //std::string bagfilepath = ros::package::getPath("fr01_bag");
-  ndt_scan_matcher.startReplay(bagfilename, scantopicname);
+  ndt_scan_matcher.startReplay(bagfilename);
   ndt_scan_matcher.savePointCloud(dstfilename);
   ros::spin();
 
