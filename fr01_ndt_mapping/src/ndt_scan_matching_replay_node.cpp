@@ -28,8 +28,7 @@ int main(int argc, char **argv)
   desc.add_options()
     ("help", "Print help message")
     ("bag_filename", boost::program_options::value<std::string>()->required(), "ros bag filename")
-    ("dst_filename", boost::program_options::value<std::string>()->default_value("default_dst_filename"), "result pcd filename")
-    ("scan_topic", boost::program_options::value<std::string>()->default_value("/hokuyo3d/hokuyo_cloud2"), "point cloud topic name");
+    ("dst_filename", boost::program_options::value<std::string>()->default_value("default_dst_filename"), "result pcd filename");
 
   boost::program_options::variables_map vm;
   try {
