@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_replay_node" name="ndt_scan_matching_node" output="screen">
+  <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_replay_node" name="ndt_scan_matching_node" output="screen" args="--bag_filename $(find fr01_bag)/bag/test2.bag">
     <param name="scanner_frame" type="string" value="hokuyo3d_link" />
     <param name="scanner_topic" type="string" value="/hokuyo3d/hokuyo_cloud2" />
     <param name="base_frame" type="string" value="base_footprint" />
