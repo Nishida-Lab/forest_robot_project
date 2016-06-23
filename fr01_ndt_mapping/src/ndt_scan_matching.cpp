@@ -329,27 +329,15 @@ void NDTScanMatching::publishTransform()
   map2ndt_odom_mutex_.unlock();
 }
 
-void NDTScanMatching::savePointCloud()
+void NDTScanMatching::savePointCloud(std::string dstfilename)
 {
-  std::string resultfilepath = ros::package::getPath("fr01_ndt_mapping");
-  resultfilepath += "/result";
-  resultfilepath += getTimeAsString();
-  resultfilepath += ".pcd";
-  pcl::io::savePCDFileASCII(resultfilepath, last_scan_);
+  // std::string resultfilepath = ros::package::getPath("fr01_ndt_mapping");
+  // resultfilepath += "/result";
+  // resultfilepath += getTimeAsString();
+  // resultfilepath += ".pcd";
+  pcl::io::savePCDFileASCII(dstfilename, last_scan_);
   ROS_INFO_STREAM("Saved " << last_scan_.points.size() << "data points to result.");
+  ROS_INFO_STREAM("Saved to " << dstfilename);
 }
 
-std::string NDTScanMatching::getTimeAsString()
-{
-  time_t rawtime;
-  struct tm * timeinfo;
-  char buffer[80];
-
-  time (&rawtime);
-  timeinfo = localtime(&rawtime);
-
-  strftime(buffer,80,"%Y%m%d%I%M%S",timeinfo);
-  std::string str(buffer);
-  return str;
-}
 
