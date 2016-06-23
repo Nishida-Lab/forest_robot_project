@@ -51,7 +51,7 @@ public:
   void publishTransform();
   void startLiveSlam();
   void startReplay(const std::string &bag_name, std::string scan_topic);
-  void savePointCloud();
+  void savePointCloud(std::string dstfilename);
 private:
   std::string getTimeAsString();
 
