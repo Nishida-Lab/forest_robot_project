@@ -175,6 +175,42 @@ void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
 }
 
 
+void NDTScanMatching::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+                              pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud)
+{
+  pcl::search::KdTree<pcl::PointXYZI> kdtree;
+  kdtree.setInputCloud(cloud);
+  pcl::PointXYZI search_point;
+  search_point.x = 0;
+  search_point.y = 0;
+  search_point.z = 0;
+  double search_radius = 5.0;
+  std::vector<int> point_idx_radius_search;
+  std::vector<float> point_radius_squared_distance;
+  
+  if ( kdtree.radiusSearch (search_point, search_radius, point_idx_radius_search, point_radius_squared_distance) > 0 )
+  {
+    std::cout << "remove points : " << point_idx_radius_search.size() << std::endl;
+    pcl::PointIndices::Ptr outliers (new pcl::PointIndices ());
+    outliers->indices = point_idx_radius_search;
+    for (size_t i = 0; i < point_idx_radius_search.size (); ++i)
+    {
+      // std::cout << "    "  <<   cloud->points[ point_idx_radius_search[i] ].x 
+      //           << " " << cloud->points[ point_idx_radius_search[i] ].y 
+      //           << " " << cloud->points[ point_idx_radius_search[i] ].z 
+      //           << " (squared distance: " << point_radius_squared_distance[i] << ")" << std::endl;
+      cloud->points.erase(cloud->points.begin() + point_idx_radius_search[i]);
+      // filtered_cloud->points.push_back(cloud->points[point_idx_radius_search[i]]);
+    }
+    cloud->width = cloud->points.size();
+    cloud->height = 1;
+    // filtered_cloud->width = filtered_cloud->points.size();
+    // filtered_cloud->height = 1;
+    // filtered_cloud->is_dense = true;
+  }
+  //pcl::copyPointCloud<pcl::PointXYZI, pcl::PointXYZI>(*cloud_filtered, *cloud);
+}
+
 void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
 {
   ros::Time scan_time = ros::Time::now();
