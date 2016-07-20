@@ -20,7 +20,7 @@ std::string getTimeAsString()
 int main(int argc, char **argv)
 {
   std::string default_dst_filename = ros::package::getPath("fr01_ndt_mapping");
-  default_dst_filename = "/result";
+  default_dst_filename += "/result";
   default_dst_filename += getTimeAsString();
   default_dst_filename += ".pcd";
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
   desc.add_options()
     ("help", "Print help message")
     ("bag_filename", boost::program_options::value<std::string>()->required(), "ros bag filename")
-    ("dst_filename", boost::program_options::value<std::string>()->default_value("default_dst_filename"), "result pcd filename");
+    ("dst_filename", boost::program_options::value<std::string>()->default_value(default_dst_filename), "result pcd filename");
 
   boost::program_options::variables_map vm;
   try {
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ndt_scan_matching");
 
   NDTScanMatching ndt_scan_matcher;
-  //std::string bagfilepath = ros::package::getPath("fr01_bag");
+
   ndt_scan_matcher.startReplay(bagfilename);
   ndt_scan_matcher.savePointCloud(dstfilename);
   ros::spin();
