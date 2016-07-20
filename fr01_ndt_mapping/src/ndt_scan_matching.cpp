@@ -77,6 +77,12 @@ void NDTScanMatching::init()
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
   map2ndt_odom_.setRotation(q);
+
+  // NDT setting
+  ndt_.setTransformationEpsilon (0.01);
+  ndt_.setStepSize (0.1);
+  ndt_.setResolution (1.5);
+  ndt_.setMaximumIterations (30);
 }
 
 void NDTScanMatching::startLiveSlam()
