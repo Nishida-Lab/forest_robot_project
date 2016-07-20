@@ -4,6 +4,7 @@
 #include <ros/package.h>
 #include <boost/foreach.hpp>
 #include <boost/progress.hpp>
+#include <pcl/filters/extract_indices.h>
 #define foreach BOOST_FOREACH
 
 NDTScanMatching::NDTScanMatching()
@@ -176,7 +177,7 @@ void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
 
 
 void NDTScanMatching::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
-                              pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud)
+                              pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered)
 {
   pcl::search::KdTree<pcl::PointXYZI> kdtree;
   kdtree.setInputCloud(cloud);
@@ -184,31 +185,18 @@ void NDTScanMatching::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
   search_point.x = 0;
   search_point.y = 0;
   search_point.z = 0;
-  double search_radius = 5.0;
-  std::vector<int> point_idx_radius_search;
+  double search_radius = 0.5;
   std::vector<float> point_radius_squared_distance;
-  
-  if ( kdtree.radiusSearch (search_point, search_radius, point_idx_radius_search, point_radius_squared_distance) > 0 )
+  pcl::PointIndices::Ptr point_idx_radius_search(new pcl::PointIndices());
+
+  if ( kdtree.radiusSearch (search_point, search_radius, point_idx_radius_search->indices, point_radius_squared_distance) > 0 )
   {
-    std::cout << "remove points : " << point_idx_radius_search.size() << std::endl;
-    pcl::PointIndices::Ptr outliers (new pcl::PointIndices ());
-    outliers->indices = point_idx_radius_search;
-    for (size_t i = 0; i < point_idx_radius_search.size (); ++i)
-    {
-      // std::cout << "    "  <<   cloud->points[ point_idx_radius_search[i] ].x 
-      //           << " " << cloud->points[ point_idx_radius_search[i] ].y 
-      //           << " " << cloud->points[ point_idx_radius_search[i] ].z 
-      //           << " (squared distance: " << point_radius_squared_distance[i] << ")" << std::endl;
-      cloud->points.erase(cloud->points.begin() + point_idx_radius_search[i]);
-      // filtered_cloud->points.push_back(cloud->points[point_idx_radius_search[i]]);
-    }
-    cloud->width = cloud->points.size();
-    cloud->height = 1;
-    // filtered_cloud->width = filtered_cloud->points.size();
-    // filtered_cloud->height = 1;
-    // filtered_cloud->is_dense = true;
+    pcl::ExtractIndices<pcl::PointXYZI> extractor;
+    extractor.setInputCloud(cloud);
+    extractor.setIndices(point_idx_radius_search);
+    extractor.setNegative(true);
+    extractor.filter(*cloud_filtered);
   }
-  //pcl::copyPointCloud<pcl::PointXYZI, pcl::PointXYZI>(*cloud_filtered, *cloud);
 }
 
 void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
@@ -230,9 +218,8 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   this->cropBox(trans_pc, cloud_radius_filtered);
   // 点群をhokuyo3d座標系からbase_link座標系に変換
   try {
-    std::cout << "cloud_radius_filtered : " << cloud_radius_filtered->points.size() << std::endl;
-    // pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *cloud_radius_filtered, scanner_frame_, scan, tf_);
-    pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *trans_pc, scanner_frame_, scan, tf_);
+    pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *cloud_radius_filtered, scanner_frame_, scan, tf_);
+    //pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *trans_pc, scanner_frame_, scan, tf_);
   } catch (tf::ExtrapolationException e) {
     ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
   }catch(ros::Exception e){
