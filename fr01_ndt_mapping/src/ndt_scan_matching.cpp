@@ -222,14 +222,27 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
 
   Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
 
-  //点群をhokuyo3d座標系からbase_link座標系に変換
-  //変換されたデータはtrans_pcに格納される．
-  pcl::PointCloud<pcl::PointXYZI> trans_pc;
-  pcl::fromROSMsg(*points, trans_pc);
+  // ROSのメッセージからPCLの形式に変換
+  pcl::PointCloud<pcl::PointXYZI>::Ptr trans_pc(new pcl::PointCloud<pcl::PointXYZI>());
+  pcl::fromROSMsg(*points, *trans_pc);
+  // robotにあたった点群を除去する
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_radius_filtered(new pcl::PointCloud<pcl::PointXYZI>());
+  this->cropBox(trans_pc, cloud_radius_filtered);
+  // 点群をhokuyo3d座標系からbase_link座標系に変換
   try {
-    pcl_ros::transformPointCloud(base_frame_, points->header.stamp, trans_pc, scanner_frame_, scan, tf_);
+    std::cout << "cloud_radius_filtered : " << cloud_radius_filtered->points.size() << std::endl;
+    // pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *cloud_radius_filtered, scanner_frame_, scan, tf_);
+    pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *trans_pc, scanner_frame_, scan, tf_);
   } catch (tf::ExtrapolationException e) {
     ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
+  }catch(ros::Exception e){
+    ROS_ERROR("ros::Exception %s", e.what());
+  }catch(std::exception &e){
+    std::cerr << e.what() << std::endl;
+    exit(-1);
+  } catch(...){
+    std::cerr << "Exception Occured!!!" << std::endl;
+    exit(-1);
   }
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(scan));
