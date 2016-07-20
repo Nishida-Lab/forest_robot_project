@@ -22,6 +22,7 @@
 #include <pcl/registration/ndt.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/voxel_grid.h>
+
 #include <pcl_ros/impl/transforms.hpp>
 
 #include <message_filters/subscriber.h>
@@ -54,6 +55,8 @@ public:
   void savePointCloud(std::string dstfilename);
 private:
   std::string getTimeAsString();
+  void cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+               pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered);
 
   ros::NodeHandle nh_;
   ros::NodeHandle private_nh_;
