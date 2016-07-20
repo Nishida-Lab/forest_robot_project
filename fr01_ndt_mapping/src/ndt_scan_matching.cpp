@@ -394,5 +394,3 @@ void NDTScanMatching::savePointCloud(std::string dstfilename)
   ROS_INFO_STREAM("Saved " << last_scan_.points.size() << "data points to result.");
   ROS_INFO_STREAM("Saved to " << dstfilename);
 }
-
-
