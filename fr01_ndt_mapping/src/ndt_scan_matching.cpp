@@ -82,7 +82,7 @@ void NDTScanMatching::init()
   // NDT setting
   ndt_.setTransformationEpsilon (0.01);
   ndt_.setStepSize (0.1);
-  ndt_.setResolution (1.5);
+  ndt_.setResolution (1.0);
   ndt_.setMaximumIterations (30);
 }
 
