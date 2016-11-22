@@ -298,7 +298,6 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   ros::Time ndt_start = ros::Time::now();
   ndt_.align (*output_cloud_ptr, init_guess);
   ros::Duration ndt_delta_t = ros::Time::now() - ndt_start;
- 
 
   t = ndt_.getFinalTransformation();
 
