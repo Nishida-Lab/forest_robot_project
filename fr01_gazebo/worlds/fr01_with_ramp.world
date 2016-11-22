@@ -1,0 +1,1357 @@
+<sdf version='1.4'>
+  <world name='default'>
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+    </model>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <gravity>0 0 -9.8</gravity>
+    </physics>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+    <state world_name='default'>
+      <sim_time>324 304000000</sim_time>
+      <real_time>306 189442030</real_time>
+      <wall_time>1472447578 56539859</wall_time>
+      <model name='ground_plane'>
+        <pose>0 0 0 0 -0 0</pose>
+        <link name='link'>
+          <pose>0 0 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='table'>
+        <pose>2 0.394808 0 0 -0 0</pose>
+        <link name='link'>
+          <pose>2 0.394808 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='table_0'>
+        <pose>2 -0.405348 0 0 -0 0</pose>
+        <link name='link'>
+          <pose>2 -0.405348 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+    </state>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>5.64454 -0.147485 1.75459 0 0.343643 -3.01499</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
+    <model name='fr01'>
+      <link name='base_footprint'>
+        <pose>0 0 0 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0.37 0 -0 0</pose>
+          <mass>6.441</mass>
+          <inertia>
+            <ixx>0.004</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.002</iyy>
+            <iyz>0</iyz>
+            <izz>0.005</izz>
+          </inertia>
+        </inertial>
+        <collision name='base_footprint_collision_base_stabilized'>
+          <pose>0 0 0.37 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/base_link.stl</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <link name='base_link'>
+        <pose>0 0 0.37 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>6.441</mass>
+          <inertia>
+            <ixx>0.02</ixx>
+            <ixy>0.006</ixy>
+            <ixz>2.00005e-05</ixz>
+            <iyy>0.006</iyy>
+            <iyz>-1.20974e-09</iyz>
+            <izz>0.023</izz>
+          </inertia>
+        </inertial>
+        <collision name='base_link_collision'>
+          <pose>0 0 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/base_link.stl</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <collision name='base_link_collision_hokuyo3d_link'>
+          <pose>0.3405 0 0.463 -3.14159 -0 0</pose>
+          <geometry>
+            <box>
+              <size>0.106 0.085 0.105</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='base_link_visual'>
+          <pose>0 0 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/base_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <visual name='base_link_visual_hokuyo3d_link'>
+          <pose>0.3405 0 0.463 -3.14159 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/yvt-x002.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='base_link_joint' type='revolute'>
+        <child>base_link</child>
+        <parent>base_footprint</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='rocker_left_link'>
+        <pose>0 0.213 0.398 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.088</mass>
+          <inertia>
+            <ixx>0.001</ixx>
+            <ixy>1.419e-07</ixy>
+            <ixz>-4.954e-05</ixz>
+            <iyy>0.001</iyy>
+            <iyz>-0.0004669</iyz>
+            <izz>0.001</izz>
+          </inertia>
+        </inertial>
+        <collision name='rocker_left_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/rocker_left_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='rocker_left_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/rocker_left_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='rocker_left_joint' type='revolute'>
+        <child>rocker_left_link</child>
+        <parent>base_link</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='bogie_left_link'>
+        <pose>0.2 0.232945 0.248 0 -0 -3.14159</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>3.374</mass>
+          <inertia>
+            <ixx>0.002</ixx>
+            <ixy>-6.528e-07</ixy>
+            <ixz>-2.349e-06</ixz>
+            <iyy>0.002</iyy>
+            <iyz>1.156e-07</iyz>
+            <izz>0.003</izz>
+          </inertia>
+        </inertial>
+        <collision name='bogie_left_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/bogie_left_link.stl</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='bogie_left_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/bogie_left_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='bogie_left_joint' type='revolute'>
+        <child>bogie_left_link</child>
+        <parent>rocker_left_link</parent>
+        <axis>
+          <xyz>0 -1 0</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='steer_left_front_link'>
+        <pose>0.402 0.347945 0.298 0 -0 -1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.522</mass>
+          <inertia>
+            <ixx>0.0005737</ixx>
+            <ixy>1.174e-10</ixy>
+            <ixz>3.442e-07</ixz>
+            <iyy>0.002</iyy>
+            <iyz>-7.199e-10</iyz>
+            <izz>0.002</izz>
+          </inertia>
+        </inertial>
+        <collision name='steer_left_front_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/steer_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='steer_left_front_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/steer_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='steer_left_front_joint' type='revolute'>
+        <child>steer_left_front_link</child>
+        <parent>bogie_left_link</parent>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='wheel_left_front_link'>
+        <pose>0.402 0.412945 0.0835 -3.14159 -8.64102e-08 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_left_front_link_collision'>
+          <pose>-0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_left_front_link_visual'>
+          <pose>0 0 0 3.14159 -8.64102e-08 3.14159</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_left_front_joint' type='revolute'>
+        <child>wheel_left_front_link</child>
+        <parent>steer_left_front_link</parent>
+        <axis>
+          <xyz>-0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='wheel_left_middle_link'>
+        <pose>0.00199998 0.481445 0.083 -3.14159 -8.64102e-08 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_left_middle_link_collision'>
+          <pose>-0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_left_middle_link_visual'>
+          <pose>0 0 0 3.14159 -8.64102e-08 3.14159</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_left_middle_joint' type='revolute'>
+        <child>wheel_left_middle_link</child>
+        <parent>bogie_left_link</parent>
+        <axis>
+          <xyz>-0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='steer_left_back_link'>
+        <pose>-0.4 0.263 0.298 0 0 -1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.522</mass>
+          <inertia>
+            <ixx>0.0005737</ixx>
+            <ixy>1.174e-10</ixy>
+            <ixz>3.442e-07</ixz>
+            <iyy>0.002</iyy>
+            <iyz>-7.199e-10</iyz>
+            <izz>0.002</izz>
+          </inertia>
+        </inertial>
+        <collision name='steer_left_back_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/steer_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='steer_left_back_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/steer_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='steer_left_back_joint' type='revolute'>
+        <child>steer_left_back_link</child>
+        <parent>rocker_left_link</parent>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='wheel_left_back_link'>
+        <pose>-0.4 0.328 0.0835 3.14159 -8.64102e-08 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_left_back_link_collision'>
+          <pose>-0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_left_back_link_visual'>
+          <pose>0 0 0 3.14159 -8.64102e-08 3.14159</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_left_back_joint' type='revolute'>
+        <child>wheel_left_back_link</child>
+        <parent>steer_left_back_link</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='rocker_right_link'>
+        <pose>0 -0.213 0.398 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.088</mass>
+          <inertia>
+            <ixx>0.001</ixx>
+            <ixy>-1.417e-07</ixy>
+            <ixz>-4.954e-05</ixz>
+            <iyy>0.001</iyy>
+            <iyz>7.736e-08</iyz>
+            <izz>0.001</izz>
+          </inertia>
+        </inertial>
+        <collision name='rocker_right_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/rocker_right_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='rocker_right_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/rocker_right_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='rocker_right_joint' type='revolute'>
+        <child>rocker_right_link</child>
+        <parent>base_link</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='bogie_right_link'>
+        <pose>0.2 -0.232945 0.248 0 -0 -3.14159</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>3.374</mass>
+          <inertia>
+            <ixx>0.002</ixx>
+            <ixy>6.258e-07</ixy>
+            <ixz>-2.349e-06</ixz>
+            <iyy>0.002</iyy>
+            <iyz>-1.149e-07</iyz>
+            <izz>0.003</izz>
+          </inertia>
+        </inertial>
+        <collision name='bogie_right_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/bogie_right_link.stl</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='bogie_right_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/bogie_right_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='bogie_right_joint' type='revolute'>
+        <child>bogie_right_link</child>
+        <parent>rocker_right_link</parent>
+        <axis>
+          <xyz>0 -1 0</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='steer_right_front_link'>
+        <pose>0.402 -0.347945 0.298 0 -0 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.522</mass>
+          <inertia>
+            <ixx>0.0005737</ixx>
+            <ixy>1.174e-10</ixy>
+            <ixz>3.442e-07</ixz>
+            <iyy>0.002</iyy>
+            <iyz>-7.199e-10</iyz>
+            <izz>0.002</izz>
+          </inertia>
+        </inertial>
+        <collision name='steer_right_front_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/steer_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='steer_right_front_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/steer_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='steer_right_front_joint' type='revolute'>
+        <child>steer_right_front_link</child>
+        <parent>bogie_right_link</parent>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='wheel_right_front_link'>
+        <pose>0.402 -0.412945 0.0835 0 -0 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_right_front_link_collision'>
+          <pose>0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_right_front_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_right_front_joint' type='revolute'>
+        <child>wheel_right_front_link</child>
+        <parent>steer_right_front_link</parent>
+        <axis>
+          <xyz>-0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='wheel_right_middle_link'>
+        <pose>0.00200002 -0.481445 0.083 0 -0 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_right_middle_link_collision'>
+          <pose>0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_right_middle_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_right_middle_joint' type='revolute'>
+        <child>wheel_right_middle_link</child>
+        <parent>bogie_right_link</parent>
+        <axis>
+          <xyz>-0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <link name='steer_right_back_link'>
+        <pose>-0.4 -0.263 0.298 0 -0 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.522</mass>
+          <inertia>
+            <ixx>0.0005737</ixx>
+            <ixy>1.174e-10</ixy>
+            <ixz>3.442e-07</ixz>
+            <iyy>0.002</iyy>
+            <iyz>-7.199e-10</iyz>
+            <izz>0.002</izz>
+          </inertia>
+        </inertial>
+        <collision name='steer_right_back_link_collision'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/collision/steer_link.stl</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='steer_right_back_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/steer_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <joint name='steer_right_back_joint' type='revolute'>
+        <child>steer_right_back_link</child>
+        <parent>rocker_right_link</parent>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <lower>-1.5708</lower>
+            <upper>1.5708</upper>
+            <effort>30</effort>
+            <velocity>6.28319</velocity>
+          </limit>
+          <dynamics>
+            <damping>0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+      <link name='wheel_right_back_link'>
+        <pose>-0.4 -0.328 0.0835 0 -0 1.5708</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>2.966</mass>
+          <inertia>
+            <ixx>0.006</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.004</iyy>
+            <iyz>0</iyz>
+            <izz>0.004</izz>
+          </inertia>
+        </inertial>
+        <collision name='wheel_right_back_link_collision'>
+          <pose>0.065 0 0 -2.65359e-06 1.57079 -2.65359e-06</pose>
+          <geometry>
+            <cylinder>
+              <length>0.16</length>
+              <radius>0.08</radius>
+            </cylinder>
+          </geometry>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='wheel_right_back_link_visual'>
+          <pose>0 0 0 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <scale>1 1 1</scale>
+              <uri>/home/yuta/Documents/ROS/forest_ws/src/forest_robot_project/fr01_description/meshes/visual/wheel_link.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <gravity>1</gravity>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>1</self_collide>
+        <kinematic>0</kinematic>
+      </link>
+      <joint name='wheel_right_back_joint' type='revolute'>
+        <child>wheel_right_back_link</child>
+        <parent>steer_right_back_link</parent>
+        <axis>
+          <xyz>-0 1 0</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+          <dynamics/>
+        </axis>
+      </joint>
+      <static>0</static>
+      <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+        <robotNamespace>/</robotNamespace>
+      </plugin>
+      <pose>0 0 0 0 -0 0</pose>
+    </model>
+    <model name='table'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='surface1'>
+          <pose>0 0 0.171 0 -0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual1'>
+          <pose>0 0 0.171 0 -0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Wood</name>
+            </script>
+          </material>
+        </visual>
+        <collision name='surface2'>
+          <pose>0.9397 0 0.171 0 0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual2'>
+          <pose>0.9397 0 0.171 0 0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Wood</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>2 0.560073 0 0 -0 0</pose>
+    </model>
+    <model name='table_0'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='surface1'>
+          <pose>0 0 0.171 0 -0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual1'>
+          <pose>0 0 0.171 0 -0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Wood</name>
+            </script>
+          </material>
+        </visual>
+        <collision name='surface2'>
+          <pose>0.9397 0 0.171 0 0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+            <bounce/>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual2'>
+          <pose>0.9397 0 0.171 0 0.349 0</pose>
+          <geometry>
+            <box>
+              <size>1 0.8 0.03</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Wood</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>2 -0.405348 0 0 -0 0</pose>
+    </model>
+  </world>
+</sdf>
