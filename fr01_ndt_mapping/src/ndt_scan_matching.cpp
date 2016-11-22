@@ -138,6 +138,10 @@ void NDTScanMatching::startReplay(const std::string &bag_name)
       // ignoring un-timestamped tf data
     }
     // Only process a scan if it has tf data
+    // for (size_t i = 0; i < 10; ++i) {
+    //   s_queue.pop();
+    // }
+
     while(!s_queue.empty())
     {
       if(replay_count < skip_num_){
