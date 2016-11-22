@@ -1,0 +1,31 @@
+<launch>
+
+  <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true"> -->
+  <!--   <rosparam command="load" file="$(find fr01_ndt_mapping)/param/ukf.yaml" /> -->
+  <!-- </node> -->
+
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+    <param name="output_frame" value="odom_combined"/>
+    <param name="base_footprint_frame" value="base_footprint"/>
+    <param name="freq" value="30.0"/>
+    <param name="sensor_timeout" value="1.0"/>
+    <param name="odom_used" value="true"/>
+    <param name="imu_used" value="true"/>
+    <param name="vo_used" value="false"/>
+    <remap from="odom" to="/fr01_rocker_bogie_controller/odom" />
+    <remap from="imu" to="/imu/data_raw" />
+  </node>
+
+
+  <node pkg="tf" type="static_transform_publisher" name="ndtodom_2_ndtpc" args="0 0 0 0 0 0 /map /matched_point_cloud 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="baselink2imu" args="0 0 0 0 3.14 0 /base_link /imu_link 100"/>
+  <node pkg="fr01_ndt_mapping" type="ndt_scan_matching_node" name="ndt_scan_matching_node" output="screen"/>
+
+  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+    <remap from="cloud_in" to="scan_match_point_cloud" />
+    <param name="resolution" value="0.05" />
+    <!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
+    <param name="frame_id" type="string" value="map" />
+  </node>
+
+</launch>

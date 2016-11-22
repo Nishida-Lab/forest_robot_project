@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot name="fr01" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- File Include -->
+  <!-- <xacro:include filename="$(find fr01_description)/urdf/sensor/c930.urdf.xacro" /> -->
+  <xacro:include filename="$(find fr01_description)/urdf/sensor/hokuyo3d.urdf.xacro"/>
+  <xacro:include filename="$(find fr01_description)/robots/fr01.urdf.xacro"/>
+
+  <!-- add Hokuyo3d -->
+  <!-- Link -->
+  <xacro:hokuyo3d_link_base_link name="hokuyo3d_link"/>
+
+  <!-- Joint -->
+  <joint name="joint_hokuyo3d" type="fixed">
+    <origin rpy="${M_PI} 0 0" xyz="0.3405 0 0.463"/>
+    <parent link="base_link"/>
+    <child link="hokuyo3d_link"/>
+  </joint>
+
+  <!-- <xacro:c930_link_base_link name="c930_link"/> -->
+
+  <!-- Joint -->
+  <!-- <joint name="joint_c930" type="fixed"> -->
+  <!--   <origin rpy="0 0 0" xyz="0.3 0 0.0"/> -->
+  <!--   <parent link="base_link"/> -->
+  <!--   <child link="c930_link"/> -->
+  <!-- </joint> -->
+
+  <!-- Gazebo -->
+  <!-- <xacro:hokuyo3d_gazebo name="hokuyo3d"/> -->
+
+</robot>
