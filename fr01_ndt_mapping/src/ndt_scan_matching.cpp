@@ -225,8 +225,8 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   }catch(ros::Exception e){
     ROS_ERROR("ros::Exception %s", e.what());
   }catch(std::exception &e){
-    std::cerr << e.what() << std::endl;
-    exit(-1);
+    ROS_ERROR("%s", e.what());
+    return;
   } catch(...){
     std::cerr << "Exception Occured!!!" << std::endl;
     exit(-1);
