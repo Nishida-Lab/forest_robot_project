@@ -251,28 +251,13 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   approximate_voxel_filter.setLeafSize (1.0, 1.0, 1.0);
   approximate_voxel_filter.setInputCloud (scan_ptr);
   approximate_voxel_filter.filter (*filtered_cloud_ptr);
-  // Setting scale dependent NDT parameters
-  // Setting minimum transformation difference for termination condition.
-  // ndt_.setTransformationEpsilon (0.01);
-  // // Setting maximum step size for More-Thuente line search.
-  // ndt_.setStepSize (0.1);
-  // //Setting Resolution of NDT grid structure (VoxelGridCovariance).
-  // ndt_.setResolution (1.0);
-  // // Setting max number of registration iterations.
-  // ndt_.setMaximumIterations (30);
-  // Setting point cloud to be aligned.
-  
-  ndt_.setInputSource (filtered_cloud_ptr);
+
+  //ndt_.setInputSource (filtered_cloud_ptr);
+  ndt_.setInputSource(scan_ptr);
   pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
   ndt_.setInputTarget (last_scan_ptr);
-  //ndt_.setInputSource(scan_ptr);
-
-  // pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
-  // Setting point cloud to be aligned to.
-  //ndt_.setInputTarget (last_scan_ptr);
 
   tf::Matrix3x3 init_rotation;
-
   // 一個前のposeと引き算してx, y ,zの偏差を出す
   offset_x_ = 0;//odom->pose.pose.position.x - last_pose_.pose.position.x;
   offset_y_ = 0;//odom->pose.pose.position.y - last_pose_.pose.position.y;
