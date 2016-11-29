@@ -1,0 +1,23 @@
+<launch>
+
+  <node pkg="fr01_lum_slam" type="lum_slam_replay_node" name="lum_slam_node" output="screen" args="--bag_filename $(find fr01_bag)/bag/2016-07-15-23-04-08_odomremoved.bag">
+    <param name="scanner_frame" type="string" value="hokuyo3d_link" />
+    <param name="scanner_topic" type="string" value="/hokuyo3d/hokuyo_cloud2" />
+    <param name="base_frame" type="string" value="base_footprint" />
+    <param name="odom_frame" type="string" value="ndt_odom" />
+    <param name="map_frame" type="string" value="map" />
+    <param name="skip_num" type="int" value="1" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="ndt2basefootprint" args="0 0 0 0 0 0 ndt_odom base_footprint 100" />
+
+  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+    <remap from="cloud_in" to="scan_match_point_cloud" />
+    <param name="resolution" value="0.3" />
+    <param name="frame_id" type="string" value="map" />
+    <param name="sensor_model/hit" value="0.7" />
+    <param name="sensor_model/miss" value="0.01" />
+    <param name="latch" value="false" />
+  </node>
+
+</launch>
