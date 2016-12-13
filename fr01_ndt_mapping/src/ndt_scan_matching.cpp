@@ -82,7 +82,7 @@ void NDTScanMatching::init()
   // NDT setting
   ndt_.setTransformationEpsilon (0.01);
   ndt_.setStepSize (0.1);
-  ndt_.setResolution (1.0);
+  ndt_.setResolution (1.5);
   ndt_.setMaximumIterations (30);
 }
 
@@ -252,8 +252,8 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   approximate_voxel_filter.setInputCloud (scan_ptr);
   approximate_voxel_filter.filter (*filtered_cloud_ptr);
 
-  //ndt_.setInputSource (filtered_cloud_ptr);
-  ndt_.setInputSource(scan_ptr);
+  ndt_.setInputSource (filtered_cloud_ptr);
+  //ndt_.setInputSource(scan_ptr);
   pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
   ndt_.setInputTarget (last_scan_ptr);
 

@@ -6,7 +6,7 @@
     <param name="base_frame" type="string" value="base_footprint" />
     <param name="odom_frame" type="string" value="ndt_odom" />
     <param name="map_frame" type="string" value="map" />
-    <param name="skip_num" type="int" value="1" />
+    <param name="skip_num" type="int" value="0" />
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="ndt2basefootprint" args="0 0 0 0 0 0 ndt_odom base_footprint 100" />
