@@ -1,4 +1,4 @@
-#include <lum_slam.h>
+#include <fr01_lum_slam/lum_slam.h>
 #include <ros/package.h>
 #include <boost/program_options.hpp>
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "ndt_scan_matching");
 
-  NDTScanMatching ndt_scan_matcher;
+  LumSLAM ndt_scan_matcher;
 
   ndt_scan_matcher.startReplay(bagfilename);
   ndt_scan_matcher.savePointCloud(dstfilename);

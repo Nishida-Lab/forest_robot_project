@@ -47,31 +47,43 @@ class LocalMatchingCloud
 {
 public:
   LocalMatchingCloud()
+    : saved_counter_(0), header_("default_")
   {
     limit_matching_count_ = 100;
-    init_count_ = -50;
+    counter_ = 0;
   }
-  LocalMatchingCloud(int limit_matching_count, int init_count)
-    : init_count_(init_count), limit_matching_count_(limit_matching_count)
+  LocalMatchingCloud(int limit_matching_count)
+    : limit_matching_count_(limit_matching_count), saved_counter_(0), header_("default_"), counter_(0)
   {
   }
-  ~LocalMatchingCloud();
-  void setLimitMatchingCound(int limit_matching_count)
+  ~LocalMatchingCloud()
+  {
+  }
+  void setLimitMatchingCount(int limit_matching_count)
   {
     limit_matching_count_ = limit_matching_count;
   }
   void setInitCount(int init_count)
   {
-    init_count_ = init_count;
+    counter_ = init_count;
+  }
+  void setSavePointCloudHeader(std::string header)
+  {
+    header_ = header;
   }
   void addPointCloud(pcl::PointCloud<pcl::PointXYZI>::Ptr source_cloud)
   {
     if(counter_ >= 0) {
       pointcloud_ += *source_cloud;
       ROS_INFO_STREAM("Added source_cloud to pointcloud");
+      counter_ += 1;
     } else {
       counter_ += 1;
     }
+  }
+  void resetCounter()
+  {
+    counter_ = 0;
   }
   bool isAccumulated()
   {
@@ -84,22 +96,37 @@ public:
   void resetPointCloud()
   {
     pointcloud_.clear();
-    counter_ = init_count_;
+    counter_ = 0;
   }
   pcl::PointCloud<pcl::PointXYZI> getLocalMatchingCloud()
   {
     return pointcloud_;
   }
-  int init_count_;
+  std::string IntToString(int number)
+  {
+    std::stringstream ss;
+    ss << number;
+    return ss.str();
+  }
+  void savePointCloud()
+  {
+    std::string dstfilename = header_ + IntToString(saved_counter_) + ".pcd";
+    pcl::io::savePCDFileASCII(dstfilename, pointcloud_);
+    ROS_INFO_STREAM("Saved " << pointcloud_.points.size() << "data points to result.");
+    ROS_INFO_STREAM("Saved to " << dstfilename);
+    saved_counter_ += 1;
+  }
+  int saved_counter_;
   int counter_;
   int limit_matching_count_;
+  std::string header_;
   pcl::PointCloud<pcl::PointXYZI> pointcloud_;
 };
 
-class NDTScanMatching
+class LumSLAM
 {
 public:
-  NDTScanMatching();
+  LumSLAM();
   void init();
   void scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points);
   void getRPY(const geometry_msgs::Quaternion &q,
@@ -113,7 +140,6 @@ private:
   std::string getTimeAsString();
   void cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
                pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered);
-
   ros::NodeHandle nh_;
   ros::NodeHandle private_nh_;
   ros::Rate rate_;
@@ -162,7 +188,7 @@ private:
   boost::mutex map2odom_mutex_;
 
   int skip_num_;
-  std::vector<LocalMatchingCloud> local_matching_clouds_[2];
+  std::vector<LocalMatchingCloud> local_matching_clouds_;
   
 };
 

@@ -1,4 +1,4 @@
-#include <lum_slam.h>
+#include <fr01_lum_slam/lum_slam.h>
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include <ros/package.h>
@@ -6,51 +6,25 @@
 #include <boost/progress.hpp>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/registration/icp_nl.h>
+#include <pcl/kdtree/kdtree_flann.h>
+
 #define foreach BOOST_FOREACH
 
-class LocalMatchingCloud
-{
-public:
-  LocalMatchingCloud(int limit_matching_count, int init_count)
-    : init_count_(init_count), limit_matching_count_(limit_matching_count)
-  {
-  }
-  ~LocalMatchingCloud();
-  void addPointCloud(pcl::PointCloud<pcl::PointXYZI>::Ptr source_cloud)
-  {
-    if(counter_ >= 0) {
-      pointcloud_ += *source_cloud;
-      ROS_INFO_STREAM("Added source_cloud to pointcloud");
-    } else {
-      counter_ += 1;
-    }
-    if(counter_ >= limit_matching_count_){
-      counter_ = init_count_;
-      this->resetPointCloud();
-    }
-  }
-  void resetPointCloud()
-  {
-    pointcloud_.clear();
-  }
-  pcl::PointCloud<pcl::PointXYZI> getLocalMatchingCloud()
-  {
-    return pointcloud_;
-  }
-  int init_count_;
-  int counter_;
-  int limit_matching_count_;
-  pcl::PointCloud<pcl::PointXYZI> pointcloud_;
-};
 
-
-NDTScanMatching::NDTScanMatching()
+LumSLAM::LumSLAM()
   : rate_(10)
 {
   init();
+  local_matching_clouds_.resize(2);
+  local_matching_clouds_[0].setSavePointCloudHeader("first_");
+  local_matching_clouds_[0].setInitCount(0);
+  local_matching_clouds_[0].setLimitMatchingCount(30);
+  local_matching_clouds_[1].setSavePointCloudHeader("second_");
+  local_matching_clouds_[1].setInitCount(-15);
+  local_matching_clouds_[1].setLimitMatchingCount(30);
 }
 
-void NDTScanMatching::init()
+void LumSLAM::init()
 {
   ros::NodeHandle n("~");
   // rosparam の設定
@@ -73,7 +47,6 @@ void NDTScanMatching::init()
   tf_delay_ = transform_publish_period_;
 
   point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/scan_match_point_cloud", 1);
-  icp_point_cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/icp_scan_match_point_cloud", 1);
   br_ = new tf::TransformBroadcaster();
 
   offset_x_ = 0;
@@ -125,18 +98,18 @@ void NDTScanMatching::init()
   ndt_.setMaximumIterations (30);
 }
 
-void NDTScanMatching::startLiveSlam()
+void LumSLAM::startLiveSlam()
 {
   point_cloud_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_, scanner_topic_, 5);
   point_cloud_filter_ = new tf::MessageFilter<sensor_msgs::PointCloud2>(*point_cloud_sub_, tf_, base_frame_, 5);
-  point_cloud_filter_->registerCallback(boost::bind(&NDTScanMatching::scanMatchingCallback, this, _1));
-  transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
+  point_cloud_filter_->registerCallback(boost::bind(&LumSLAM::scanMatchingCallback, this, _1));
+  transform_thread_ = new boost::thread(boost::bind(&LumSLAM::publishLoop, this, transform_publish_period_));
 }
 
-void NDTScanMatching::startReplay(const std::string &bag_name)
+void LumSLAM::startReplay(const std::string &bag_name)
 {
   double transform_publish_period;
-  transform_thread_ = new boost::thread(boost::bind(&NDTScanMatching::publishLoop, this, transform_publish_period_));
+  transform_thread_ = new boost::thread(boost::bind(&LumSLAM::publishLoop, this, transform_publish_period_));
 
   ros::NodeHandle private_nh_("~");
 
@@ -212,14 +185,14 @@ void NDTScanMatching::startReplay(const std::string &bag_name)
   //savePointCloud();
 }
 
-void NDTScanMatching::getRPY(const geometry_msgs::Quaternion &q,
+void LumSLAM::getRPY(const geometry_msgs::Quaternion &q,
                              double &roll,double &pitch,double &yaw){
   tf::Quaternion tfq(q.x, q.y, q.z, q.w);
   tf::Matrix3x3(tfq).getRPY(roll, pitch, yaw);
 }
 
 
-void NDTScanMatching::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+void LumSLAM::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
                               pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered)
 {
   pcl::search::KdTree<pcl::PointXYZI> kdtree;
@@ -242,7 +215,7 @@ void NDTScanMatching::cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
   }
 }
 
-void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
+void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
 {
   ros::Time scan_time = ros::Time::now();
 
@@ -250,10 +223,8 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   pcl::PointCloud<pcl::PointXYZI> scan;
   pcl::PointCloud<pcl::PointXYZI>::Ptr transformed_scan_ptr (new pcl::PointCloud<pcl::PointXYZI>());
   tf::Quaternion q;
-  tf::Quaternion q_icp;
 
   Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
-  Eigen::Matrix4f t_icp(Eigen::Matrix4f::Identity());
 
   // ROSのメッセージからPCLの形式に変換
   pcl::PointCloud<pcl::PointXYZI>::Ptr trans_pc(new pcl::PointCloud<pcl::PointXYZI>());
@@ -281,46 +252,18 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   if(initial_scan_loaded_ == 0)
   {
     last_scan_ = *scan_ptr;
-    icp_last_scan_ = *scan_ptr;
     initial_scan_loaded_ = 1;
     //ROS_INFO_STREAM("Initial scan loaded.");
     return;
   }
-  pcl::IterativeClosestPointNonLinear<pcl::PointXYZI, pcl::PointXYZI> icp;
   pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
-  pcl::PointCloud<pcl::PointXYZI>::Ptr icp_last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(icp_last_scan_));
-
-  // // Filtering input scan to roughly 10% of original size to increase speed of registration.
-  // pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud_ptr (new pcl::PointCloud<pcl::PointXYZI>);
-  // pcl::ApproximateVoxelGrid<pcl::PointXYZI> approximate_voxel_filter;
-  // approximate_voxel_filter.setLeafSize (1.0, 1.0, 1.0);
-  // approximate_voxel_filter.setInputCloud (scan_ptr);
-  // approximate_voxel_filter.filter (*filtered_cloud_ptr);
 
   ndt_.setInputSource(scan_ptr);
   ndt_.setInputTarget(last_scan_ptr);
 
-  icp.setEuclideanFitnessEpsilon(0.000001);
-  icp.setMaximumIterations(10000);
-  icp.setTransformationEpsilon(0.000001);
-  icp.setInputSource(scan_ptr);
-  icp.setInputTarget(icp_last_scan_ptr);
-
   tf::Matrix3x3 init_rotation;
-  // 一個前のposeと引き算してx, y ,zの偏差を出す
-  offset_x_ = 0;//odom->pose.pose.position.x - last_pose_.pose.position.x;
-  offset_y_ = 0;//odom->pose.pose.position.y - last_pose_.pose.position.y;
-  double roll, pitch, yaw = 0;
-  //getRPY(odom->pose.pose.orientation, roll, pitch, yaw);
-  offset_yaw_ = 0;//yaw - last_yaw_;
+  guess_pos_ = previous_pos_; // ほとんど移動していないという仮定
 
-  guess_pos_.x = previous_pos_.x + offset_x_;
-  guess_pos_.y = previous_pos_.y + offset_y_;
-
-  guess_pos_.z = previous_pos_.z;
-  guess_pos_.roll = previous_pos_.roll;
-  guess_pos_.pitch = previous_pos_.pitch;
-  guess_pos_.yaw = previous_pos_.yaw + offset_yaw_;
   Eigen::AngleAxisf init_rotation_x(guess_pos_.roll, Eigen::Vector3f::UnitX());
   Eigen::AngleAxisf init_rotation_y(guess_pos_.pitch, Eigen::Vector3f::UnitY());
   Eigen::AngleAxisf init_rotation_z(guess_pos_.yaw, Eigen::Vector3f::UnitZ());
@@ -328,20 +271,10 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   Eigen::Matrix4f init_guess = (init_translation * init_rotation_z * init_rotation_y * init_rotation_x).matrix();
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr(new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr icp_output_cloud_ptr(new pcl::PointCloud<pcl::PointXYZI>);
   ros::Time matching_start = ros::Time::now();
   ndt_.align(*output_cloud_ptr, init_guess); // ndt でマッチングする
   t = ndt_.getFinalTransformation(); // ndtで変換行列をゲットする
-  std::cout << "init_guess : " << init_guess << std::endl;
-  std::cout << "t(ndt)     : " << t << std::endl;
-  icp.align(*icp_output_cloud_ptr, t); // ndtでゲットした変換行列を初期値としてicpを実行する
   ros::Duration matching_delta_t = ros::Time::now() - matching_start;
-
-  t_icp = icp.getFinalTransformation();
-
-  // Transforming unfiltered, input cloud using found transform.
-  //  pcl::transformPointCloud (*scan_ptr, *output_cloud_ptr, t);
-  // icpはそもそも間引いてないからやらない
 
   // for NDT
   tf::Matrix3x3 tf3d;
@@ -355,61 +288,45 @@ void NDTScanMatching::scanMatchingCallback(const sensor_msgs::PointCloud2::Const
   current_pos_.z = t(2, 3);
   tf3d.getRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw, 1);
 
-  // for ICP
-  tf::Matrix3x3 icp_tf3d;
-  icp_tf3d.setValue(
-                    static_cast<double>(t_icp(0, 0)), static_cast<double>(t_icp(0, 1)), static_cast<double>(t_icp(0, 2)),
-                    static_cast<double>(t_icp(1, 0)), static_cast<double>(t_icp(1, 1)), static_cast<double>(t_icp(1, 2)),
-                    static_cast<double>(t_icp(2, 0)), static_cast<double>(t_icp(2, 1)), static_cast<double>(t_icp(2, 2)));
-  icp_tf3d.getRPY(icp_current_pos_.roll, icp_current_pos_.pitch, icp_current_pos_.yaw, 1);
-
-  map2odom_mutex_.lock();
   map2ndt_odom_.setOrigin(tf::Vector3(current_pos_.x, current_pos_.y, current_pos_.z));
   q.setRPY(current_pos_.roll, current_pos_.pitch, current_pos_.yaw);
   map2ndt_odom_.setRotation(q);
-  
-  map2icp_odom_.setOrigin(tf::Vector3(t_icp(0, 3), t_icp(1, 3), t_icp(2, 3)));
-  q_icp.setRPY(icp_current_pos_.roll, icp_current_pos_.pitch, icp_current_pos_.yaw);
-  map2icp_odom_.setRotation(q_icp);
-  map2odom_mutex_.unlock();
-  
+
   std::cout << "/////////////////////////////////////////////" << std::endl;
   std::cout << "count : " << count_ << std::endl;
   std::cout << "Process time : " << matching_delta_t.toSec() << std::endl;
   std::cout << "NDT has converged: " << ndt_.hasConverged() << " score: "
             << ndt_.getFitnessScore() << std::endl;
-  std::cout << "ICP has converged :" << icp.hasConverged () << " score : "
-            << icp.getFitnessScore () << std::endl;
   std::cout << "x : " << current_pos_.x << std::endl;
   std::cout << "y : " << current_pos_.y << std::endl;
   std::cout << "z : " << current_pos_.z << std::endl;
   //std::cout << "/////////////////////////////////////////////" << std::endl;
 
   sensor_msgs::PointCloud2 scan_matched;
-  sensor_msgs::PointCloud2 icp_scan_matched;
   //pcl::toROSMsg(*output_cloud_ptr, scan_matched);
   pcl::toROSMsg(scan, scan_matched);
-  pcl::toROSMsg(scan, icp_scan_matched);
-  //scan_matched = *points;
-  
+
   scan_matched.header.stamp = scan_time;
   scan_matched.header.frame_id = ndt_odom_frame_;
-  icp_scan_matched.header.stamp = scan_time;
-  icp_scan_matched.header.frame_id = icp_odom_frame_;
   point_cloud_pub_.publish(scan_matched);
-  icp_point_cloud_pub_.publish(icp_scan_matched);
   // Update position and posture. current_pos -> previous_pos
   previous_pos_ = current_pos_;
 
   // save current scan
   last_scan_ += *output_cloud_ptr;
-  icp_last_scan_ += *icp_output_cloud_ptr;
-  //last_pose_.pose = odom->pose.pose;
-  last_yaw_ = yaw;
+
+  for (size_t i = 0; i < local_matching_clouds_.size(); ++i) {
+    local_matching_clouds_[i].addPointCloud(output_cloud_ptr);
+    if (local_matching_clouds_[i].isAccumulated()) {
+      local_matching_clouds_[i].savePointCloud();
+      local_matching_clouds_[i].resetPointCloud();
+    }
+  }
+
   count_++;
 }
 
-void NDTScanMatching::publishLoop(double transform_publish_period){
+void LumSLAM::publishLoop(double transform_publish_period){
   if(transform_publish_period == 0)
     return;
 
@@ -420,18 +337,16 @@ void NDTScanMatching::publishLoop(double transform_publish_period){
   }
 }
 
-void NDTScanMatching::publishTransform()
+void LumSLAM::publishTransform()
 {
-  map2odom_mutex_.lock();
+  //map2odom_mutex_.lock();
   ros::Time tf_expiration = ros::Time::now() + ros::Duration(tf_delay_);
   br_->sendTransform(tf::StampedTransform(map2ndt_odom_, tf_expiration,
                                           map_frame_, ndt_odom_frame_));
-  br_->sendTransform(tf::StampedTransform(map2icp_odom_, tf_expiration,
-                                          map_frame_, icp_odom_frame_));
-  map2odom_mutex_.unlock();
+  //map2odom_mutex_.unlock();
 }
 
-void NDTScanMatching::savePointCloud(std::string dstfilename)
+void LumSLAM::savePointCloud(std::string dstfilename)
 {
   // std::string resultfilepath = ros::package::getPath("fr01_ndt_mapping");
   // resultfilepath += "/result";
