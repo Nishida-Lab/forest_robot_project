@@ -127,6 +127,7 @@ class LumSLAM
 {
 public:
   LumSLAM();
+  ~LumSLAM();
   void init();
   void scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& points);
   void getRPY(const geometry_msgs::Quaternion &q,
@@ -136,6 +137,9 @@ public:
   void startLiveSlam();
   void startReplay(const std::string &bag_name);
   void savePointCloud(std::string dstfilename);
+  void savePointCloud(int saved_counter_, pcl::PointCloud<pcl::PointXYZI> pointcloud);
+  std::string timeToStr();
+  void outputPose(int saved_counter, Position pose);
 private:
   std::string getTimeAsString();
   void cropBox(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
@@ -188,8 +192,12 @@ private:
   boost::mutex map2odom_mutex_;
 
   int skip_num_;
+  int saved_counter_;
   std::vector<LocalMatchingCloud> local_matching_clouds_;
-  
+  std::vector<pcl::PointCloud<pcl::PointXYZI> > local_matched_clouds_;
+
+  std::ofstream pose_output_;
+  std::string pose_output_file_name_;
 };
 
 #endif /* LUM_SLAM_H */

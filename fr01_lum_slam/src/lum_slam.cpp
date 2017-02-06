@@ -8,20 +8,24 @@
 #include <pcl/registration/icp_nl.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
+#include <fstream>
+
 #define foreach BOOST_FOREACH
 
 
 LumSLAM::LumSLAM()
-  : rate_(10)
+  : rate_(10),saved_counter_(0)
 {
   init();
-  local_matching_clouds_.resize(2);
-  local_matching_clouds_[0].setSavePointCloudHeader("first_");
-  local_matching_clouds_[0].setInitCount(0);
-  local_matching_clouds_[0].setLimitMatchingCount(30);
-  local_matching_clouds_[1].setSavePointCloudHeader("second_");
-  local_matching_clouds_[1].setInitCount(-15);
-  local_matching_clouds_[1].setLimitMatchingCount(30);
+  // local_matching_clouds_.resize(2);
+  // local_matching_clouds_[0].setSavePointCloudHeader("first_");
+  // local_matching_clouds_[0].setInitCount(0);
+  // local_matching_clouds_[0].setLimitMatchingCount(30);
+  // local_matching_clouds_[1].setSavePointCloudHeader("second_");
+  // local_matching_clouds_[1].setInitCount(-15);
+  // local_matching_clouds_[1].setLimitMatchingCount(30);
+  pose_output_file_name_ = ros::package::getPath("fr01_lum_slam") + "/poseoutput_" + timeToStr();
+  local_matched_clouds_.resize(10);
 }
 
 void LumSLAM::init()
@@ -96,6 +100,11 @@ void LumSLAM::init()
   ndt_.setStepSize (0.1);
   ndt_.setResolution (1.0);
   ndt_.setMaximumIterations (30);
+}
+
+LumSLAM::~LumSLAM()
+{
+  std::cout << "Pose saved file : " << pose_output_file_name_ << std::endl;
 }
 
 void LumSLAM::startLiveSlam()
@@ -253,6 +262,8 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
   {
     last_scan_ = *scan_ptr;
     initial_scan_loaded_ = 1;
+    local_matched_clouds_[0] = *scan_ptr;
+    count_++;
     //ROS_INFO_STREAM("Initial scan loaded.");
     return;
   }
@@ -315,12 +326,16 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
   // save current scan
   last_scan_ += *output_cloud_ptr;
 
-  for (size_t i = 0; i < local_matching_clouds_.size(); ++i) {
-    local_matching_clouds_[i].addPointCloud(output_cloud_ptr);
-    if (local_matching_clouds_[i].isAccumulated()) {
-      local_matching_clouds_[i].savePointCloud();
-      local_matching_clouds_[i].resetPointCloud();
+  local_matched_clouds_[count_%10] = *output_cloud_ptr;
+  if ((count_%9) == 0) {
+    pcl::PointCloud<pcl::PointXYZI> sum_pointcloud;
+    for (int i = 0; i < 10; ++i) {
+      sum_pointcloud += local_matched_clouds_[i];
     }
+    saved_counter_++;
+    this->savePointCloud(saved_counter_, sum_pointcloud);
+    this->outputPose(saved_counter_, current_pos_);
+    sum_pointcloud.clear();
   }
 
   count_++;
@@ -355,4 +370,34 @@ void LumSLAM::savePointCloud(std::string dstfilename)
   pcl::io::savePCDFileASCII(dstfilename, last_scan_);
   ROS_INFO_STREAM("Saved " << last_scan_.points.size() << "data points to result.");
   ROS_INFO_STREAM("Saved to " << dstfilename);
+}
+
+void LumSLAM::savePointCloud(int saved_counter_, pcl::PointCloud<pcl::PointXYZI> pointcloud)
+{
+  std::stringstream ss;
+  ss << std::setw(10) << std::setfill('0') << saved_counter_ << ".pcd";
+  pcl::io::savePCDFileASCII(ros::package::getPath("fr01_lum_slam") + "/" +ss.str(), pointcloud);
+  std::cout << "Saved : " << ss.str() << std::endl;
+  return;
+}
+
+void LumSLAM::outputPose(int saved_counter, Position pose)
+{
+  pose_output_.open(pose_output_file_name_.c_str(), std::ios::app);
+  pose_output_ << saved_counter_ << " " << pose.x << " " << pose.y
+               << " " << pose.z << " " << pose.roll << " " << pose.pitch
+               << " " << pose.yaw << std::endl;
+  pose_output_.close();
+}
+
+std::string LumSLAM::timeToStr()
+{
+  std::stringstream msg;
+  const boost::posix_time::ptime now=
+    boost::posix_time::second_clock::local_time();
+  boost::posix_time::time_facet *const f=
+    new boost::posix_time::time_facet("%Y-%m-%d-%H-%M-%S");
+  msg.imbue(std::locale(msg.getloc(),f));
+  msg << now;
+  return msg.str();
 }
