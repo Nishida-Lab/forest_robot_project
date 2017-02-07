@@ -198,6 +198,7 @@ private:
 
   std::ofstream pose_output_;
   std::string pose_output_file_name_;
+  int keep_clouds_size_;
 };
 
 #endif /* LUM_SLAM_H */
