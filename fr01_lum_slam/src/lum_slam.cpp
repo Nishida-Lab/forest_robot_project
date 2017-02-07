@@ -24,8 +24,8 @@ LumSLAM::LumSLAM()
   // local_matching_clouds_[1].setSavePointCloudHeader("second_");
   // local_matching_clouds_[1].setInitCount(-15);
   // local_matching_clouds_[1].setLimitMatchingCount(30);
-  pose_output_file_name_ = ros::package::getPath("fr01_lum_slam") + "/poseoutput_" + timeToStr();
-  local_matched_clouds_.resize(10);
+  pose_output_file_name_ = ros::package::getPath("fr01_lum_slam") + "/poseoutput_" + timeToStr() + ".csv";
+  local_matched_clouds_.resize(100);
 }
 
 void LumSLAM::init()
