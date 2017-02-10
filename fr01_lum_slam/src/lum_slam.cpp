@@ -25,7 +25,7 @@ LumSLAM::LumSLAM()
   // local_matching_clouds_[1].setInitCount(-15);
   // local_matching_clouds_[1].setLimitMatchingCount(30);
   pose_output_file_name_ = ros::package::getPath("fr01_lum_slam") + "/poseoutput_" + timeToStr() + ".csv";
-  keep_clouds_size_ = 500;
+  keep_clouds_size_ = 5000;
   local_matched_clouds_.resize(keep_clouds_size_);
 }
 
@@ -99,8 +99,8 @@ void LumSLAM::init()
   // NDT setting
   ndt_.setTransformationEpsilon (0.01);
   ndt_.setStepSize (0.1);
-  ndt_.setResolution (1.0);
-  ndt_.setMaximumIterations (30);
+  ndt_.setResolution (1.5);
+  ndt_.setMaximumIterations (10);
 }
 
 LumSLAM::~LumSLAM()
@@ -245,7 +245,6 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
   // 点群をhokuyo3d座標系からbase_link座標系に変換
   try {
     pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *cloud_radius_filtered, scanner_frame_, scan, tf_);
-    //pcl_ros::transformPointCloud(base_frame_, points->header.stamp, *trans_pc, scanner_frame_, scan, tf_);
   } catch (tf::ExtrapolationException e) {
     ROS_ERROR("pcl_ros::transformPointCloud %s", e.what());
   }catch(ros::Exception e){
@@ -268,9 +267,17 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
     //ROS_INFO_STREAM("Initial scan loaded.");
     return;
   }
-  pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
 
-  ndt_.setInputSource(scan_ptr);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud_ptr (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::ApproximateVoxelGrid<pcl::PointXYZI> approximate_voxel_filter;
+  approximate_voxel_filter.setLeafSize (1.0, 1.0, 1.0);
+  approximate_voxel_filter.setInputCloud (scan_ptr);
+  approximate_voxel_filter.filter (*filtered_cloud_ptr);
+
+   pcl::PointCloud<pcl::PointXYZI>::Ptr last_scan_ptr(new pcl::PointCloud<pcl::PointXYZI>(last_scan_));
+   
+  //ndt_.setInputSource(scan_ptr);
+  ndt_.setInputSource(filtered_cloud_ptr);
   ndt_.setInputTarget(last_scan_ptr);
 
   tf::Matrix3x3 init_rotation;
@@ -315,7 +322,6 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
   //std::cout << "/////////////////////////////////////////////" << std::endl;
 
   sensor_msgs::PointCloud2 scan_matched;
-  //pcl::toROSMsg(*output_cloud_ptr, scan_matched);
   pcl::toROSMsg(scan, scan_matched);
 
   scan_matched.header.stamp = scan_time;
@@ -326,34 +332,10 @@ void LumSLAM::scanMatchingCallback(const sensor_msgs::PointCloud2::ConstPtr& poi
   previous_pos_ = current_pos_;
 
   // save current scan
-  // last_scan_ += *output_cloud_ptr;
-  pcl::PointCloud<pcl::PointXYZI> sum_pointcloud;
-  local_matched_clouds_[count_%keep_clouds_size_] = *output_cloud_ptr;
-   
-  if(count_ > keep_clouds_size_){
-    for (int i = 0; i < keep_clouds_size_; ++i) {
-      sum_pointcloud += local_matched_clouds_[i];
-    }
-  }else{
-    for (int i; i < count_; ++i) {
-      sum_pointcloud += local_matched_clouds_[i];
-    }
-  }
-  last_scan_ = sum_pointcloud;
+  last_scan_ += *output_cloud_ptr;
   saved_counter_++;
-  this->savePointCloud(saved_counter_, sum_pointcloud);
-  
+  this->savePointCloud(saved_counter_, scan);
   this->outputPose(saved_counter_, current_pos_);
-  // if ((count_%9) == 0) {
-  //   for (int i = 0; i < 10; ++i) {
-  //     sum_pointcloud += local_matched_clouds_[i];
-  //   }
-  //   saved_counter_++;
-  //   this->savePointCloud(saved_counter_, sum_pointcloud);
-  //   this->outputPose(saved_counter_, current_pos_);
-  //   sum_pointcloud.clear();
-  // }
-
   count_++;
 }
 
