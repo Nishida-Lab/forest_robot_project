@@ -12,7 +12,7 @@ Fr01WheelStatePublisher::Fr01WheelStatePublisher(ros::NodeHandle nh)
   wheel_state_.position.resize(6);
   for (size_t i = 0; i < wheel_state_.velocity.size(); ++i) {
     wheel_state_.velocity[i] = 0.0;
-    wheel_state_.position[i] = 0.0;  
+    wheel_state_.position[i] = 0.0;
   }
 
   wheel_state_.name.resize(6);

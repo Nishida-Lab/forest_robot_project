@@ -58,7 +58,7 @@ Fr01Interface::Fr01Interface()
 	ros::spinOnce();
 	ros::Duration(0.25).sleep();
       }
-    } while (steer_state_ptr_->name.size() != 4);
+    } while (steer_state_ptr_->name.size() != 2);
   ROS_INFO_STREAM_NAMED("hardware_interface", "Done for first steer state message to be recieved");
 
   fr01_wheel_ptr_.reset(new Fr01WheelInterface(wheel_joint_names_));
@@ -102,7 +102,7 @@ void Fr01Interface::wheelStateCallback(const sensor_msgs::JointStateConstPtr& wh
 
 void Fr01Interface::steerStateCallback(const sensor_msgs::JointStateConstPtr& steer_state)
 {
-  if(steer_state->name.size() != 4){
+  if(steer_state->name.size() != 2){
     return;
   }
   steer_state_ptr_ = steer_state;
