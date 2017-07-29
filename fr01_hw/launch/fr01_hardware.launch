@@ -30,7 +30,7 @@
   <rosparam file="$(find fr01_hw)/config/b3m_driver.yaml"
   	    command="load" ns="b3m_driver"/>
   <node name="b3m_driver" pkg="b3m_servo" type="b3m_driver"
-  	args="joint_0_driver joint_1_driver joint_2_driver joint_3_driver"
+  	args="joint_0_driver joint_1_driver"
   	output="screen" >
     <param name="joint_cmd_topic_name" value="$(arg steer_cmd_topic_name)" />
     <param name="joint_state_topic_name" value="$(arg steer_state_topic_name)" />
