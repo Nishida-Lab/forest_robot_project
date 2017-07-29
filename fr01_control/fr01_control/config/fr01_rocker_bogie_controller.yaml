@@ -9,8 +9,8 @@ fr01_rocker_bogie_controller:
     type        : "rocker_bogie_controller/RockerBogieController"
     left_wheel  : ['wheel_left_front_joint', 'wheel_left_middle_joint', 'wheel_left_back_joint']
     right_wheel : ['wheel_right_front_joint', 'wheel_right_middle_joint', 'wheel_right_back_joint']
-    left_steer  : ['steer_left_front_joint', 'steer_left_back_joint']
-    right_steer : ['steer_right_front_joint', 'steer_right_back_joint']
+    left_steer  : ['steer_left_front_joint']
+    right_steer : ['steer_right_front_joint']
     publish_rate: 100
 
     pose_covariance_diagonal : [0.00001, 0.00001, 1000000000000.0, 1000000000000.0, 1000000000000.0, 0.001]

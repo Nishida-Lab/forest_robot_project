@@ -425,13 +425,13 @@ namespace rocker_bogie_controller{
       const double left_front_steer_pos = atan2(2.0*ws_h*tan_cmd_ang,
                                                 2.0*ws_h - ws_w*tan_cmd_ang);
       //---- back
-      const double right_back_steer_pos = - right_front_steer_pos;
-      const double left_back_steer_pos = - left_front_steer_pos;
+      // const double right_back_steer_pos = - right_front_steer_pos;
+      // const double left_back_steer_pos = - left_front_steer_pos;
       //-- set commands
       right_steer_joints_[INDX_STEER_FRNT].setCommand(right_front_steer_pos);
       left_steer_joints_[INDX_STEER_FRNT].setCommand(left_front_steer_pos);
-      right_steer_joints_[INDX_STEER_BACK].setCommand(right_back_steer_pos);
-      left_steer_joints_[INDX_STEER_BACK].setCommand(left_back_steer_pos);
+      // right_steer_joints_[INDX_STEER_BACK].setCommand(right_back_steer_pos);
+      // left_steer_joints_[INDX_STEER_BACK].setCommand(left_back_steer_pos);
 
       // wheel
       //-- compute commands
